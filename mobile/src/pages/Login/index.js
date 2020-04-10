@@ -30,12 +30,12 @@ export default function Login() {
        </TextInput>
 
       
-      <TouchableOpacity style={{ backgroundColor: '#AD4545' ,height:60, width:'100%',flexDirection: 'row',
+      <TouchableOpacity style={{ backgroundColor: '#AD4545' ,height:60, width:'100%',flexDirection: 'row',borderRadius:50,
         justifyContent: 'center', alignItems:'center'}}
          onPress = {onBtnLoginClick}>
         
-        <Feather name="play" size={16} color="white"  style={{flex:1, paddingLeft:5}}></Feather>
-        <Text style ={{color:'#ffffff', fontSize:18, flex:9, textAlign: 'center', paddingRight:30 }}>Jogar</Text>
+        <Feather name="play" size={16} color="white"  style={{flex:1, paddingLeft:30}}></Feather>
+        <Text style ={{color:'#ffffff', fontSize:18, flex:9, textAlign: 'center', paddingRight:60 }}>Jogar</Text>
       
       
       </TouchableOpacity>
@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-evenly',
     paddingTop: Constants.statusBarHeight + 20,
-    paddingLeft:1,
-    paddingRight:1
+    paddingLeft:5,
+    paddingRight:5
   },
 });

@@ -1,199 +1,48 @@
 import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-import { Feather } from '@expo/vector-icons';
+import { StyleSheet, View } from 'react-native';
 import Constants from 'expo-constants';
+import Card from './card';
+import RightPanel from './right_panel';
 
-export default function Game() {
-    function btnJogarClick() {
+export default class Game extends React.Component {
 
+    cardData = {
+        name: 'Brasil',
+        population: '209.3 milhões',
+        area: '8.511.000 km2',
+        hdi: '0,755 (#75)',
+        militaryPower: '0,1988 (#10)',
+        popDensity: '23 pessoas/km2',
+        flag: 'http://www.flags.net/images/largeflags/BRAZ0001.GIF'
     }
 
 
-    return (
-        <View style={styles.container}>
-            <View style={{ flex: 1, borderColor: 'gray', borderWidth: 1, margin: 2, flexDirection: 'row' }}>
+    render() {
 
-                <View style={{ flex: 3, borderColor: 'gray', borderWidth: 1, margin: 2 }}>
-
-                    <View style={{ flex: 4, borderColor: 'gray', borderWidth: 1 }}>
-
-                    </View>
-                    <View style={{ flex: 6, borderColor: 'gray', borderWidth: 1, flexDirection: 'column' }}>
-                        <View style={{ flex: 1, borderColor: 'gray', borderWidth: 1, flexDirection: 'row' }} >
-
-                            <View style={{ flex: 1, paddingLeft: 5, borderColor: 'gray', borderWidth: 1, alignItems: 'flex-start', justifyContent: 'center' }} >
-                                <Text style={{ fontSize: 16 }}>População</Text>
-
-                            </View>
-
-                            <View style={{ flex: 1, borderColor: 'gray', borderWidth: 1, alignItems: 'center', justifyContent: 'center' }} >
-                                <Text>209.3 milhões</Text>
-                            </View>
-
-                        </View>
-
-                        <View style={{ flex: 1, borderColor: 'gray', borderWidth: 1, flexDirection: 'row' }} >
-
-                            <View style={{ flex: 1, paddingLeft: 5, borderColor: 'gray', borderWidth: 1, alignItems: 'flex-start', justifyContent: 'center' }} >
-                                <Text style={{ fontSize: 16 }}>Área</Text>
-
-                            </View>
-
-                            <View style={{ flex: 1, borderColor: 'gray', borderWidth: 1, alignItems: 'center', justifyContent: 'center' }} >
-                                <Text>8.511.000 km2</Text>
-                            </View>
-
-                        </View>
-                        <View style={{ flex: 1, borderColor: 'gray', borderWidth: 1, flexDirection: 'row' }} >
-
-                            <View style={{ flex: 1, paddingLeft: 5, borderColor: 'gray', borderWidth: 1, alignItems: 'flex-start', justifyContent: 'center' }} >
-                                <Text style={{ fontSize: 16 }}>IDH</Text>
-
-                            </View>
-
-                            <View style={{ flex: 1, borderColor: 'gray', borderWidth: 1, alignItems: 'center', justifyContent: 'center' }} >
-                                <Text>0,755 (#75)</Text>
-                            </View>
-
-                        </View>
-                        <View style={{ flex: 1, borderColor: 'gray', borderWidth: 1, flexDirection: 'row' }} >
-
-                            <View style={{ flex: 1, paddingLeft: 5, borderColor: 'gray', borderWidth: 1, alignItems: 'flex-start', justifyContent: 'center' }} >
-                                <Text style={{ fontSize: 16 }}>Poder militar</Text>
-
-                            </View>
-
-                            <View style={{ flex: 1, borderColor: 'gray', borderWidth: 1, alignItems: 'center', justifyContent: 'center' }} >
-                                <Text>0,1988 (#10)</Text>
-                            </View>
-
-                        </View>
-                        <View style={{ flex: 1, borderColor: 'gray', borderWidth: 1, flexDirection: 'row' }} >
-
-                            <View style={{ flex: 1, paddingLeft: 5, borderColor: 'gray', borderWidth: 1, alignItems: 'flex-start', justifyContent: 'center' }} >
-                                <Text style={{ fontSize: 16 }}>Densidade pop.</Text>
-
-                            </View>
-
-                            <View style={{ flex: 1, borderColor: 'gray', borderWidth: 1, alignItems: 'center', justifyContent: 'center' }} >
-                                <Text>23 pessoas/km2</Text>
-                            </View>
-
-                        </View>
-                     </View>
-
+        return (
+            <View style={styles.container}>
+                <View style={{ flex: 1, margin: 2, flexDirection: 'row' }}>
+                    <Card cardData={this.cardData}>
+                    </Card>
+                    <RightPanel>
+                    </RightPanel>
                 </View>
-                <View style={{ flex: 1, borderColor: 'gray', borderWidth: 1, margin: 2, flexDirection: 'column' }}>
-                    <View style={{ flex: 1, borderColor: 'gray', borderWidth: 1 }} >
-
-                    </View>
-
-                    <View style={{ flex: 1, borderColor: 'gray', borderWidth: 1 }} >
-
-                    </View>
-
-                    <View style={{ flex: 1, borderColor: 'gray', borderWidth: 1 }} >
-
-                    </View>
-
+                <View style={{ flex: 1, margin: 2, flexDirection: 'row' }}>
+                    <Card cardData={this.cardData}>
+                    </Card>
+                    <RightPanel>
+                    </RightPanel>
                 </View>
             </View>
-            <View style={{ flex: 1, borderColor: 'gray', borderWidth: 1, margin: 2, flexDirection: 'row' }}>
-
-                <View style={{ flex: 3, borderColor: 'gray', borderWidth: 1, margin: 2 }}>
-
-                    <View style={{ flex: 4, borderColor: 'gray', borderWidth: 1 }}>
-
-                    </View>
-                    <View style={{ flex: 6, borderColor: 'gray', borderWidth: 1, flexDirection: 'column' }}>
-                        <View style={{ flex: 1, borderColor: 'gray', borderWidth: 1, flexDirection: 'row' }} >
-
-                            <View style={{ flex: 1, paddingLeft: 5, borderColor: 'gray', borderWidth: 1, alignItems: 'flex-start', justifyContent: 'center' }} >
-                                <Text style={{ fontSize: 16 }}>População</Text>
-
-                            </View>
-
-                            <View style={{ flex: 1, borderColor: 'gray', borderWidth: 1, alignItems: 'center', justifyContent: 'center' }} >
-                                <Text>209.3 milhões</Text>
-                            </View>
-
-                        </View>
-
-                        <View style={{ flex: 1, borderColor: 'gray', borderWidth: 1, flexDirection: 'row' }} >
-
-                            <View style={{ flex: 1, paddingLeft: 5, borderColor: 'gray', borderWidth: 1, alignItems: 'flex-start', justifyContent: 'center' }} >
-                                <Text style={{ fontSize: 16 }}>Área</Text>
-
-                            </View>
-
-                            <View style={{ flex: 1, borderColor: 'gray', borderWidth: 1, alignItems: 'center', justifyContent: 'center' }} >
-                                <Text>8.511.000 km2</Text>
-                            </View>
-
-                        </View>
-                        <View style={{ flex: 1, borderColor: 'gray', borderWidth: 1, flexDirection: 'row' }} >
-
-                            <View style={{ flex: 1, paddingLeft: 5, borderColor: 'gray', borderWidth: 1, alignItems: 'flex-start', justifyContent: 'center' }} >
-                                <Text style={{ fontSize: 16 }}>IDH</Text>
-
-                            </View>
-
-                            <View style={{ flex: 1, borderColor: 'gray', borderWidth: 1, alignItems: 'center', justifyContent: 'center' }} >
-                                <Text>0,755 (#75)</Text>
-                            </View>
-
-                        </View>
-                        <View style={{ flex: 1, borderColor: 'gray', borderWidth: 1, flexDirection: 'row' }} >
-
-                            <View style={{ flex: 1, paddingLeft: 5, borderColor: 'gray', borderWidth: 1, alignItems: 'flex-start', justifyContent: 'center' }} >
-                                <Text style={{ fontSize: 16 }}>Poder militar</Text>
-
-                            </View>
-
-                            <View style={{ flex: 1, borderColor: 'gray', borderWidth: 1, alignItems: 'center', justifyContent: 'center' }} >
-                                <Text>0,1988 (#10)</Text>
-                            </View>
-
-                        </View>
-                        <View style={{ flex: 1, borderColor: 'gray', borderWidth: 1, flexDirection: 'row' }} >
-
-                            <View style={{ flex: 1, paddingLeft: 5, borderColor: 'gray', borderWidth: 1, alignItems: 'flex-start', justifyContent: 'center' }} >
-                                <Text style={{ fontSize: 16 }}>Densidade pop.</Text>
-
-                            </View>
-
-                            <View style={{ flex: 1, borderColor: 'gray', borderWidth: 1, alignItems: 'center', justifyContent: 'center' }} >
-                                <Text>23 pessoas/km2</Text>
-                            </View>
-
-                        </View>
-                    </View>
-
-                </View>
-                <View style={{ flex: 1, borderColor: 'gray', borderWidth: 1, margin: 2, flexDirection: 'column' }}>
-                    <View style={{ flex: 1, borderColor: 'gray', borderWidth: 1 }} >
-
-                    </View>
-
-                    <View style={{ flex: 1, borderColor: 'gray', borderWidth: 1 }} >
-
-                    </View>
-
-                    <View style={{ flex: 1, borderColor: 'gray', borderWidth: 1 }} >
-
-                    </View>
-
-                </View>
-            </View>
-        </View>
-    );
+        );
+    }
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#fff',
-        paddingTop: Constants.statusBarHeight,
+        paddingTop: Constants.statusBarHeight + 30,
         flexDirection: 'column',
         justifyContent: 'flex-start',
         padding: 1,

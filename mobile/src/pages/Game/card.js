@@ -2,11 +2,9 @@ import React from 'react';
 import { StyleSheet, Text, View, Image } from 'react-native';
 import SectionCard from './section_card';
 
-export default class Card extends React.Component {
+export default function Card (props) {
 
-    render() {
-
-        const cardData = this.props.cardData;
+        const { cardData } = props;
 
         return (
             <View style={{ flex: 3, borderColor: 'gray', borderWidth: 1, margin: 2 }}>
@@ -38,5 +36,5 @@ export default class Card extends React.Component {
 
             </View>
         );
-    }
+    
 }

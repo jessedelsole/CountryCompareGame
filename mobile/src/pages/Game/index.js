@@ -3,10 +3,11 @@ import { StyleSheet, View } from 'react-native';
 import Constants from 'expo-constants';
 import Card from './card';
 import RightPanel from './right_panel';
+import {useRoute} from '@react-navigation/native';
 
-export default class Game extends React.Component {
+export default function Game (){
 
-    cardData = {
+   const cardData = {
         name: 'Brasil',
         population: '209.3 milhões',
         area: '8.511.000 km2',
@@ -16,27 +17,30 @@ export default class Game extends React.Component {
         flag: 'http://www.flags.net/images/largeflags/BRAZ0001.GIF'
     }
 
+    const route = useRoute();
 
-    render() {
+    const nome = route.params.nome;
+    
+
 
         return (
             <View style={styles.container}>
                 <View style={{ flex: 1, margin: 2, flexDirection: 'row' }}>
-                    <Card cardData={this.cardData}>
+                    <Card cardData={cardData}>
                     </Card>
-                    <RightPanel>
+                    <RightPanel nome = {'adversário'}>
                     </RightPanel>
                 </View>
                 <View style={{ flex: 1, margin: 2, flexDirection: 'row' }}>
-                    <Card cardData={this.cardData}>
+                    <Card cardData={cardData}>
                     </Card>
-                    <RightPanel>
+                    <RightPanel nome = {nome}>
                     </RightPanel>
                 </View>
             </View>
         );
-    }
 }
+
 
 const styles = StyleSheet.create({
     container: {

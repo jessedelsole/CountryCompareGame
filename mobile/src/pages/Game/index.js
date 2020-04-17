@@ -14,7 +14,7 @@ export default function Game (){
         hdi: '0,755 (#75)',
         militaryPower: '0,1988 (#10)',
         popDensity: '23 pessoas/km2',
-        flag: 'http://www.flags.net/images/largeflags/BRAZ0001.GIF'
+        flag: 'https://cdn.countryflags.com/thumbs/brazil/flag-400.png'
     }
 
     const route = useRoute();
@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#fff',
-        paddingTop: Constants.statusBarHeight + 30,
+        paddingTop: Constants.statusBarHeight,
         flexDirection: 'column',
         justifyContent: 'flex-start',
         padding: 1,

@@ -23,7 +23,7 @@ export default function Card (props) {
                     <SectionCard text={'Polulação'} value={cardData.population}>
                     </SectionCard>
 
-                    <SectionCard text={'Area'} value={cardData.area}>
+                    <SectionCard text={'Área'} value={cardData.area}>
                     </SectionCard>
 
                     <SectionCard text={'IDH'} value={cardData.hdi}>

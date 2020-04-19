@@ -9,7 +9,7 @@ export default function Card (props) {
         
 
         return (
-            <View style={{ flex: 3, borderColor: 'gray', borderWidth: 1, margin: 2 }}>
+            <View style={{ flex: 3, borderColor: 'gray', borderWidth: 1, margin: 2, borderRadius:20 }}>
 
                 <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
                     <Text style={{ color: 'black', fontWeight: 'bold' }}>{cardData.name}</Text>
@@ -20,7 +20,7 @@ export default function Card (props) {
                 </View>
                 <View style={{ flex: 6,  flexDirection: 'column' }}>
 
-                    <SectionCard text={'Polulação'} value={cardData.population}>
+                    <SectionCard  text={'Polulação'} value={cardData.population}>
                     </SectionCard>
 
                     <SectionCard text={'Área'} value={cardData.area}>

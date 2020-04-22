@@ -9,35 +9,61 @@ export default function Login() {
 
   const navigation = useNavigation();
   const [nome, setNome] = useState('');
+  const [carregando, setCarregando] = useState(false);
 
-  async function lookForOpponent(){
+  global.game_id = 0;
 
-     
-     const player = nome;
+  
+  function postLookForOpponent() {
+    console.log('postLookForOpponent');
     
-      
-      const response =  await api.post('lookForOpponent', {player} );
+    return new Promise((resolve, reject) => {
 
-      console.log(response.data.gameId);
-      console.log(response.data.status);
-      
+      const player = nome;
+      const gameId = global.game_id;
+
+      setCarregando(true);
+
+      api.post('lookForOpponent', { player, gameId }).then(result => {
+        resolve(result);
+      });
+    });
+  }
+
+
+
+  function trataResultadoPost(result) {
+
+    global.game_id = result.data.return_gameId;
+
+    console.log('gameid=' + result.data.return_gameId);
+    console.log('status' + result.data.return_status);
+    console.log(result.data.return_operation)
+
+    if (result.data.return_status == 2) {
+         setCarregando(false);
+         navigation.navigate('Game', { nome });
+    } else {
+
+      console.log('chamando setTimeOut');
+      setTimeout(() => { postLookForOpponent().then( result => trataResultadoPost(result)) }, 2000)
+    }
 
   }
 
 
   function onBtnClick() {
-    
-    
-    lookForOpponent();
 
-    navigation.navigate('Game', { nome });
- 
- 
+      postLookForOpponent().then( result =>  trataResultadoPost(result) );
+      
   }
 
   return (
     <KeyboardAvoidingView behavior='height' style={styles.container}>
-      <Text style={{ color: 'white', fontSize: 25, fontWeight: 'bold' }}>Digite o seu nome</Text>
+      <TouchableOpacity onPress={() => global.game_id = 0}>
+        <Text style={{ color: 'white', fontSize: 25, fontWeight: 'bold' }}>Digite o seu nome</Text>
+      </TouchableOpacity>
+
       <TextInput style={{}} placeHolder="Digite o nome do usuário"
         style={{
           width: '100%', height: 60, borderColor: 'gray', borderWidth: 1, backgroundColor: 'white',
@@ -47,8 +73,11 @@ export default function Login() {
       >
       </TextInput>
 
+       {carregando? <Text>'Aguarde, procurando um oponente...</Text> : null }
+       
+
       <TouchableOpacity style={{
-        backgroundColor: '#AD4545', height: 60, width: '100%', flexDirection: 'row', borderRadius: 50,
+        backgroundColor: '#AD4545', height: 60, width: '100%', flexDirection: 'row', borderRadius: 50, 
         justifyContent: 'center', alignItems: 'center'
       }}
         onPress={onBtnClick}>

@@ -12,24 +12,18 @@ export default function Login() {
   const [carregando, setCarregando] = useState(false);
 
   global.game_id = 0;
-
   
-  function postLookForOpponent() {
-    console.log('postLookForOpponent');
-    
-    return new Promise((resolve, reject) => {
 
-      const player = nome;
-      const gameId = global.game_id;
+  function postLookForOpponent(){
 
-      setCarregando(true);
+     const player = nome;
+     const gameId = global.game_id;
 
-      api.post('lookForOpponent', { player, gameId }).then(result => {
-        resolve(result);
-      });
-    });
+     setCarregando(true);
+
+     api.post('lookForOpponent', { player, gameId }).then(result =>  trataResultadoPost(result) );
+
   }
-
 
 
   function trataResultadoPost(result) {
@@ -46,7 +40,7 @@ export default function Login() {
     } else {
 
       console.log('chamando setTimeOut');
-      setTimeout(() => { postLookForOpponent().then( result => trataResultadoPost(result)) }, 2000)
+      setTimeout( () =>  postLookForOpponent() , 2000)
     }
 
   }
@@ -54,7 +48,7 @@ export default function Login() {
 
   function onBtnClick() {
 
-      postLookForOpponent().then( result =>  trataResultadoPost(result) );
+    postLookForOpponent();
       
   }
 
@@ -73,7 +67,7 @@ export default function Login() {
       >
       </TextInput>
 
-       {carregando? <Text>'Aguarde, procurando um oponente...</Text> : null }
+       {carregando? <Text>Aguarde, procurando um oponente...</Text> : null }
        
 
       <TouchableOpacity style={{

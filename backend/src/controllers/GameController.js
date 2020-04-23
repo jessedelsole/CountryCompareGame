@@ -6,8 +6,10 @@ module.exports = {
     // returns game's id  and status's (waiting for opponent or  game_ready, also starts the logic of the match when there are two players ready
     async lookForOpponent(request, response) {
 
-        
-       
+        const cards = await connection('cards').select('*');
+        console.log(cards);
+
+
         const { player, gameId } = request.body;
         console.log(player);
         console.log(gameId);
@@ -57,6 +59,11 @@ async function waitForOpponent_StartGame(player) {
 
 }
 
+
+function stargGame(){
+
+
+}
 
 
 

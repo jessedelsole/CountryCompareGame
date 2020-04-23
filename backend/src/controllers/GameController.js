@@ -5,16 +5,20 @@ module.exports = {
 
     // returns game's id  and status's (waiting for opponent or  game_ready, also starts the logic of the match when there are two players ready
     async lookForOpponent(request, response) {
+
+        
        
         const { player, gameId } = request.body;
+        console.log(player);
+        console.log(gameId);
 
         if ( gameId > 0 ) {
 
-            return response.json(await returnGameStatusById(gameId));
+            return response.json( await returnGameStatusById( gameId ));
 
         } else {
 
-            return response.json(await returnGameStatusByPlayerName(player));
+            return response.json( await waitForOpponent_StartGame( player ));
         }
     }
 }
@@ -31,30 +35,22 @@ async function returnGameStatusById(gameId) {
 }
 
 
-async function returnGameStatusByPlayerName(player) {
+async function waitForOpponent_StartGame(player) {
 
-    //user doesn't know its game id yet
-    //check if there's already anyone waiting for opponent
+    //user doesn't know its game id yet, check if there's already anyone waiting for opponent
 
     const games = await connection('games').where('status', game_consts.WAITING_OPONENT).select('*');
 
     if (games.length === 0) {
 
-        result = await connection('games').insert({
-            player1: player,
-            player2: "",
-            status: game_consts.WAITING_OPONENT
-        });
+        result = await connection('games').insert({ player1: player,  player2: "", status: game_consts.WAITING_OPONENT });
 
         return new ReturnObj_lookForOpponent(result[0], game_consts.WAITING_OPONENT, 'INSERTED');
 
     } else {
-        //somebody was already waiting for oppoent, update table, change status to "PLAYING", and start the logic of the game
-        await connection('games').where('id', games[0].id).update({
-            status: game_consts.GAME_READY,
-            player2: player
-        });
 
+        //somebody was already waiting for oppoent, update table, change status to "PLAYING", and start the logic of the game
+        await connection('games').where('id', games[0].id).update({ status: game_consts.GAME_READY,  player2: player });
 
         return new ReturnObj_lookForOpponent(games[0].id, game_consts.GAME_READY, 'UPDATE');
     }

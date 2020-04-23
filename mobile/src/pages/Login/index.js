@@ -10,26 +10,22 @@ export default function Login() {
   const navigation = useNavigation();
   const [nome, setNome] = useState('');
   const [carregando, setCarregando] = useState(false);
-
-  global.game_id = 0;
+  let gameId=0;
   
 
   function postLookForOpponent(){
 
-     const player = nome;
-     const gameId = global.game_id;
-
      setCarregando(true);
 
-     api.post('lookForOpponent', { player, gameId }).then(result =>  trataResultadoPost(result) );
+     api.post('lookForOpponent', { player : nome , gameId }).then(result =>  trataResultadoPost(result) );
 
   }
 
 
   function trataResultadoPost(result) {
 
-    global.game_id = result.data.return_gameId;
-
+    gameId = result.data.return_gameId;
+    
     console.log('gameid=' + result.data.return_gameId);
     console.log('status' + result.data.return_status);
     console.log(result.data.return_operation)
@@ -54,7 +50,7 @@ export default function Login() {
 
   return (
     <KeyboardAvoidingView behavior='height' style={styles.container}>
-      <TouchableOpacity onPress={() => global.game_id = 0}>
+      <TouchableOpacity onPress={() =>   gameId = 0}>
         <Text style={{ color: 'white', fontSize: 25, fontWeight: 'bold' }}>Digite o seu nome</Text>
       </TouchableOpacity>
 

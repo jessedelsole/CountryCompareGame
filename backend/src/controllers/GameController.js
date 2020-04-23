@@ -3,85 +3,73 @@ const game_consts = require('../../src/game_consts');
 
 module.exports = {
 
-    //lookForOpponent :
-    // returns game's id  and status's (waiting for opponent or  game_ready)
-    // also starts the logic of the match when there're two players ready
+    // returns game's id  and status's (waiting for opponent or  game_ready, also starts the logic of the match when there are two players ready
     async lookForOpponent(request, response) {
-
-        console.log(request.body);
-
-        let return_operation = 'INITIAL';
-        let return_gameId = 0;
-        let return_status = 0;
-
+       
         const { player, gameId } = request.body;
 
+        if ( gameId > 0 ) {
 
-        //if the user already knows its gameID, just check the status of the game:
-
-        if (gameId > 0) {
-
-            const games = await connection('games').where('id', gameId).select('*');
-            console.log(games);
-
-            return_gameId = games[0].id;
-            return_status = games[0].status;
-            return_operation = 'JUST_CHECKED';
+            return response.json(await returnGameStatusById(gameId));
 
         } else {
 
-            //user doesn't know its game id yet
-            //check if there's already anyone waiting for opponent
-
-            const games = await connection('games').where('status', game_consts.WAITING_OPONENT).select('*');
-            console.log(games);
-
-
-            if (games.length === 0) {
-
-                //nobody is waiting for opponent yet, insert record in database and wait for opponent
-
-                const player1 = player;
-                let player2 = '';
-                let status = game_consts.WAITING_OPONENT;
-
-                result = await connection('games').insert({
-                    player1,
-                    player2,
-                    status
-                });
-
-                [return_gameId] = result;
-                return_status = status;
-                return_operation = 'INSERTED';
-
-            } else {
-                //somebody was already waiting for oppoent, update table, change status to "PLAYING", and start the logic of the game
-
-
-                return_gameId = games[0].id;
-
-
-                //check if it's not the user itself who is waiting for opponent
-                if (player != games[0].player1) {
-
-                    let player2 = player;
-                    let status = game_consts.GAME_READY;
-                    await connection('games').where('id', return_gameId).update({ status, player2 });
-
-
-                    return_operation = 'UPDATE';
-
-                } else {
-                    return_operation = 'NONE';
-                    return_status = games[0].status;
-                }
-
-            }
-
+            return response.json(await returnGameStatusByPlayerName(player));
         }
+    }
+}
 
-        return response.json({ return_gameId, return_status, return_operation });
 
+async function returnGameStatusById(gameId) {
+
+    //if the user already knows its gameID, just check the status of the game:
+    //used by player 1 after first call, to check if there's a player2 ready
+
+    const games = await connection('games').where('id', gameId).select('*');
+
+    return new ReturnObj_lookForOpponent(games[0].id, games[0].status, 'JUST_CHECKED');
+}
+
+
+async function returnGameStatusByPlayerName(player) {
+
+    //user doesn't know its game id yet
+    //check if there's already anyone waiting for opponent
+
+    const games = await connection('games').where('status', game_consts.WAITING_OPONENT).select('*');
+
+    if (games.length === 0) {
+
+        result = await connection('games').insert({
+            player1: player,
+            player2: "",
+            status: game_consts.WAITING_OPONENT
+        });
+
+        return new ReturnObj_lookForOpponent(result[0], game_consts.WAITING_OPONENT, 'INSERTED');
+
+    } else {
+        //somebody was already waiting for oppoent, update table, change status to "PLAYING", and start the logic of the game
+        await connection('games').where('id', games[0].id).update({
+            status: game_consts.GAME_READY,
+            player2: player
+        });
+
+
+        return new ReturnObj_lookForOpponent(games[0].id, game_consts.GAME_READY, 'UPDATE');
+    }
+
+}
+
+
+
+
+
+class ReturnObj_lookForOpponent {
+    constructor(return_gameId, return_status, return_operation) {
+
+        this.return_gameId = return_gameId;
+        this.return_status = return_status;
+        this.return_operation = return_operation;
     }
 }

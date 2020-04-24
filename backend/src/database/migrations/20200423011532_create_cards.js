@@ -1,19 +1,12 @@
 
-exports.up = function(knex, Promise) {
+exports.up = function(knex) {
 
     return  knex.schema.createTable('cards', function(table){
         table.increments();
-        table.string('name').notNullable();
+        table.string('name');
         table.string('url');
-    }).then( function(){
-        
-        
-    // knex('cards').insert([ {name: 'Brazil'}, {name: 'Argentina'}])
-
-    //   const  obj = knex('cards').select('*'); 
-       
-     //   console.log('cards :'  + obj[0])
-
+        table.integer('population',10);
+        table.integer('area',7);
     })
   
 };

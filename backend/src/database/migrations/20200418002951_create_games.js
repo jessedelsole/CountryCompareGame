@@ -1,11 +1,14 @@
 
 exports.up = function(knex) {
   
-    return  knex.schema.createTable('games', function(table_games){
-        table_games.increments();
-        table_games.string('player1').notNullable();
-        table_games.string('player2').notNullable();
-        table_games.string('status').notNullable();
+    return  knex.schema.createTable('games', function(table){
+        table.increments();
+        table.string('player1');
+        table.string('player2');
+        table.string('status');
+        table.integer('idCard_player1',5);
+        table.integer('idCard_player2',5);
+        
   
     })
 };

@@ -3,12 +3,7 @@ const game_consts = require('../../src/game_consts');
 
 module.exports = {
 
-    // returns game's id  and status's (waiting for opponent or  game_ready, also starts the logic of the match when there are two players ready
     async lookForOpponent(request, response) {
-
-        const cards = await connection('cards').select('*');
-        console.log(cards);
-
 
         const { player, gameId } = request.body;
         console.log(player);
@@ -28,9 +23,6 @@ module.exports = {
 
 async function returnGameStatusById(gameId) {
 
-    //if the user already knows its gameID, just check the status of the game:
-    //used by player 1 after first call, to check if there's a player2 ready
-
     const games = await connection('games').where('id', gameId).select('*');
 
     return new ReturnObj_lookForOpponent(games[0].id, games[0].status, 'JUST_CHECKED');
@@ -39,29 +31,52 @@ async function returnGameStatusById(gameId) {
 
 async function waitForOpponent_StartGame(player) {
 
-    //user doesn't know its game id yet, check if there's already anyone waiting for opponent
-
     const games = await connection('games').where('status', game_consts.WAITING_OPONENT).select('*');
 
     if (games.length === 0) {
 
-        result = await connection('games').insert({ player1: player,  player2: "", status: game_consts.WAITING_OPONENT });
-
-        return new ReturnObj_lookForOpponent(result[0], game_consts.WAITING_OPONENT, 'INSERTED');
+        const [gameId] = await connection('games').insert({ player1: player,  player2: "", status: game_consts.WAITING_OPONENT });
+        return new ReturnObj_lookForOpponent(gameId, game_consts.WAITING_OPONENT, 'INSERTED');
 
     } else {
 
-        //somebody was already waiting for oppoent, update table, change status to "PLAYING", and start the logic of the game
-        await connection('games').where('id', games[0].id).update({ status: game_consts.GAME_READY,  player2: player });
-
+        await startGame(games[0].id, games[0].player1, player);
         return new ReturnObj_lookForOpponent(games[0].id, game_consts.GAME_READY, 'UPDATE');
     }
 
 }
 
 
-function stargGame(){
+async function startGame(gameId, player1, player2){
 
+   const cards = await connection('cards').select('*');
+   console.log(cards);
+
+   let tempPlayer = player1;  
+   for (let i=0; i<= cards.length-1;i++){
+
+     if (tempPlayer===player1)
+      tempPlayer=player2; else
+        tempPlayer=player1;
+
+      await connection('cards_game').insert({card_id:cards[i].id, game_id: gameId, player:tempPlayer });   
+   }
+
+   const cards_game_player1 = await connection('cards_game').where('player',player1).select('*');
+   console.log(cards_game_player1);
+   const cards_game_player2 = await connection('cards_game').where('player',player2).select('*');
+   console.log(cards_game_player2);
+  
+  
+   await connection('games').where('id', gameId).update(
+       { status: game_consts.GAME_READY,  
+         player2: player2, 
+         idCard_player1: cards_game_player1[0].id,
+         idCard_player2: cards_game_player2[0].id
+         });
+
+   const game = await connection('games').where('id', gameId).select('*');
+   console.log(game);
 
 }
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 import Constants from 'expo-constants';
 import Card from './card';
 import BackCard from './backcard';
@@ -16,6 +16,8 @@ export default function Game() {
 
     const [cardCount,setCardCount ]= useState(0);
     const [opponentCardCount, setOpponnetCardCount]=useState(0);
+    const [statusText, setStatusText]=useState('');
+    const [statusColor, setStatusColor]=useState('#fff');
 
     const [opponentCardData, setOpponentCardData] = useState({
         name: '',
@@ -68,6 +70,19 @@ export default function Game() {
             setOpponnetCardCount(result.data.opponentCount);
 
 
+            if (result.data.player_turn == nome){
+
+                setStatusText('Sua vez de jogar! Escolha uma opção abaixo!');
+                setStatusColor('#8edfa7');
+
+
+            } else {
+
+                setStatusText(`Aguarde enquanto ${opponentName} faz a jogada!`);
+                setStatusColor('#eff9a5');
+            }
+
+
         });
     }, [])
 
@@ -79,6 +94,10 @@ export default function Game() {
                 </BackCard>
                 <RightPanel nome={opponentName} cardCount={opponentCardCount}>
                 </RightPanel>
+            </View>
+
+            <View style={{backgroundColor: statusColor, borderColor: '#b4b4b4', borderRadius:5, borderWidth:1}}>
+                 <Text style={{padding:10}}>{statusText}</Text>
             </View>
             <View style={{ flex: 1, margin: 2, flexDirection: 'row' }}>
                 <Card cardData={cardData}>

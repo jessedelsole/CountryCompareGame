@@ -1,21 +1,22 @@
 import React from 'react';
 import { StyleSheet, Text, View, Image } from 'react-native';
+import { TouchableHighlight, TouchableOpacity } from 'react-native-gesture-handler';
 
 export default function SectionCard(props) {
 
-  
-      
         return (
-            <View style={{ flex: 1, borderColor: 'gray', borderWidth: 1, flexDirection: 'row' }} >
+           
+          
+            <View  style={{ paddingLeft: 10, paddingRight:10, flex: 1,
+              borderColor: 'gray', borderWidth: 1, flexDirection: 'row', justifyContent: 'space-between' ,alignItems: 'center'}}>
+              
+               <Text style={{ fontSize: 16 }}>{props.text}</Text>
+               <Text>{props.value}</Text>
 
-                <View style={{ flex: 1, paddingLeft: 5, alignItems: 'flex-start', justifyContent: 'center' }} >
-                    <Text style={{ fontSize: 16 }}>{props.text}</Text>
-                </View>
-
-                <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }} >
-                    <Text>{props.value}</Text>
-                </View>
+          
             </View>
+          
+           
         )
     
 }

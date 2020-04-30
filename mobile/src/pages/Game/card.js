@@ -1,6 +1,7 @@
 import React from 'react';
-import { StyleSheet, Text, View, Image } from 'react-native';
+import { StyleSheet, Text, View, Image,TouchableOpacity } from 'react-native';
 import SectionCard from './section_card';
+
 
 export default function Card (props) {
 
@@ -20,20 +21,32 @@ export default function Card (props) {
                 </View>
                 <View style={{ flex: 6,  flexDirection: 'column' }}>
 
+                    <TouchableOpacity style= {{flex:1}}>
                     <SectionCard  text={'Polulação'} value={cardData.population}>
                     </SectionCard>
+                    </TouchableOpacity>
 
+                   
+                    <TouchableOpacity style= {{flex:1}}>
                     <SectionCard text={'Área'} value={cardData.area}>
                     </SectionCard>
-                  
+                    </TouchableOpacity>
+
+                    <TouchableOpacity style= {{flex:1}}>
                     <SectionCard text={'IDH'} value={ cardData.hdi}>
                     </SectionCard>
+                    </TouchableOpacity>
 
+                    <TouchableOpacity style= {{flex:1}}>
                     <SectionCard text={'Poder militar'} value={cardData.militaryPower}>
                     </SectionCard>
+                    </TouchableOpacity>
 
+
+                    <TouchableOpacity style= {{flex:1}}>
                     <SectionCard text={'Densidade pop.'} value={cardData.popDensity}>
                     </SectionCard>
+                    </TouchableOpacity>
 
                    
                 </View>

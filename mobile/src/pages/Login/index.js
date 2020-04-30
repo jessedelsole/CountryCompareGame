@@ -11,6 +11,7 @@ export default function Login() {
   const [nome, setNome] = useState('');
   const [carregando, setCarregando] = useState(false);
   let gameId=0;
+  let opponentName='';
   
 
   function postLookForOpponent(){
@@ -24,22 +25,25 @@ export default function Login() {
 
   function trataResultadoPost(result) {
 
-    gameId = result.data.return_gameId;
+    gameId       = result.data.return_gameId;
+    opponentName = result.data.opponentName;
     
     console.log('gameid=' + result.data.return_gameId);
     console.log('status' + result.data.return_status);
     console.log(result.data.return_operation)
+    console.log(result.data.opponentName);
+
 
     if (result.data.return_status == 2) {
          setCarregando(false);
-         navigation.navigate('Game', { nome });
+         navigation.navigate('Game', { nome , gameId, opponentName});
     } else {
 
       console.log('chamando setTimeOut');
       setTimeout( () =>  postLookForOpponent() , 2000)
     }
 
-  }
+  } 
 
 
   function onBtnClick() {

@@ -16,7 +16,7 @@ export default function Card (props) {
                 </View>
 
                 <View style={{ padding:5, flex: 4, borderColor: 'gray', borderWidth: 1 }}>
-                    <Image  source={{ uri: cardData.flag }} style={{ flex: 1, resizeMode:'cover' }} ></Image>
+                  {cardData.flag? <Image  source={{ uri: cardData.flag }} style={{ flex: 1, resizeMode:'cover' }} ></Image> : null}
                 </View>
                 <View style={{ flex: 6,  flexDirection: 'column' }}>
 
@@ -25,8 +25,8 @@ export default function Card (props) {
 
                     <SectionCard text={'Área'} value={cardData.area}>
                     </SectionCard>
-
-                    <SectionCard text={'IDH'} value={cardData.hdi}>
+                  
+                    <SectionCard text={'IDH'} value={ cardData.hdi}>
                     </SectionCard>
 
                     <SectionCard text={'Poder militar'} value={cardData.militaryPower}>
@@ -34,6 +34,8 @@ export default function Card (props) {
 
                     <SectionCard text={'Densidade pop.'} value={cardData.popDensity}>
                     </SectionCard>
+
+                   
                 </View>
 
             </View>

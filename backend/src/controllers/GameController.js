@@ -17,6 +17,53 @@ module.exports = {
 
             return response.json( await waitForOpponent_StartGame( player ));
         }
+    }, 
+
+    async getCard(request, response){
+         
+        const { player, gameId } = request.query;
+
+        const [game] = await connection('games').where('id', gameId).select('*');
+
+        const player_turn = game.player_turn;
+
+
+
+        const card = await connection('cards_game')
+          .where({player, game_id:gameId })
+          .join('cards','cards.id','=','cards_game.card_id')
+          .first('*');
+
+        console.log(card);
+
+        const opponentCard = await connection('cards_game')
+        .where({ game_id:gameId })
+        .andWhereNot({player})
+        .join('cards','cards.id','=','cards_game.card_id')
+        .first('*');
+
+      console.log(opponentCard);
+       
+
+
+        const [cardCount] = await connection('cards_game')
+        .where({player, game_id:gameId })
+        .count();
+
+        count = cardCount['count(*)'];
+
+        const [opponentCardCount] = await connection('cards_game')
+        .where({ game_id:gameId })
+        .andWhereNot({player})
+        .count();
+
+        opponentCount = opponentCardCount['count(*)'];
+
+
+
+
+        return response.json( {card, opponentCard, count, opponentCount, player_turn});
+
     }
 }
 
@@ -25,7 +72,7 @@ async function returnGameStatusById(gameId) {
 
     const games = await connection('games').where('id', gameId).select('*');
 
-    return new ReturnObj_lookForOpponent(games[0].id, games[0].status, 'JUST_CHECKED');
+    return new ReturnObj_lookForOpponent(games[0].id, games[0].status, 'JUST_CHECKED',games[0].player2);
 }
 
 
@@ -36,12 +83,12 @@ async function waitForOpponent_StartGame(player) {
     if (games.length === 0) {
 
         const [gameId] = await connection('games').insert({ player1: player,  player2: "", status: game_consts.WAITING_OPONENT });
-        return new ReturnObj_lookForOpponent(gameId, game_consts.WAITING_OPONENT, 'INSERTED');
+        return new ReturnObj_lookForOpponent(gameId, game_consts.WAITING_OPONENT, 'INSERTED', '');
 
     } else {
 
         await startGame(games[0].id, games[0].player1, player);
-        return new ReturnObj_lookForOpponent(games[0].id, game_consts.GAME_READY, 'UPDATE');
+        return new ReturnObj_lookForOpponent(games[0].id, game_consts.GAME_READY, 'UPDATE', games[0].player1);
     }
 
 }
@@ -72,7 +119,8 @@ async function startGame(gameId, player1, player2){
        { status: game_consts.GAME_READY,  
          player2: player2, 
          idCard_player1: cards_game_player1[0].id,
-         idCard_player2: cards_game_player2[0].id
+         idCard_player2: cards_game_player2[0].id,
+         player_turn:player1
          });
 
    const game = await connection('games').where('id', gameId).select('*');
@@ -84,10 +132,12 @@ async function startGame(gameId, player1, player2){
 
 
 class ReturnObj_lookForOpponent {
-    constructor(return_gameId, return_status, return_operation) {
+    constructor(return_gameId, return_status, return_operation, opponentName) {
 
         this.return_gameId = return_gameId;
         this.return_status = return_status;
         this.return_operation = return_operation;
+        this.opponentName = opponentName;
+
     }
 }

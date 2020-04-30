@@ -8,6 +8,7 @@ exports.up = function(knex) {
         table.string('status');
         table.integer('idCard_player1',5);
         table.integer('idCard_player2',5);
+        table.string('player_turn');
         
   
     })

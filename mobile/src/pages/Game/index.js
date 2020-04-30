@@ -17,7 +17,7 @@ export default function Game() {
     const [cardCount,setCardCount ]= useState(0);
     const [opponentCardCount, setOpponnetCardCount]=useState(0);
 
-    const cardDataOpponent = {
+    const [opponentCardData, setOpponentCardData] = useState({
         name: '',
         population: '',
         area: '',
@@ -25,7 +25,7 @@ export default function Game() {
         militaryPower: '',
         popDensity: '',
         flag: ''
-    }
+    });
 
     const [cardData, setCardData] = useState({
         name: '',
@@ -52,6 +52,16 @@ export default function Game() {
                 militaryPower: '0,1988 (#10)',
                 popDensity: '23 pessoas/km2',
                 flag: result.data.card.url
+            });
+
+            setOpponentCardData({
+                name: result.data.opponentCard.name,
+                population: result.data.opponentCard.population,
+                area: result.data.opponentCard.area,
+                hdi: '0,755 (#75)',
+                militaryPower: '0,1988 (#10)',
+                popDensity: '23 pessoas/km2',
+                flag: result.data.opponentCard.url
             });
 
             setCardCount(result.data.count);

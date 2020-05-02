@@ -1,70 +1,84 @@
 const connection = require('../database/connection');
 const game_consts = require('../../src/game_consts');
 
+
 module.exports = {
 
     async lookForOpponent(request, response) {
 
         const { player, gameId } = request.body;
-        console.log(player);
-        console.log(gameId);
-
-        if ( gameId > 0 ) {
-
-            return response.json( await returnGameStatusById( gameId ));
-
-        } else {
-
-            return response.json( await waitForOpponent_StartGame( player ));
-        }
+        return response.json( await _lookForOpponent( player, gameId ));
     }, 
 
+    async cardPlayed(request, response){
+        
+        console.log( request.body);
+        return response.json('card played');
+    },
     async getCard(request, response){
          
         const { player, gameId } = request.query;
-
-        const [game] = await connection('games').where('id', gameId).select('*');
-
-        const player_turn = game.player_turn;
-
-
-
-        const card = await connection('cards_game')
-          .where({player, game_id:gameId })
-          .join('cards','cards.id','=','cards_game.card_id')
-          .first('*');
-
-        console.log(card);
-
-        const opponentCard = await connection('cards_game')
-        .where({ game_id:gameId })
-        .andWhereNot({player})
-        .join('cards','cards.id','=','cards_game.card_id')
-        .first('*');
-
-      console.log(opponentCard);
-       
-
-
-        const [cardCount] = await connection('cards_game')
-        .where({player, game_id:gameId })
-        .count();
-
-        count = cardCount['count(*)'];
-
-        const [opponentCardCount] = await connection('cards_game')
-        .where({ game_id:gameId })
-        .andWhereNot({player})
-        .count();
-
-        opponentCount = opponentCardCount['count(*)'];
-
-
-
-
-        return response.json( {card, opponentCard, count, opponentCount, player_turn});
-
+        return response.json( await _getCard(player, gameId));
     }
+}
+
+async function _lookForOpponent( player, gameId){
+    console.log(player);
+    console.log(gameId);
+
+    if ( gameId > 0 ) {
+
+        return await returnGameStatusById( gameId );
+
+    } else {
+
+        return await waitForOpponent_StartGame( player );
+    }
+}
+
+
+
+async function _getCard(player, gameId){
+    const [game] = await connection('games').where('id', gameId).select('*');
+
+    const player_turn = game.player_turn;
+
+
+
+    const card = await connection('cards_game')
+      .where({player, game_id:gameId })
+      .join('cards','cards.id','=','cards_game.card_id')
+      .first('*');
+
+    console.log(card);
+
+    const opponentCard = await connection('cards_game')
+    .where({ game_id:gameId })
+    .andWhereNot({player})
+    .join('cards','cards.id','=','cards_game.card_id')
+    .first('*');
+
+    console.log(opponentCard);
+   
+
+
+    const [cardCount] = await connection('cards_game')
+    .where({player, game_id:gameId })
+    .count();
+
+    count = cardCount['count(*)'];
+
+    const [opponentCardCount] = await connection('cards_game')
+    .where({ game_id:gameId })
+    .andWhereNot({player})
+    .count();
+
+    opponentCount = opponentCardCount['count(*)'];
+
+
+
+
+    return {card, opponentCard, count, opponentCount, player_turn};
 }
 
 

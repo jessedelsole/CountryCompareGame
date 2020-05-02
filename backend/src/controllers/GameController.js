@@ -13,13 +13,27 @@ module.exports = {
     async cardPlayed(request, response){
         
         console.log( request.body);
-        return response.json('card played');
+        const{ gameId, idx_played, player } = request.body;
+
+        return response.json( await _cardPlayed(gameId, idx_played, player));
     },
     async getCard(request, response){
          
         const { player, gameId } = request.query;
         return response.json( await _getCard(player, gameId));
     }
+}
+
+async function _cardPlayed(gameId, idx_played, player){
+
+
+    await connection('games').where('id', gameId).update({ idx_played});
+ 
+    const game = await connection('games').where('id', gameId).select('*');
+    console.log(game);
+
+    return "result";
+
 }
 
 async function _lookForOpponent( player, gameId){

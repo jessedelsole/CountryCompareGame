@@ -9,22 +9,18 @@ import api from '../../services/api';
 
 export default function Game() {
 
-    let turn = '';
-
+    
     const route = useRoute();
-   
-    console.log(route.params)
     const { nome, gameId, opponentName } = route.params;
 
-    
-    const [cardCount        , setCardCount        ] = useState(0);
+    const [cardCount, setCardCount] = useState(0);
     const [opponentCardCount, setOpponnetCardCount] = useState(0);
-    const [statusText       , setStatusText       ] = useState('');
-    const [statusColor      , setStatusColor      ] = useState('#fff');
-    const [idxSelected      , setIdxSelected      ] = useState(0);
+    const [statusText, setStatusText] = useState('');
+    const [statusColor, setStatusColor] = useState('#fff');
+    const [idxSelected, setIdxSelected] = useState(0);
     const [showOpponentsCard, setShowOpponentsCard] = useState(false);
 
-    const [opponentCardData, setOpponentCardData]   = useState({
+    const [opponentCardData, setOpponentCardData] = useState({
         name: '',
         population: '',
         area: '',
@@ -45,22 +41,26 @@ export default function Game() {
     });
 
 
-    const cardsOptionClick= (idxClicked)=> {
-       
+    const cardsOptionClick = (idxClicked) => {
+
+        console.log('turn = ' + global.turn);
+        if (global.turn != nome)
+         return;
+
         setIdxSelected(idxClicked);
 
         console.log('cardsOptionClick');
-        
-        api.post('cardPlayed', {gameId, idx_played:idxClicked, player:nome } ).then(  
-             result=>{ 
-                
+
+        api.post('cardPlayed', { gameId, idx_played: idxClicked, player: nome }).then(
+            result => {
+
                 const { roundWinner } = result.data;
                 console.log('roundWinner: ' + roundWinner);
                 setShowOpponentsCard(true);
 
                 turn = roundWinner;
 
-                if (turn == nome){
+                if (turn == nome) {
 
                     setStatusText('Sua vez de jogar! Escolha uma opção abaixo!');
                     setStatusColor('#8edfa7');
@@ -69,33 +69,57 @@ export default function Game() {
                     setStatusColor('#eff9a5');
                 }
 
-                setTimeout( () => getRoundInfo(), 2000);
-
-
-
+                setTimeout(() => getRoundInfo(), 2000);
             });
     }
 
-    function getRoundInfo(){
+    function checkIfOpponentHasPlayed(){
        
+        api.get('checkCardPlayed',{params : {gameId}}).then( (result)=> { 
+        
+            const {idx_played} = result.data;
+            if (idx_played>0){
+
+                setShowOpponentsCard(true);
+                setIdxSelected(idx_played);
+
+                setTimeout( ()=> {
+                    
+                    getRoundInfo();
+                },2000);
+
+                 
+            } else {
+
+                setTimeout( ()=> { 
+                    checkIfOpponentHasPlayed()
+                }, 2000);
+            }
+
+        });
+
+    }
+
+    function getRoundInfo() {
+
         setIdxSelected(0);
         setShowOpponentsCard(false);
 
         api.get('getCard', { params: { player: nome, gameId } }).then(result => {
 
             console.log(result.data);
-            const {card, opponentCard, count, opponentCount, player_turn}= result.data;
+            const { card, opponentCard, count, opponentCount, player_turn } = result.data;
 
-            if (count>0){
-              setCardData({
-                  name: card.name,
-                  population: card.population,
-                  area: card.area,
-                  hdi: '0,755 (#75)',
-                  militaryPower: '0,1988 (#10)',
-                  popDensity: '23 pessoas/km2',
-                  flag: card.url
-              });
+            if (count > 0) {
+                setCardData({
+                    name: card.name,
+                    population: card.population,
+                    area: card.area,
+                    hdi: '0,755 (#75)',
+                    militaryPower: '0,1988 (#10)',
+                    popDensity: '23 pessoas/km2',
+                    flag: card.url
+                });
             } else {
                 setCardData({
                     name: '',
@@ -104,19 +128,20 @@ export default function Game() {
                     hdi: '',
                     militaryPower: '',
                     popDensity: '',
-                    flag: ''}); 
+                    flag: ''
+                });
             }
 
-            if (opponentCount>0){
-              setOpponentCardData({
-                  name: opponentCard.name,
-                  population: opponentCard.population,
-                  area: opponentCard.area,
-                  hdi: '0,755 (#75)',
-                  militaryPower: '0,1988 (#10)',
-                  popDensity: '23 pessoas/km2',
-                  flag: opponentCard.url
-               });
+            if (opponentCount > 0) {
+                setOpponentCardData({
+                    name: opponentCard.name,
+                    population: opponentCard.population,
+                    area: opponentCard.area,
+                    hdi: '0,755 (#75)',
+                    militaryPower: '0,1988 (#10)',
+                    popDensity: '23 pessoas/km2',
+                    flag: opponentCard.url
+                });
             } else {
                 setOpponentCardData({
                     name: '',
@@ -126,56 +151,61 @@ export default function Game() {
                     militaryPower: '',
                     popDensity: '',
                     flag: ''
-                });   
+                });
             }
 
             setCardCount(count);
             setOpponnetCardCount(opponentCount);
 
-            turn = player_turn;   
+            global.turn = player_turn;
 
-            if (turn == nome){
+           
+            if (global.turn == nome) {
 
                 setStatusText('Sua vez de jogar! Escolha uma opção abaixo!');
                 setStatusColor('#8edfa7');
             } else {
                 setStatusText(`Aguarde enquanto ${opponentName} faz a jogada!`);
                 setStatusColor('#eff9a5');
+                
+                setTimeout( ()=> { 
+                    checkIfOpponentHasPlayed()
+                }, 2000);
+
+
             }
         });
     }
 
-    useEffect( () => {
+    useEffect(() => {
 
-       getRoundInfo();
-       
+        getRoundInfo();
+
     }, [])
 
     return (
         <View style={styles.container}>
             <View style={{ flex: 1, margin: 2, flexDirection: 'row' }}>
-                
-                
-                { 
-                 opponentCardCount>0?
-                    (showOpponentsCard ?
-                    <Card idxSelected={idxSelected} cardData={opponentCardData}>
-                    </Card>:
-                    <BackCard>
-                    </BackCard>): null
+                {
+                    opponentCardCount > 0 ?
+                        (showOpponentsCard ?
+                            <Card idxSelected={idxSelected} cardData={opponentCardData}>
+                            </Card> :
+                            <BackCard>
+                            </BackCard>) : null
                 }
                 <RightPanel nome={opponentName} cardCount={opponentCardCount}>
                 </RightPanel>
             </View>
 
-            <View style={{backgroundColor: statusColor, borderColor: '#b4b4b4', borderRadius:5, borderWidth:1}}>
-                 <Text style={{padding:10}}>{statusText}</Text>
+            <View style={{ backgroundColor: statusColor, borderColor: '#b4b4b4', borderRadius: 5, borderWidth: 1 }}>
+                <Text style={{ padding: 10 }}>{statusText}</Text>
             </View>
-            <View  style={{ flex: 1, margin: 2,  flexDirection: 'row' }}>
-                
-                {cardCount>0?
-                <Card idxSelected={idxSelected} cardsOptionClick = {cardsOptionClick}  cardData={cardData}>
-                </Card> : null
+            <View style={{ flex: 1, margin: 2, flexDirection: 'row' }}>
+
+                {cardCount > 0 ?
+                    <Card idxSelected={idxSelected} cardsOptionClick={cardsOptionClick} cardData={cardData}>
+                    </Card> : null
                 }
                 <RightPanel nome={nome} cardCount={cardCount}>
                 </RightPanel>

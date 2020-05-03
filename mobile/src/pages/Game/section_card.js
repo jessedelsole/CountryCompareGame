@@ -8,10 +8,11 @@ export default function SectionCard(props) {
            
           
             <View  style={{ paddingLeft: 10, paddingRight:10, flex: 1,
-              borderColor: 'gray', borderWidth: 1, flexDirection: 'row', justifyContent: 'space-between' ,alignItems: 'center'}}>
+              borderColor: 'gray', borderWidth: 1, flexDirection: 'row', justifyContent: 'space-between' ,alignItems: 'center',
+              backgroundColor : props.selected?'#a5d5f9':'white'}}>
               
                <Text style={{ fontSize: 16 }}>{props.text}</Text>
-               <Text>{props.value}</Text>
+               <Text> { props.value}</Text>
 
           
             </View>

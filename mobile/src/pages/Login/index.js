@@ -15,8 +15,10 @@ export default function Login() {
   
 
   function postLookForOpponent(){
-
-     setCarregando(true);
+    
+    console.log('postLookForOpponent');
+    
+    setCarregando(true);
 
      api.post('lookForOpponent', { player : nome , gameId }).then(result =>  trataResultadoPost(result) );
 

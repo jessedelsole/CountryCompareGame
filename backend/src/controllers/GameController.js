@@ -12,9 +12,7 @@ module.exports = {
 
     async cardPlayed(request, response){
         
-        console.log( request.body);
         const{ gameId, idx_played, player } = request.body;
-
         return response.json( await _cardPlayed(gameId, idx_played, player));
     },
     async getCard(request, response){
@@ -26,13 +24,77 @@ module.exports = {
 
 async function _cardPlayed(gameId, idx_played, player){
 
+     //gets the other player's name
+    const [game] = await connection('games').where('id', gameId).select('*');
+    
+    let otherPlayer;
+    if (game.player1==player)
+        otherPlayer=game.player2; else 
+          otherPlayer=game.player1;
 
-    await connection('games').where('id', gameId).update({ idx_played});
- 
-    const game = await connection('games').where('id', gameId).select('*');
-    console.log(game);
+    //loads the player card (first in his deck)
+    const card = await connection('cards_game')
+    .where({player, game_id:gameId, seq:1 })
+    .join('cards','cards.id','=','cards_game.card_id')
+    .first('*');
+    console.log(card);
 
-    return "result";
+    //loads the opponent's card(first in his deck)
+    const opponentCard = await connection('cards_game')
+    .where({ game_id:gameId, seq:1 })
+    .andWhereNot({player})
+    .join('cards','cards.id','=','cards_game.card_id')
+    .first('*');
+    console.log(opponentCard);
+
+    //loads the values of the selected property
+    let valuePlayed, valuePlayedOpponnent;
+
+    if (idx_played==1){
+        valuePlayed          = card.population;
+        valuePlayedOpponnent = opponentCard.population;
+    }else
+    if (idx_played==2){
+        valuePlayed          = card.area;
+        valuePlayedOpponnent = opponentCard.area;
+    }
+   
+    //finds out which player won 
+    let roundWinner;
+    let roundLooser;
+
+    if (valuePlayed > valuePlayedOpponnent){
+        roundWinner  = player; 
+        roundLooser  = otherPlayer;
+    } else{ 
+        roundWinner = otherPlayer;
+        roundLooser = player;
+    }
+     
+    //take the looser's card, and prepare for next round :
+    
+    const [maxSeq] = await connection('cards_game')
+    .where({player:roundWinner, game_id:gameId })
+    .max('seq',{as : 'maxSeq'});
+    
+    let newSeqCardWon = maxSeq.maxSeq+1;
+    
+    //(set new owner for looser's card, sets its sequence to last of winner's deck)
+    await connection('cards_game').where({game_id:gameId, seq: 1, player: roundLooser }).update({player:roundWinner, seq:newSeqCardWon});
+    //(put winner's first card in the end of its deck)
+    await connection('cards_game').where({game_id:gameId,seq: 1, player: roundWinner }).update({seq:newSeqCardWon+1});
+    //(moves the queue of card's, second will become first, and so forth. lets it prepared for next round)
+    await connection('cards_game').where({game_id:gameId}).decrement('seq', 1);
+
+    //defines who should play next
+    await connection('games').where({id:gameId}).update({player_turn : roundWinner});
+
+
+    
+    
+
+
+    return { roundWinner }
 
 }
 
@@ -53,29 +115,23 @@ async function _lookForOpponent( player, gameId){
 
 
 async function _getCard(player, gameId){
+    
     const [game] = await connection('games').where('id', gameId).select('*');
 
     const player_turn = game.player_turn;
 
-
-
     const card = await connection('cards_game')
-      .where({player, game_id:gameId })
+      .where({player, game_id:gameId, seq:1 })
       .join('cards','cards.id','=','cards_game.card_id')
       .first('*');
 
-    console.log(card);
-
     const opponentCard = await connection('cards_game')
-    .where({ game_id:gameId })
+    .where({ game_id:gameId, seq:1 })
     .andWhereNot({player})
     .join('cards','cards.id','=','cards_game.card_id')
     .first('*');
 
-    console.log(opponentCard);
-   
-
-
+ 
     const [cardCount] = await connection('cards_game')
     .where({player, game_id:gameId })
     .count();
@@ -110,7 +166,7 @@ async function waitForOpponent_StartGame(player) {
 
     if (games.length === 0) {
 
-        const [gameId] = await connection('games').insert({ player1: player,  player2: "", status: game_consts.WAITING_OPONENT });
+        const [gameId] = await connection('games').insert({ player1: player,  player2: "", status: game_consts.WAITING_OPONENT,idx_played:0 });
         return new ReturnObj_lookForOpponent(gameId, game_consts.WAITING_OPONENT, 'INSERTED', '');
 
     } else {
@@ -126,33 +182,32 @@ async function startGame(gameId, player1, player2){
 
    const cards = await connection('cards').select('*');
    console.log(cards);
-
-   let tempPlayer = player1;  
-   for (let i=0; i<= cards.length-1;i++){
-
-     if (tempPlayer===player1)
-      tempPlayer=player2; else
-        tempPlayer=player1;
-
-      await connection('cards_game').insert({card_id:cards[i].id, game_id: gameId, player:tempPlayer });   
-   }
-
-   const cards_game_player1 = await connection('cards_game').where('player',player1).select('*');
-   console.log(cards_game_player1);
-   const cards_game_player2 = await connection('cards_game').where('player',player2).select('*');
-   console.log(cards_game_player2);
   
+   await connection('cards_game').insert({card_id:cards[2].id, game_id: gameId, player:player1, seq:1 });   
+   await connection('cards_game').insert({card_id:cards[0].id, game_id: gameId, player:player1, seq:2 });   
+   await connection('cards_game').insert({card_id:cards[3].id, game_id: gameId, player:player2, seq:1 });   
+   await connection('cards_game').insert({card_id:cards[1].id, game_id: gameId, player:player2, seq:2 });   
+  
+
+   const allcards = await connection('cards')
+   .select('*');
+   console.log(allcards);
+
   
    await connection('games').where('id', gameId).update(
        { status: game_consts.GAME_READY,  
-         player2: player2, 
-         idCard_player1: cards_game_player1[0].id,
-         idCard_player2: cards_game_player2[0].id,
+         player2: player2,
          player_turn:player1
          });
 
+
+   //debug       
    const game = await connection('games').where('id', gameId).select('*');
    console.log(game);
+
+   //debug
+   const cards_game= await connection('cards_game').where('game_id', gameId).select('*');
+   console.log(cards_game);
 
 }
 

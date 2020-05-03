@@ -9,7 +9,7 @@ import api from '../../services/api';
 
 export default function Game() {
 
-    
+
     const route = useRoute();
     const { nome, gameId, opponentName } = route.params;
 
@@ -19,33 +19,15 @@ export default function Game() {
     const [statusColor, setStatusColor] = useState('#fff');
     const [idxSelected, setIdxSelected] = useState(0);
     const [showOpponentsCard, setShowOpponentsCard] = useState(false);
-
-    const [opponentCardData, setOpponentCardData] = useState({
-        name: '',
-        population: '',
-        area: '',
-        hdi: '',
-        militaryPower: '',
-        popDensity: '',
-        flag: ''
-    });
-
-    const [cardData, setCardData] = useState({
-        name: '',
-        population: '',
-        area: '',
-        hdi: '',
-        militaryPower: '',
-        popDensity: '',
-        flag: ''
-    });
+    const [opponentCardData, setOpponentCardData] = useState(new CardData('', '', '', '', '', '', ''));
+    const [cardData, setCardData] = useState(new CardData('', '', '', '', '', '', ''));
 
 
     const cardsOptionClick = (idxClicked) => {
 
         console.log('turn = ' + global.turn);
         if (global.turn != nome)
-         return;
+            return;
 
         setIdxSelected(idxClicked);
 
@@ -73,31 +55,27 @@ export default function Game() {
             });
     }
 
-    function checkIfOpponentHasPlayed(){
-       
-        api.get('checkCardPlayed',{params : {gameId}}).then( (result)=> { 
-        
-            const {idx_played} = result.data;
-            if (idx_played>0){
+    function checkIfOpponentHasPlayed() {
+
+        api.get('checkCardPlayed', { params: { gameId } }).then((result) => {
+
+            const { idx_played } = result.data;
+            if (idx_played > 0) {
 
                 setShowOpponentsCard(true);
                 setIdxSelected(idx_played);
 
-                setTimeout( ()=> {
-                    
-                    getRoundInfo();
-                },2000);
+                setTimeout(() => {
 
-                 
+                    getRoundInfo();
+                }, 2000);
             } else {
 
-                setTimeout( ()=> { 
+                setTimeout(() => {
                     checkIfOpponentHasPlayed()
                 }, 2000);
             }
-
         });
-
     }
 
     function getRoundInfo() {
@@ -111,47 +89,15 @@ export default function Game() {
             const { card, opponentCard, count, opponentCount, player_turn } = result.data;
 
             if (count > 0) {
-                setCardData({
-                    name: card.name,
-                    population: card.population,
-                    area: card.area,
-                    hdi: '0,755 (#75)',
-                    militaryPower: '0,1988 (#10)',
-                    popDensity: '23 pessoas/km2',
-                    flag: card.url
-                });
+                setCardData(new CardData(card.name, card.population, card.area, '0,755 (#75)', '0,1988 (#10)', '23 pessoas/km2', card.url));
             } else {
-                setCardData({
-                    name: '',
-                    population: 0,
-                    area: 0,
-                    hdi: '',
-                    militaryPower: '',
-                    popDensity: '',
-                    flag: ''
-                });
+                setCardData(new CardData('', '', '', '', '', '', ''));
             }
 
             if (opponentCount > 0) {
-                setOpponentCardData({
-                    name: opponentCard.name,
-                    population: opponentCard.population,
-                    area: opponentCard.area,
-                    hdi: '0,755 (#75)',
-                    militaryPower: '0,1988 (#10)',
-                    popDensity: '23 pessoas/km2',
-                    flag: opponentCard.url
-                });
+                setOpponentCardData(new CardData(opponentCard.name, opponentCard.population, opponentCard.area, '0,755 (#75)', '0,1988 (#10)', '23 pessoas/km2', opponentCard.url));
             } else {
-                setOpponentCardData({
-                    name: '',
-                    population: 0,
-                    area: 0,
-                    hdi: '',
-                    militaryPower: '',
-                    popDensity: '',
-                    flag: ''
-                });
+                setOpponentCardData(new CardData('', '', '', '', '', '', ''));
             }
 
             setCardCount(count);
@@ -159,7 +105,6 @@ export default function Game() {
 
             global.turn = player_turn;
 
-           
             if (global.turn == nome) {
 
                 setStatusText('Sua vez de jogar! Escolha uma opção abaixo!');
@@ -167,12 +112,10 @@ export default function Game() {
             } else {
                 setStatusText(`Aguarde enquanto ${opponentName} faz a jogada!`);
                 setStatusColor('#eff9a5');
-                
-                setTimeout( ()=> { 
+
+                setTimeout(() => {
                     checkIfOpponentHasPlayed()
                 }, 2000);
-
-
             }
         });
     }
@@ -180,7 +123,6 @@ export default function Game() {
     useEffect(() => {
 
         getRoundInfo();
-
     }, [])
 
     return (
@@ -214,6 +156,18 @@ export default function Game() {
     );
 }
 
+
+class CardData {
+    constructor(countryName, population, area, hdi, militaryPower, popDensity, flag) {
+        this.countryName = countryName;
+        this.population = population;
+        this.area = area;
+        this.hdi = hdi;
+        this.militaryPower = militaryPower;
+        this.popDensity = popDensity;
+        this.flag = flag;
+    }
+}
 
 const styles = StyleSheet.create({
     container: {

@@ -21,17 +21,30 @@ export default function Game() {
     const [showOpponentsCard, setShowOpponentsCard] = useState(false);
     const [opponentCardData, setOpponentCardData] = useState(new CardData('', '', '', '', '', '', ''));
     const [cardData, setCardData] = useState(new CardData('', '', '', '', '', '', ''));
+    const [cardResult, setCardResult]=useState(0);
+    const [opponentCardResult, setOpponentCardResult]=useState(0);
 
 
-    const cardsOptionClick = (idxClicked) => {
+    function showWinner(winner){
 
-        console.log('turn = ' + global.turn);
-        if (global.turn != nome)
-            return;
+        if (winner == nome) {
 
-        setIdxSelected(idxClicked);
+            setStatusText('Você ganhou essa rodada!');
+            setStatusColor('#ace589');
+            setCardResult(1);
+            setOpponentCardResult(2);
+        } else {
+            setStatusText('Você perdeu essa rodada...');
+            setStatusColor('#c74b1e');
+            setCardResult(2);
+            setOpponentCardResult(1);
+           
+        }
+        setTimeout(() => getRoundInfo(), 3000);
+    }
 
-        console.log('cardsOptionClick');
+
+    function callApiCardClicked( idxClicked){
 
         api.post('cardPlayed', { gameId, idx_played: idxClicked, player: nome }).then(
             result => {
@@ -42,17 +55,24 @@ export default function Game() {
 
                 turn = roundWinner;
 
-                if (turn == nome) {
-
-                    setStatusText('Sua vez de jogar! Escolha uma opção abaixo!');
-                    setStatusColor('#8edfa7');
-                } else {
-                    setStatusText(`Aguarde enquanto ${opponentName} faz a jogada!`);
-                    setStatusColor('#eff9a5');
-                }
-
-                setTimeout(() => getRoundInfo(), 2000);
+                setStatusText('Analisando vencedor...');
+                setStatusColor('#eff9a5');
+                setTimeout( ()=> showWinner( roundWinner), 2000 );
             });
+
+    }
+
+    const cardsOptionClick = (idxClicked, textClicked) => {
+
+        console.log('turn = ' + global.turn);
+        if (global.turn != nome)
+            return;
+
+        setIdxSelected(idxClicked);
+        setStatusText(`Você escolheu ${textClicked}, revelando carta do adversário...`)
+        setStatusColor('#cbd7fb');
+        setTimeout(() =>   callApiCardClicked(idxClicked) , 2000);
+        
     }
 
     function checkIfOpponentHasPlayed() {
@@ -82,6 +102,8 @@ export default function Game() {
 
         setIdxSelected(0);
         setShowOpponentsCard(false);
+        setCardResult(0);
+        setOpponentCardResult(0);
 
         api.get('getCard', { params: { player: nome, gameId } }).then(result => {
 
@@ -131,7 +153,7 @@ export default function Game() {
                 {
                     opponentCardCount > 0 ?
                         (showOpponentsCard ?
-                            <Card idxSelected={idxSelected} cardData={opponentCardData}>
+                            <Card idxSelected={idxSelected} cardData={opponentCardData} cardResult={opponentCardResult}>
                             </Card> :
                             <BackCard>
                             </BackCard>) : null
@@ -146,7 +168,7 @@ export default function Game() {
             <View style={{ flex: 1, margin: 2, flexDirection: 'row' }}>
 
                 {cardCount > 0 ?
-                    <Card idxSelected={idxSelected} cardsOptionClick={cardsOptionClick} cardData={cardData}>
+                    <Card idxSelected={idxSelected} cardsOptionClick={cardsOptionClick} cardData={cardData} cardResult={cardResult} >
                     </Card> : null
                 }
                 <RightPanel nome={nome} cardCount={cardCount}>

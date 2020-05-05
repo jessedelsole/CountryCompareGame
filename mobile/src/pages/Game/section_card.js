@@ -4,20 +4,32 @@ import { TouchableHighlight, TouchableOpacity } from 'react-native-gesture-handl
 
 export default function SectionCard(props) {
 
-        return (
-           
-          
-            <View  style={{ paddingLeft: 10, paddingRight:10, flex: 1,
-              borderColor: 'gray', borderWidth: 1, flexDirection: 'row', justifyContent: 'space-between' ,alignItems: 'center',
-              backgroundColor : props.selected?'#a5d5f9':'white'}}>
-              
-               <Text style={{ fontSize: 16 }}>{props.text}</Text>
-               <Text> { props.value}</Text>
+  const { selected, text, value, cardResult } = props;
 
-          
-            </View>
-          
-           
-        )
-    
+  let backGroundColor;
+  if (selected){
+
+     switch (cardResult){
+       case 0 : backGroundColor = '#a5d5f9'; //blue
+       break;
+       case 1 : backGroundColor = '#ace589'; //green
+       break;
+       case 2 : backGroundColor = '#c74b1e'; //red
+       break;
+     }
+  
+
+  } else {
+     backgroundColor='white';
+  }
+
+  return (
+    <View style={{
+      paddingLeft: 10, paddingRight: 10, flex: 1,
+      borderColor: 'gray', borderWidth: 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+      backgroundColor: backGroundColor}}>
+      <Text style={{ fontSize: 16 }}>{text}</Text>
+      <Text> {value}</Text>
+    </View>
+  )
 }

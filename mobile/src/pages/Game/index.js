@@ -44,36 +44,37 @@ export default function Game() {
     }
 
 
-    function callApiCardClicked( idxClicked){
-
-        api.post('cardPlayed', { gameId, idx_played: idxClicked, player: nome }).then(
-            result => {
-
-                const { roundWinner } = result.data;
-                console.log('roundWinner: ' + roundWinner);
-                setShowOpponentsCard(true);
-
-                turn = roundWinner;
-
-                setStatusText('Analisando vencedor...');
-                setStatusColor('#eff9a5');
-                setTimeout( ()=> showWinner( roundWinner), 2000 );
-            });
-
+   function afterCallApiCard( roundWinner){
+     
+        console.log("afterCallApiCard, roundWinner = " + roundWinner);
+        setShowOpponentsCard(true);
+        global.turn = roundWinner;
+        setStatusText('Analisando vencedor...');
+        setStatusColor('#eff9a5');
+        setTimeout( ()=> showWinner( roundWinner), 2000 );
     }
 
     const cardsOptionClick = (idxClicked, textClicked) => {
-
-        console.log('turn = ' + global.turn);
+   
         if (global.turn != nome)
             return;
 
         setIdxSelected(idxClicked);
         setStatusText(`Você escolheu ${textClicked}, revelando carta do adversário...`)
         setStatusColor('#cbd7fb');
-        setTimeout(() =>   callApiCardClicked(idxClicked) , 2000);
+        api.post('cardPlayed', { gameId, idx_played: idxClicked, player: nome }).then(
+            result => {
+                const { roundWinner } = result.data;
+
+                setTimeout( () => afterCallApiCard(roundWinner) , 2000);
+        });
+
         
     }
+
+    function opponentHasPlayed(idx_played){
+
+    } 
 
     function checkIfOpponentHasPlayed() {
 
@@ -89,6 +90,8 @@ export default function Game() {
 
                     getRoundInfo();
                 }, 2000);
+
+
             } else {
 
                 setTimeout(() => {

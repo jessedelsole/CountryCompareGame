@@ -27,15 +27,16 @@ export default function Game() {
 
     function showWinner(winner){
 
+        console.log('show winnder : ' + winner);
         if (winner == nome) {
 
             setStatusText('Você ganhou essa rodada!');
-            setStatusColor('#ace589');
+            setStatusColor('#eff9a5');
             setCardResult(1);
             setOpponentCardResult(2);
         } else {
             setStatusText('Você perdeu essa rodada...');
-            setStatusColor('#c74b1e');
+            setStatusColor('#eff9a5');
             setCardResult(2);
             setOpponentCardResult(1);
            
@@ -46,7 +47,7 @@ export default function Game() {
 
    function afterCallApiCard( roundWinner){
      
-        console.log("afterCallApiCard, roundWinner = " + roundWinner);
+      
         setShowOpponentsCard(true);
         global.turn = roundWinner;
         setStatusText('Analisando vencedor...');
@@ -72,24 +73,34 @@ export default function Game() {
         
     }
 
-    function opponentHasPlayed(idx_played){
-
-    } 
+    function opponentHasPlayed( player_turn){
+        console.log('opponentHasPlayed');
+        setShowOpponentsCard(true);
+        setTimeout( () => showWinner(player_turn) , 2000);
+    }
 
     function checkIfOpponentHasPlayed() {
 
+        console.log('checkIfOpponentHasPlayed');
         api.get('checkCardPlayed', { params: { gameId } }).then((result) => {
 
-            const { idx_played } = result.data;
+            const { idx_played, player_turn } = result.data;
             if (idx_played > 0) {
 
-                setShowOpponentsCard(true);
+                console.log('idxPLayed = ' + idx_played);
                 setIdxSelected(idx_played);
 
-                setTimeout(() => {
+                let opcaoJogada;
+                switch( idx_played){
+                    case 1 : opcaoJogada = 'População'
+                    break;
+                    case 2 : opcaoJogada = 'Área';
+                    break;
+                }
+                
+                setStatusText(`${opponentName} escolheu: '${opcaoJogada}', revelando a carta... `);
 
-                    getRoundInfo();
-                }, 2000);
+                setTimeout( () => opponentHasPlayed(player_turn) , 2000);
 
 
             } else {
@@ -110,7 +121,7 @@ export default function Game() {
 
         api.get('getCard', { params: { player: nome, gameId } }).then(result => {
 
-            console.log(result.data);
+           
             const { card, opponentCard, count, opponentCount, player_turn } = result.data;
 
             if (count > 0) {

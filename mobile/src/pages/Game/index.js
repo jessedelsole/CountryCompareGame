@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View, Text, SafeAreaView } from 'react-native';
 import Constants from 'expo-constants';
 import Card from './card';
 import BackCard from './backcard';
 import RightPanel from './right_panel';
-import { useRoute } from '@react-navigation/native';
+import { useRoute, useNavigation } from '@react-navigation/native';
 import api from '../../services/api';
 
 export default function Game() {
 
 
+    const navigation = useNavigation();
     const route = useRoute();
     const { nome, gameId, opponentName } = route.params;
 
@@ -23,23 +24,22 @@ export default function Game() {
     const [cardData, setCardData] = useState(new CardData('', '', '', '', '', '', ''));
     const [cardResult, setCardResult]=useState(0);
     const [opponentCardResult, setOpponentCardResult]=useState(0);
+    const [statusTextBold, setStatusTextBold]=useState(false);
 
 
     function showWinner(winner){
-
-        console.log('show winnder : ' + winner);
+      
+        setStatusTextBold(true);
+        setStatusColor('#e7e7e7');
         if (winner == nome) {
 
             setStatusText('Você ganhou essa rodada!');
-            setStatusColor('#eff9a5');
             setCardResult(1);
             setOpponentCardResult(2);
         } else {
             setStatusText('Você perdeu essa rodada...');
-            setStatusColor('#eff9a5');
             setCardResult(2);
             setOpponentCardResult(1);
-           
         }
         setTimeout(() => getRoundInfo(), 3000);
     }
@@ -51,7 +51,8 @@ export default function Game() {
         setShowOpponentsCard(true);
         global.turn = roundWinner;
         setStatusText('Analisando vencedor...');
-        setStatusColor('#eff9a5');
+        setStatusTextBold(true);
+        setStatusColor('#e7e7e7');
         setTimeout( ()=> showWinner( roundWinner), 2000 );
     }
 
@@ -61,27 +62,27 @@ export default function Game() {
             return;
 
         setIdxSelected(idxClicked);
-        setStatusText(`Você escolheu ${textClicked}, revelando carta do adversário...`)
-        setStatusColor('#cbd7fb');
+        setStatusText(`Você escolheu ${textClicked}, revelando carta do adversário...`);
+        setStatusTextBold(true);
+        setStatusColor('#e7e7e7');
         api.post('cardPlayed', { gameId, idx_played: idxClicked, player: nome }).then(
             result => {
                 const { roundWinner } = result.data;
 
                 setTimeout( () => afterCallApiCard(roundWinner) , 2000);
-        });
-
-        
+        });  
     }
 
     function opponentHasPlayed( player_turn){
-        console.log('opponentHasPlayed');
+       
         setShowOpponentsCard(true);
+        setStatusText('Analisando vencedor...');
         setTimeout( () => showWinner(player_turn) , 2000);
     }
 
     function checkIfOpponentHasPlayed() {
 
-        console.log('checkIfOpponentHasPlayed');
+        
         api.get('checkCardPlayed', { params: { gameId } }).then((result) => {
 
             const { idx_played, player_turn } = result.data;
@@ -96,9 +97,16 @@ export default function Game() {
                     break;
                     case 2 : opcaoJogada = 'Área';
                     break;
+                    case 3 : opcaoJogada = 'IDH';
+                    break;
+                    case 5 : opcaoJogada = 'Densidade pop.';
+                    break;
                 }
                 
                 setStatusText(`${opponentName} escolheu: '${opcaoJogada}', revelando a carta... `);
+                setStatusColor('#e7e7e7');
+                
+                setStatusTextBold(true);
 
                 setTimeout( () => opponentHasPlayed(player_turn) , 2000);
 
@@ -112,26 +120,35 @@ export default function Game() {
         });
     }
 
+    function backToMainScreen(){
+
+         setTimeout( () => { global.gameId=0; navigation.goBack(); },2000)
+    }
+
     function getRoundInfo() {
 
         setIdxSelected(0);
         setShowOpponentsCard(false);
+        setStatusTextBold(false);
         setCardResult(0);
         setOpponentCardResult(0);
 
         api.get('getCard', { params: { player: nome, gameId } }).then(result => {
 
+            
            
             const { card, opponentCard, count, opponentCount, player_turn } = result.data;
 
+            console.log(card);
+
             if (count > 0) {
-                setCardData(new CardData(card.name, card.population, card.area, '0,755 (#75)', '0,1988 (#10)', '23 pessoas/km2', card.url));
+                setCardData(new CardData(card.name, card.population, card.area, card.hdi , '0,1988 (#10)', card.pop_density, card.url));
             } else {
                 setCardData(new CardData('', '', '', '', '', '', ''));
             }
 
             if (opponentCount > 0) {
-                setOpponentCardData(new CardData(opponentCard.name, opponentCard.population, opponentCard.area, '0,755 (#75)', '0,1988 (#10)', '23 pessoas/km2', opponentCard.url));
+                setOpponentCardData(new CardData(opponentCard.name, opponentCard.population, opponentCard.area, opponentCard.hdi, '0,1988 (#10)', opponentCard.pop_density, opponentCard.url));
             } else {
                 setOpponentCardData(new CardData('', '', '', '', '', '', ''));
             }
@@ -141,28 +158,50 @@ export default function Game() {
 
             global.turn = player_turn;
 
-            if (global.turn == nome) {
+            //Noruega, Suiça    
 
-                setStatusText('Sua vez de jogar! Escolha uma opção abaixo!');
+            if (count==0){
+
+                setStatusText('Você perdeu o jogo!');
+                setStatusColor('#fb5454');
+                setStatusTextBold(false);
+                backToMainScreen();
+
+            } else 
+            if (opponentCount==0){
+
+                setStatusText('Você ganhou!!');
+                setStatusColor('#ace589');
+                setStatusTextBold(false);
+                backToMainScreen();
+            }else
+
+            if (global.turn == nome) {
+ 
+                setStatusText('Sua vez de jogar! Escolha uma opção abaixo:');
                 setStatusColor('#8edfa7');
+                setStatusTextBold(false);
             } else {
-                setStatusText(`Aguarde enquanto ${opponentName} faz a jogada!`);
+                setStatusText(`Aguarde enquanto ${opponentName} faz a jogada...`);
                 setStatusColor('#eff9a5');
 
                 setTimeout(() => {
                     checkIfOpponentHasPlayed()
                 }, 2000);
             }
+
+
         });
     }
 
     useEffect(() => {
 
         getRoundInfo();
+
     }, [])
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
             <View style={{ flex: 1, margin: 2, flexDirection: 'row' }}>
                 {
                     opponentCardCount > 0 ?
@@ -176,8 +215,8 @@ export default function Game() {
                 </RightPanel>
             </View>
 
-            <View style={{ backgroundColor: statusColor, borderColor: '#b4b4b4', borderRadius: 5, borderWidth: 1 }}>
-                <Text style={{ padding: 10 }}>{statusText}</Text>
+            <View style={{  backgroundColor: statusColor, borderColor: '#b4b4b4', borderRadius: 5, borderWidth: 1 }}>
+                <Text style={{ fontWeight: statusTextBold?'bold':'normal', padding: 10 }}>{statusText}</Text>
             </View>
             <View style={{ flex: 1, margin: 2, flexDirection: 'row' }}>
 
@@ -188,7 +227,7 @@ export default function Game() {
                 <RightPanel nome={nome} cardCount={cardCount}>
                 </RightPanel>
             </View>
-        </View>
+        </SafeAreaView>
     );
 }
 
@@ -213,6 +252,6 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         justifyContent: 'flex-start',
         padding: 1,
-        marginBottom: 30
+        
     },
 });

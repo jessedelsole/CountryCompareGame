@@ -5,8 +5,11 @@ exports.up = function(knex) {
         table.increments();
         table.string('name');
         table.string('url');
-        table.integer('population',10);
-        table.integer('area',7);
+        table.integer('population');
+        table.integer('area');
+        table.float('hdi',4,3);
+        table.integer('pop_density');
+        table.float('military_power',3,2);
     })
   
 };

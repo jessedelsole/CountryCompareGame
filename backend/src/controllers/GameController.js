@@ -71,14 +71,28 @@ async function _cardPlayed(gameId, idx_played, player) {
     //loads the values of the selected property
     let valuePlayed, valuePlayedOpponnent;
 
-    if (idx_played == 1) {
-        valuePlayed = card.population;
-        valuePlayedOpponnent = opponentCard.population;
-    } else
-    if (idx_played == 2) {
-        valuePlayed = card.area;
-        valuePlayedOpponnent = opponentCard.area;
+    switch(idx_played){
+        case 1 : 
+          valuePlayed = card.population;
+          valuePlayedOpponnent = opponentCard.population; 
+        break;
+        case 2 :
+          valuePlayed = card.area;
+          valuePlayedOpponnent = opponentCard.area;
+        break;
+        case 3 :
+          valuePlayed = card.hdi;
+          valuePlayedOpponnent = opponentCard.hdi;
+        break;
+        case 5 :
+            valuePlayed = card.pop_density;
+            valuePlayedOpponnent = opponentCard.pop_density;
+        break;
+
+
     }
+    
+    
 
     //finds out which player won 
     let roundWinner;
@@ -129,6 +143,8 @@ async function _lookForOpponent(player, gameId) {
 
 
 async function _getCard(player, gameId) {
+
+    
 
     const [game] = await connection('games').where('id', gameId).select('*');
 
@@ -194,10 +210,21 @@ async function startGame(gameId, player1, player2) {
     const cards = await connection('cards').select('*');
     console.log(cards);
 
-    await connection('cards_game').insert({ card_id: cards[2].id, game_id: gameId, player: player1, seq: 1 });
-    await connection('cards_game').insert({ card_id: cards[0].id, game_id: gameId, player: player1, seq: 2 });
+    
+    await connection('cards_game').insert({ card_id: cards[7].id, game_id: gameId, player: player1, seq: 1 });
+    await connection('cards_game').insert({ card_id: cards[6].id, game_id: gameId, player: player1, seq: 2 });
+    await connection('cards_game').insert({ card_id: cards[5].id, game_id: gameId, player: player1, seq: 3 });
+    await connection('cards_game').insert({ card_id: cards[4].id, game_id: gameId, player: player1, seq: 4 });
+   
     await connection('cards_game').insert({ card_id: cards[3].id, game_id: gameId, player: player2, seq: 1 });
-    await connection('cards_game').insert({ card_id: cards[1].id, game_id: gameId, player: player2, seq: 2 });
+    await connection('cards_game').insert({ card_id: cards[2].id, game_id: gameId, player: player2, seq: 2 });
+    await connection('cards_game').insert({ card_id: cards[1].id, game_id: gameId, player: player2, seq: 3 });
+    await connection('cards_game').insert({ card_id: cards[0].id, game_id: gameId, player: player2, seq: 4 });
+
+    await connection('cards_game').insert({ card_id: cards[8].id, game_id: gameId, player: player1, seq: 5 });
+    await connection('cards_game').insert({ card_id: cards[9].id, game_id: gameId, player: player2, seq: 5 });
+
+    
 
 
     await connection('games').where('id', gameId).update(
@@ -214,15 +241,11 @@ async function startGame(gameId, player1, player2) {
 }
 
 
-
-
 class ReturnObj_lookForOpponent {
     constructor(return_gameId, return_status, return_operation, opponentName) {
-
         this.return_gameId = return_gameId;
         this.return_status = return_status;
         this.return_operation = return_operation;
         this.opponentName = opponentName;
-
     }
 }

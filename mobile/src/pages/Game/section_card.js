@@ -14,7 +14,7 @@ export default function SectionCard(props) {
        break;
        case 1 : backGroundColor = '#ace589'; //green
        break;
-       case 2 : backGroundColor = '#c74b1e'; //red
+       case 2 : backGroundColor = '#fb5454'; //red
        break;
      }
   

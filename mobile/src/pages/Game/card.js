@@ -42,8 +42,8 @@ export default function Card(props) {
         </TouchableOpacity>
 
         <TouchableOpacity style={{ flex: 1 }}
-          onPress={() => { cardsOptionClick(4, 'Poder Militar') }}>
-          <SectionCard selected={idxSelected == 4} text={'Poder militar'} value={cardData.militaryPower} cardResult= {cardResult} >
+          onPress={() => { cardsOptionClick(4, 'Índice de segurança') }}>
+          <SectionCard selected={idxSelected == 4} text={'Índice de segurança'} value={cardData.safety_index} cardResult= {cardResult} >
           </SectionCard>
         </TouchableOpacity>
 

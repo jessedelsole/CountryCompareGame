@@ -99,6 +99,8 @@ export default function Game() {
                     break;
                     case 3 : opcaoJogada = 'IDH';
                     break;
+                    case 4 : opcaoJogada = 'Índice de segurança';
+                    break;
                     case 5 : opcaoJogada = 'Densidade pop.';
                     break;
                 }
@@ -142,13 +144,13 @@ export default function Game() {
             console.log(card);
 
             if (count > 0) {
-                setCardData(new CardData(card.name, card.population, card.area, card.hdi , '0,1988 (#10)', card.pop_density, card.url));
+                setCardData(new CardData(card.name, card.population, card.area, card.hdi , card.safety_index, card.pop_density, card.url));
             } else {
                 setCardData(new CardData('', '', '', '', '', '', ''));
             }
 
             if (opponentCount > 0) {
-                setOpponentCardData(new CardData(opponentCard.name, opponentCard.population, opponentCard.area, opponentCard.hdi, '0,1988 (#10)', opponentCard.pop_density, opponentCard.url));
+                setOpponentCardData(new CardData(opponentCard.name, opponentCard.population, opponentCard.area, opponentCard.hdi, opponentCard.safety_index, opponentCard.pop_density, opponentCard.url));
             } else {
                 setOpponentCardData(new CardData('', '', '', '', '', '', ''));
             }
@@ -233,12 +235,12 @@ export default function Game() {
 
 
 class CardData {
-    constructor(countryName, population, area, hdi, militaryPower, popDensity, flag) {
+    constructor(countryName, population, area, hdi, safety_index, popDensity, flag) {
         this.countryName = countryName;
         this.population = population;
         this.area = area;
         this.hdi = hdi;
-        this.militaryPower = militaryPower;
+        this.safety_index = safety_index;
         this.popDensity = popDensity;
         this.flag = flag;
     }

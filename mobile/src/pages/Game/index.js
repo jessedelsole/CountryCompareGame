@@ -7,7 +7,7 @@ import RightPanel from './right_panel';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import api from '../../services/api';
 
-export default function Game() {
+export default function Game() { 
 
 
     const navigation = useNavigation();

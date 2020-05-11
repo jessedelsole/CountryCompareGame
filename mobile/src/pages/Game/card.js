@@ -43,13 +43,13 @@ export default function Card(props) {
 
         <TouchableOpacity style={{ flex: 1 }}
           onPress={() => { cardsOptionClick(4, 'Índice de segurança') }}>
-          <SectionCard selected={idxSelected == 4} text={'Índice de segurança'} value={cardData.safety_index} cardResult= {cardResult} >
+          <SectionCard selected={idxSelected == 4} text={'Índice de segurança'} value={Intl.NumberFormat('pt-BR', {style:'decimal'}).format(cardData.safety_index)} cardResult= {cardResult} >
           </SectionCard>
         </TouchableOpacity>
 
         <TouchableOpacity style={{ flex: 1 }}
           onPress={() => { cardsOptionClick(5, 'Densidade pop.')}}>
-          <SectionCard selected={idxSelected == 5} text={'Densidade pop.'} value={cardData.popDensity + ' Pessoas/ Km²'} cardResult= {cardResult} >
+          <SectionCard selected={idxSelected == 5} text={'Densidade pop.'} value={Intl.NumberFormat('pt-BR', {style:'decimal'}).format(cardData.popDensity)+ ' Pessoas/ Km²'} cardResult= {cardResult} >
           </SectionCard>
         </TouchableOpacity>
       </View>

@@ -73,23 +73,25 @@ async function _cardPlayed(gameId, idx_played, player) {
 
     switch(idx_played){
         case 1 : 
-          valuePlayed = card.population;
-          valuePlayedOpponnent = opponentCard.population; 
+           valuePlayed = card.population;
+           valuePlayedOpponnent = opponentCard.population; 
         break;
         case 2 :
-          valuePlayed = card.area;
-          valuePlayedOpponnent = opponentCard.area;
+           valuePlayed = card.area;
+           valuePlayedOpponnent = opponentCard.area;
         break;
         case 3 :
-          valuePlayed = card.hdi;
-          valuePlayedOpponnent = opponentCard.hdi;
+           valuePlayed = card.hdi;
+           valuePlayedOpponnent = opponentCard.hdi;
         break;
+        case 4 :
+            valuePlayed = card.safety_index;
+            valuePlayedOpponent = opponentCard.safety_index;
+        break
         case 5 :
             valuePlayed = card.pop_density;
             valuePlayedOpponnent = opponentCard.pop_density;
         break;
-
-
     }
     
     
@@ -223,6 +225,13 @@ async function startGame(gameId, player1, player2) {
 
     await connection('cards_game').insert({ card_id: cards[8].id, game_id: gameId, player: player1, seq: 5 });
     await connection('cards_game').insert({ card_id: cards[9].id, game_id: gameId, player: player2, seq: 5 });
+
+    await connection('cards_game').insert({ card_id: cards[10].id, game_id: gameId, player: player1, seq: 6 });
+    await connection('cards_game').insert({ card_id: cards[11].id, game_id: gameId, player: player1, seq: 7 });
+    await connection('cards_game').insert({ card_id: cards[12].id, game_id: gameId, player: player1, seq: 8 });
+    await connection('cards_game').insert({ card_id: cards[13].id, game_id: gameId, player: player2, seq: 6 });
+    await connection('cards_game').insert({ card_id: cards[14].id, game_id: gameId, player: player2, seq: 7 });
+    await connection('cards_game').insert({ card_id: cards[15].id, game_id: gameId, player: player2, seq: 8 });
 
     
 

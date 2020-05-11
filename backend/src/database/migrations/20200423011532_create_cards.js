@@ -9,7 +9,7 @@ exports.up = function(knex) {
         table.integer('area');
         table.float('hdi',4,3);
         table.integer('pop_density');
-        table.float('military_power',3,2);
+        table.float('safety_index',4,2);
     })
   
 };

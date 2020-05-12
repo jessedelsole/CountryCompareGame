@@ -28,7 +28,6 @@ module.exports = {
 
 async function _checkCardPlayed(gameId){
 
-    console.log('check card played : ' + gameId);
 
     const [game] = await connection('games').where('id', gameId).select('*');
 
@@ -36,9 +35,7 @@ async function _checkCardPlayed(gameId){
     const player_turn = game.player_turn;
 
     await connection('games').where({id:gameId}).update({idx_played:0} );
-
-
-    console.log(game);
+  
     return { idx_played, player_turn };
 
 }
@@ -58,7 +55,7 @@ async function _cardPlayed(gameId, idx_played, player) {
         .where({ player, game_id: gameId, seq: 1 })
         .join('cards', 'cards.id', '=', 'cards_game.card_id')
         .first('*');
-    console.log(card);
+    
 
     //loads the opponent's card(first in his deck)
     const opponentCard = await connection('cards_game')
@@ -66,23 +63,23 @@ async function _cardPlayed(gameId, idx_played, player) {
         .andWhereNot({ player })
         .join('cards', 'cards.id', '=', 'cards_game.card_id')
         .first('*');
-    console.log(opponentCard);
+    
 
     //loads the values of the selected property
-    let valuePlayed, valuePlayedOpponnent;
+    let valuePlayed, valuePlayedOpponent;
 
     switch(idx_played){
         case 1 : 
            valuePlayed = card.population;
-           valuePlayedOpponnent = opponentCard.population; 
+           valuePlayedOpponent = opponentCard.population; 
         break;
         case 2 :
            valuePlayed = card.area;
-           valuePlayedOpponnent = opponentCard.area;
+           valuePlayedOpponent = opponentCard.area;
         break;
         case 3 :
            valuePlayed = card.hdi;
-           valuePlayedOpponnent = opponentCard.hdi;
+           valuePlayedOpponent = opponentCard.hdi;
         break;
         case 4 :
             valuePlayed = card.safety_index;
@@ -90,20 +87,24 @@ async function _cardPlayed(gameId, idx_played, player) {
         break
         case 5 :
             valuePlayed = card.pop_density;
-            valuePlayedOpponnent = opponentCard.pop_density;
+            valuePlayedOpponent = opponentCard.pop_density;
         break;
     }
     
+    console.log("value played: "+ card.safety_index);
+    console.log("valuePlayedOpponent: " + opponentCard.safety_index);
     
 
     //finds out which player won 
     let roundWinner;
     let roundLooser;
 
-    if (valuePlayed > valuePlayedOpponnent) {
+    if ( valuePlayed  >  valuePlayedOpponent) {
+        console.log("> roundwinner = " + player);
         roundWinner = player;
         roundLooser = otherPlayer;
     } else {
+        console.log("< roundwinner = " + otherPlayer);
         roundWinner = otherPlayer;
         roundLooser = player;
     }
@@ -130,8 +131,6 @@ async function _cardPlayed(gameId, idx_played, player) {
 }
 
 async function _lookForOpponent(player, gameId) {
-    console.log(player);
-    console.log(gameId);
 
     if (gameId > 0) {
 
@@ -207,34 +206,51 @@ async function waitForOpponent_StartGame(player) {
 }
 
 
+ //shuffle algorithm copied from : https://github.com/Daplie/knuth-shuffle.git
+function shuffle(array) {
+   
+    var currentIndex = array.length
+      , temporaryValue
+      , randomIndex
+      ;
+
+    // While there remain elements to shuffle...
+    while (0 !== currentIndex) {
+
+      // Pick a remaining element...
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex -= 1;
+
+      // And swap it with the current element.
+      temporaryValue = array[currentIndex];
+      array[currentIndex] = array[randomIndex];
+      array[randomIndex] = temporaryValue;
+    }
+
+    return array;
+  }
+
+
 async function startGame(gameId, player1, player2) {
 
     const cards = await connection('cards').select('*');
     console.log(cards);
 
-    
-    await connection('cards_game').insert({ card_id: cards[7].id, game_id: gameId, player: player1, seq: 1 });
-    await connection('cards_game').insert({ card_id: cards[6].id, game_id: gameId, player: player1, seq: 2 });
-    await connection('cards_game').insert({ card_id: cards[5].id, game_id: gameId, player: player1, seq: 3 });
-    await connection('cards_game').insert({ card_id: cards[4].id, game_id: gameId, player: player1, seq: 4 });
+    shuffle(cards);
+
+    console.log('cards were sorted!');
+    console.log(cards);
    
-    await connection('cards_game').insert({ card_id: cards[3].id, game_id: gameId, player: player2, seq: 1 });
-    await connection('cards_game').insert({ card_id: cards[2].id, game_id: gameId, player: player2, seq: 2 });
-    await connection('cards_game').insert({ card_id: cards[1].id, game_id: gameId, player: player2, seq: 3 });
-    await connection('cards_game').insert({ card_id: cards[0].id, game_id: gameId, player: player2, seq: 4 });
-
-    await connection('cards_game').insert({ card_id: cards[8].id, game_id: gameId, player: player1, seq: 5 });
-    await connection('cards_game').insert({ card_id: cards[9].id, game_id: gameId, player: player2, seq: 5 });
-
-    await connection('cards_game').insert({ card_id: cards[10].id, game_id: gameId, player: player1, seq: 6 });
-    await connection('cards_game').insert({ card_id: cards[11].id, game_id: gameId, player: player1, seq: 7 });
-    await connection('cards_game').insert({ card_id: cards[12].id, game_id: gameId, player: player1, seq: 8 });
-    await connection('cards_game').insert({ card_id: cards[13].id, game_id: gameId, player: player2, seq: 6 });
-    await connection('cards_game').insert({ card_id: cards[14].id, game_id: gameId, player: player2, seq: 7 });
-    await connection('cards_game').insert({ card_id: cards[15].id, game_id: gameId, player: player2, seq: 8 });
-
+    const length = cards.length;
+    const half = Math.floor(length/2);
     
-
+    let seq=1;
+    for (let i =1; i<= half ;i++)
+       await connection('cards_game').insert({ card_id: cards[i-1].id, game_id: gameId, player: player1, seq: seq++ });
+    
+    seq=1;
+    for (let i = half+1; i<= length;i++)
+      await connection('cards_game').insert({ card_id: cards[i-1].id, game_id: gameId, player: player2, seq: seq++ });
 
     await connection('games').where('id', gameId).update(
         {
@@ -244,7 +260,10 @@ async function startGame(gameId, player1, player2) {
         });
 
     //debug
+  
     const cards_game = await connection('cards_game').where('game_id', gameId).select('*');
+   
+    console.log('cards game:');    
     console.log(cards_game);
 
 }

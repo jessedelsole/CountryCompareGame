@@ -99,7 +99,7 @@ async function _cardPlayed(gameId, idx_played, player) {
     let roundWinner;
     let roundLooser;
 
-    if ( valuePlayed  >  valuePlayedOpponent) {
+    if ( Math.fround(valuePlayed)  >  Math.fround(valuePlayedOpponent)) {
         console.log("> roundwinner = " + player);
         roundWinner = player;
         roundLooser = otherPlayer;
@@ -234,12 +234,8 @@ function shuffle(array) {
 async function startGame(gameId, player1, player2) {
 
     const cards = await connection('cards').select('*');
-    console.log(cards);
 
     shuffle(cards);
-
-    console.log('cards were sorted!');
-    console.log(cards);
    
     const length = cards.length;
     const half = Math.floor(length/2);
@@ -252,19 +248,21 @@ async function startGame(gameId, player1, player2) {
     for (let i = half+1; i<= length;i++)
       await connection('cards_game').insert({ card_id: cards[i-1].id, game_id: gameId, player: player2, seq: seq++ });
 
+
+    const iTurn =  Math.floor( Math.random() * 2 ) + 1; 
+    console.log('iTurn = ' + iTurn);
+    let turn;
+    if (iTurn==1)
+      turn = player1; else 
+       turn = player2;
+      
+      
     await connection('games').where('id', gameId).update(
         {
             status: game_consts.GAME_READY,
             player2: player2,
-            player_turn: player1
+            player_turn: turn
         });
-
-    //debug
-  
-    const cards_game = await connection('cards_game').where('game_id', gameId).select('*');
-   
-    console.log('cards game:');    
-    console.log(cards_game);
 
 }
 

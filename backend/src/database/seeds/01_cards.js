@@ -32,21 +32,11 @@ exports.seed = function(knex) {
         {name: 'Bulgaria', url: 'https://cdn.countryflags.com/thumbs/bulgaria/flag-800.png',population: 7101510, area: 110879, hdi:0.816,pop_density:64 , safety_index:61.50},
         {name: 'Marrocos', url: 'https://cdn.countryflags.com/thumbs/morocco/flag-800.png',population: 33986000, area: 446000, hdi:0.676,pop_density:76 , safety_index:51.31},
         {name: 'Australia', url: 'https://cdn.countryflags.com/thumbs/australia/flag-800.png',population: 23232000, area: 7692024, hdi:0.938,pop_density:3 , safety_index:58.64},
-        {name: 'Canada', url: 'https://cdn.countryflags.com/thumbs/canada/flag-800.png',population: 35623000, area: 9984670, hdi:0.922,pop_density:4 , safety_index:60.33}
-
-
-        
-
+        {name: 'Canada', url: 'https://cdn.countryflags.com/thumbs/canada/flag-800.png',population: 35623000, area: 9984670, hdi:0.922,pop_density:4 , safety_index:60.33},
+        {name: 'Bósnia e Herzegovina', url: 'https://cdn.countryflags.com/thumbs/bosnia-and-herzegovina/flag-800.png',population: 3502000, area: 51000, hdi:0.769,pop_density:68 , safety_index:56.97},
+        {name: 'Alemanha', url: 'https://cdn.countryflags.com/thumbs/germany/flag-800.png',population: 80594000, area: 357000 , hdi:0.939,pop_density:226 , safety_index:65.19},
         
         
-        
-        
-        
-        
-        
-
-       
-
       ]);
     });
 };

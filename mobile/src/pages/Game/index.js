@@ -12,7 +12,7 @@ export default function Game() {
 
     const navigation = useNavigation();
     const route = useRoute();
-    const { nome, gameId, opponentName } = route.params;
+    const { name, gameId, opponentName } = route.params;
 
     const [cardCount, setCardCount] = useState(0);
     const [opponentCardCount, setOpponnetCardCount] = useState(0);
@@ -31,7 +31,7 @@ export default function Game() {
       
         setStatusTextBold(true);
         setStatusColor('#e7e7e7');
-        if (winner == nome) {
+        if (winner == name) {
 
             setStatusText('Você ganhou essa rodada!');
             setCardResult(1);
@@ -58,14 +58,14 @@ export default function Game() {
 
     const cardsOptionClick = (idxClicked, textClicked) => {
    
-        if (global.turn != nome)
+        if (global.turn != name)
             return;
 
         setIdxSelected(idxClicked);
         setStatusText(`Você escolheu ${textClicked}, revelando carta do adversário...`);
         setStatusTextBold(true);
         setStatusColor('#e7e7e7');
-        api.post('cardPlayed', { gameId, idx_played: idxClicked, player: nome }).then(
+        api.post('cardPlayed', { gameId, idx_played: idxClicked, player: name }).then(
             result => {
                 const { roundWinner } = result.data;
 
@@ -135,7 +135,7 @@ export default function Game() {
         setCardResult(0);
         setOpponentCardResult(0);
 
-        api.get('getCard', { params: { player: nome, gameId } }).then(result => {
+        api.get('getCard', { params: { player: name, gameId } }).then(result => {
 
             
            
@@ -178,7 +178,7 @@ export default function Game() {
                 backToMainScreen();
             }else
 
-            if (global.turn == nome) {
+            if (global.turn == name) {
  
                 setStatusText('Sua vez de jogar! Escolha uma opção abaixo:');
                 setStatusColor('#8edfa7');
@@ -226,7 +226,7 @@ export default function Game() {
                     <Card idxSelected={idxSelected} cardsOptionClick={cardsOptionClick} cardData={cardData} cardResult={cardResult} >
                     </Card> : null
                 }
-                <RightPanel nome={nome} cardCount={cardCount}>
+                <RightPanel nome={name} cardCount={cardCount}>
                 </RightPanel>
             </View>
         </SafeAreaView>

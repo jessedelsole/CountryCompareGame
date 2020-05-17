@@ -17,7 +17,7 @@ export default function Card(props) {
       </View>
 
       <View style={{ padding: 5, flex: 4, borderColor: 'gray', borderWidth: 1 }}>
-        {cardData.flag ? <Image source={{ uri: cardData.flag }} style={{ flex: 1, resizeMode: 'cover' }} ></Image> : null}
+        {cardData.flag ? <Image source={{ uri: cardData.flag }} style={{ flex: 1, resizeMode: 'stretch' }} ></Image> : null}
       </View>
       <View style={{ flex: 6, flexDirection: 'column' }}>
 
@@ -33,7 +33,7 @@ export default function Card(props) {
           onPress={() => { cardsOptionClick(2, 'Área') }}>
           <SectionCard selected={idxSelected == 2} text={'Área'} value={Intl.NumberFormat('pt-BR', {style:'decimal'}).format(cardData.area)+ ' km²'}  cardResult= {cardResult}>
           </SectionCard>
-        </TouchableOpacity>
+        </TouchableOpacity> 
 
         <TouchableOpacity style={{ flex: 1 }}
           onPress={() => { cardsOptionClick(3, 'IDH') }}>
@@ -51,7 +51,7 @@ export default function Card(props) {
           onPress={() => { cardsOptionClick(5, 'Densidade pop.')}}>
           <SectionCard selected={idxSelected == 5} text={'Densidade pop.'} value={Intl.NumberFormat('pt-BR', {style:'decimal'}).format(cardData.popDensity)+ ' Pessoas/ Km²'} cardResult= {cardResult} >
           </SectionCard>
-        </TouchableOpacity>
+        </TouchableOpacity>  
       </View>
     </View>
   );

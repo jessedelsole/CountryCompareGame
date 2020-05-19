@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, SafeAreaView } from 'react-native';
+import { StyleSheet, View, Text, SafeAreaView, Image, TouchableOpacity } from 'react-native';
 import Constants from 'expo-constants';
 import Card from './card';
 import BackCard from './backcard';
@@ -7,7 +7,8 @@ import RightPanel from './right_panel';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import api from '../../services/api';
 
-export default function Game() { 
+
+export default function Game() {
 
 
     const navigation = useNavigation();
@@ -22,42 +23,53 @@ export default function Game() {
     const [showOpponentsCard, setShowOpponentsCard] = useState(false);
     const [opponentCardData, setOpponentCardData] = useState(new CardData('', '', '', '', '', '', ''));
     const [cardData, setCardData] = useState(new CardData('', '', '', '', '', '', ''));
-    const [cardResult, setCardResult]=useState(0);
-    const [opponentCardResult, setOpponentCardResult]=useState(0);
-    const [statusTextBold, setStatusTextBold]=useState(false);
+    const [cardResult, setCardResult] = useState(0);
+    const [opponentCardResult, setOpponentCardResult] = useState(0);
+    const [statusTextBold, setStatusTextBold] = useState(false);
+    const [indicatorOpponentColor, setIndicatorOpponentColor] = useState('#707070');
+    const [indicatorColor, setIndicatorColor] = useState('#ace589');
 
 
-    function showWinner(winner){
-      
+    function showWinner(winner) {
+
+        console.log('winner = '+ winner);
+        console.log('name = '+ name);
+
         setStatusTextBold(true);
         setStatusColor('#e7e7e7');
+ 
         if (winner == name) {
 
-            setStatusText('Você ganhou essa rodada!');
+           // setStatusText('Você ganhou essa rodada!');
             setCardResult(1);
             setOpponentCardResult(2);
+            console.log('winner');
+            
+
         } else {
-            setStatusText('Você perdeu essa rodada...');
+           // setStatusText('Você perdeu essa rodada...');
             setCardResult(2);
             setOpponentCardResult(1);
+            console.log('looser');
+       
         }
         setTimeout(() => getRoundInfo(), 3000);
     }
 
 
-   function afterCallApiCard( roundWinner){
-     
-      
+    function afterCallApiCard(roundWinner) {
+
+
         setShowOpponentsCard(true);
         global.turn = roundWinner;
         setStatusText('Analisando vencedor...');
         setStatusTextBold(true);
         setStatusColor('#e7e7e7');
-        setTimeout( ()=> showWinner( roundWinner), 2000 );
+        setTimeout(() => showWinner(roundWinner), 2000);
     }
 
     const cardsOptionClick = (idxClicked, textClicked) => {
-   
+
         if (global.turn != name)
             return;
 
@@ -69,48 +81,48 @@ export default function Game() {
             result => {
                 const { roundWinner } = result.data;
 
-                setTimeout( () => afterCallApiCard(roundWinner) , 2000);
-        });  
+                setTimeout(() => afterCallApiCard(roundWinner), 2000);
+            });
     }
 
-    function opponentHasPlayed( player_turn){
-       
+    function opponentHasPlayed(player_turn) {
+
         setShowOpponentsCard(true);
         setStatusText('Analisando vencedor...');
-        setTimeout( () => showWinner(player_turn) , 2000);
+        setTimeout(() => showWinner(player_turn), 2000);
     }
 
     function checkIfOpponentHasPlayed() {
 
-        
+
         api.get('checkCardPlayed', { params: { gameId } }).then((result) => {
 
             const { idx_played, player_turn } = result.data;
             if (idx_played > 0) {
 
-                console.log('idxPLayed = ' + idx_played);
+               
                 setIdxSelected(idx_played);
 
                 let opcaoJogada;
-                switch( idx_played){
-                    case 1 : opcaoJogada = 'População'
-                    break;
-                    case 2 : opcaoJogada = 'Área';
-                    break;
-                    case 3 : opcaoJogada = 'IDH';
-                    break;
-                    case 4 : opcaoJogada = 'Índice de segurança';
-                    break;
-                    case 5 : opcaoJogada = 'Densidade pop.';
-                    break;
+                switch (idx_played) {
+                    case 1: opcaoJogada = 'População'
+                        break;
+                    case 2: opcaoJogada = 'Área';
+                        break;
+                    case 3: opcaoJogada = 'IDH';
+                        break;
+                    case 4: opcaoJogada = 'Índice de segurança';
+                        break;
+                    case 5: opcaoJogada = 'Densidade pop.';
+                        break;
                 }
-                
+
                 setStatusText(`${opponentName} escolheu: '${opcaoJogada}', revelando a carta... `);
                 setStatusColor('#e7e7e7');
-                
+
                 setStatusTextBold(true);
 
-                setTimeout( () => opponentHasPlayed(player_turn) , 2000);
+                setTimeout(() => opponentHasPlayed(player_turn), 2000);
 
 
             } else {
@@ -122,9 +134,9 @@ export default function Game() {
         });
     }
 
-    function backToMainScreen(){
+    function backToMainScreen() {
 
-         setTimeout( () => { global.gameId=0; navigation.goBack(); },2000)
+        setTimeout(() => { global.gameId = 0; navigation.goBack(); }, 2000)
     }
 
     function getRoundInfo() {
@@ -137,14 +149,11 @@ export default function Game() {
 
         api.get('getCard', { params: { player: name, gameId } }).then(result => {
 
-            
-           
             const { card, opponentCard, count, opponentCount, player_turn } = result.data;
 
-            console.log(card);
-
+       
             if (count > 0) {
-                setCardData(new CardData(card.name, card.population, card.area, card.hdi , card.safety_index, card.pop_density, card.url));
+                setCardData(new CardData(card.name, card.population, card.area, card.hdi, card.safety_index, card.pop_density, card.url));
             } else {
                 setCardData(new CardData('', '', '', '', '', '', ''));
             }
@@ -160,39 +169,39 @@ export default function Game() {
 
             global.turn = player_turn;
 
-            //Noruega, Suiça    
-
-            if (count==0){
+            if (count == 0) {
 
                 setStatusText('Você perdeu o jogo!');
                 setStatusColor('#fb5454');
                 setStatusTextBold(false);
                 backToMainScreen();
 
-            } else 
-            if (opponentCount==0){
+            } else
+                if (opponentCount == 0) {
 
-                setStatusText('Você ganhou!!');
-                setStatusColor('#ace589');
-                setStatusTextBold(false);
-                backToMainScreen();
-            }else
+                    setStatusText('Você ganhou!!');
+                    setStatusColor('#ace589');
+                    setStatusTextBold(false);
+                    backToMainScreen();
+                } else
 
-            if (global.turn == name) {
- 
-                setStatusText('Sua vez de jogar! Escolha uma opção abaixo:');
-                setStatusColor('#8edfa7');
-                setStatusTextBold(false);
-            } else {
-                setStatusText(`Aguarde enquanto ${opponentName} faz a jogada...`);
-                setStatusColor('#eff9a5');
+                    if (global.turn == name) {
 
-                setTimeout(() => {
-                    checkIfOpponentHasPlayed()
-                }, 2000);
-            }
+                        setIndicatorColor('#ace589');
+                        setIndicatorOpponentColor('#707070');
+                        setStatusText('Sua vez de jogar! Escolha uma opção abaixo:');
+                        setStatusColor('#8edfa7');
+                        setStatusTextBold(false);
+                    } else {
+                        setStatusText(`Aguarde enquanto ${opponentName} faz a jogada...`);
+                        setStatusColor('#eff9a5');
+                        setIndicatorColor('#707070');
+                        setIndicatorOpponentColor('#ace589');
 
-
+                        setTimeout(() => {
+                            checkIfOpponentHasPlayed()
+                        }, 2000);
+                    }
         });
     }
 
@@ -203,39 +212,68 @@ export default function Game() {
     }, [])
 
     return (
+       
         <SafeAreaView style={styles.container}>
-            <View style={{ flex: 1, margin: 2, flexDirection: 'row' }}>
-                {
-                    opponentCardCount > 0 ?
-                        (showOpponentsCard ?
-                            <Card idxSelected={idxSelected} cardData={opponentCardData} cardResult={opponentCardResult}>
-                            </Card> :
-                            <BackCard>
-                            </BackCard>) : null
-                }
-                <RightPanel nome={opponentName} cardCount={opponentCardCount}>
-                </RightPanel>
+            <View style={{ flex: 1, flexDirection: 'row' }}>
+                <View style={{ flex: 2, marginRight: 10 }}>
+                    <Image style={{ backgroundColor: 'white', borderRadius: 100, marginLeft: 20, marginBottom: 5, 
+                      marginTop: 5, width: 42, height: 5, flex: 2, resizeMode: 'cover', borderColor:indicatorOpponentColor,borderWidth:2}}
+                        source={require('../../../assets/avatar_1.png')}>
+                    </Image>
+                </View>
+                <View style={{ flex: 8, flexDirection: 'column', justifyContent: 'space-around', padding: 5 }}>
+                    <Text style={{ color: '#FAEBFF', fontWeight: 'bold', fontSize: 18 }}>{opponentName}</Text>
+                    <Text style={{ color: '#FAEBFF', fontSize: 18 }}>{`${opponentCardCount} Cartas`}</Text>
+                </View>
+                <View style={{ flex: 2 }}>
+                    <TouchableOpacity>
+                        <Image style={{ marginRight: 5, marginTop: 12 }}
+                            source={require('../../../assets/menu_icon.png')}>
+                        </Image>
+                    </TouchableOpacity>
+                </View>
             </View>
 
-            <View style={{  backgroundColor: statusColor, borderColor: '#b4b4b4', borderRadius: 5, borderWidth: 1 }}>
-                <Text style={{ fontWeight: statusTextBold?'bold':'normal', padding: 10 }}>{statusText}</Text>
-            </View>
-            <View style={{ flex: 1, margin: 2, flexDirection: 'row' }}>
+            {opponentCardCount > 0 ?
+                (showOpponentsCard ?
+                    <Card idxSelected={idxSelected} cardData={opponentCardData} cardResult={opponentCardResult}>
+                    </Card> :
+                    <BackCard>
+                    </BackCard>) : null
+            }
 
-                {cardCount > 0 ?
-                    <Card idxSelected={idxSelected} cardsOptionClick={cardsOptionClick} cardData={cardData} cardResult={cardResult} >
-                    </Card> : null
-                }
-                <RightPanel nome={name} cardCount={cardCount}>
-                </RightPanel>
+           
+
+            <Card idxSelected={idxSelected} cardsOptionClick={cardsOptionClick} cardData={cardData} cardResult={cardResult} >
+            </Card>
+
+            <View style={{ flex: 1, flexDirection: 'row' }}>
+
+                <View style={{ flex: 2, marginRight: 10 }}>
+
+                </View>
+
+                <View style={{ flex: 8, flexDirection: 'column', justifyContent: 'flex-end', padding: 5, marginRight: 10 }}>
+                    <Text style={{ color: '#FAEBFF', fontWeight: 'bold', fontSize: 18, textAlign: 'right' }}>{name}</Text>
+                    <Text style={{ color: '#FAEBFF', fontSize: 18, textAlign: 'right' }}>{`${cardCount} Cartas`}</Text>
+                </View>
+                <View style={{ flex: 2 }}>
+
+                    <Image style={{ backgroundColor: 'white', borderRadius: 100, marginRight: 20, marginBottom: 5,
+                      marginTop: 5, width: 42, height: 5, flex: 2, resizeMode: 'cover',borderColor:indicatorColor,borderWidth:2 }}
+                        source={require('../../../assets/avatar_2.png')}>
+                    </Image>
+                </View>
             </View>
+           
         </SafeAreaView>
+      
     );
 }
 
 
 class CardData {
-    constructor(countryName, population, area, hdi, safety_index, popDensity, flag) {
+    constructor(countryName, population, area, hdi, safety_index, popDensity, flag, map, idiom, currency) {
         this.countryName = countryName;
         this.population = population;
         this.area = area;
@@ -243,17 +281,20 @@ class CardData {
         this.safety_index = safety_index;
         this.popDensity = popDensity;
         this.flag = flag;
+        this.map = map;
+        this.idiom = idiom;
+        this.currency = currency;
     }
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff',
+        backgroundColor: '#333D79',
         paddingTop: Constants.statusBarHeight,
         flexDirection: 'column',
         justifyContent: 'flex-start',
         padding: 1,
-        
+
     },
 });

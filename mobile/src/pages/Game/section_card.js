@@ -20,16 +20,17 @@ export default function SectionCard(props) {
   
 
   } else {
-     backgroundColor='white';
+    backGroundColor='white';
   }
+
 
   return (
     <View style={{
       paddingLeft: 10, paddingRight: 10, flex: 1,
       borderColor: 'gray', borderWidth: 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-      backgroundColor: backGroundColor}}>
-      <Text style={{ fontSize: 16 }}>{text}</Text>
-      <Text> {value}</Text>
+      backgroundColor: backGroundColor, borderRadius: 8, marginBottom:4}}>
+      <Text style={{color:'#707070', fontSize: 16, fontWeight:'bold' }}>{text}</Text>
+      <Text style={{color:'#707070', fontSize: 16 }}>{value}</Text>
     </View>
   )
 }

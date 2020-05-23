@@ -26,29 +26,59 @@ module.exports = {
     }
 }
 
+
+function showtime(){
+    var d = new Date();
+    return d.toLocaleTimeString();
+  }
+
+  function _log(log){
+       console.log(`[backend]${showtime()}  ${log}`);
+  }
+
 async function _checkCardPlayed(gameId){
 
-
+    _log('> checkCardPlayed');
     const [game] = await connection('games').where('id', gameId).select('*');
 
-    const idx_played = game.idx_played;
-    const player_turn = game.player_turn;
+    const {idx_played, player_turn} = game;
 
     await connection('games').where({id:gameId}).update({idx_played:0} );
-  
+
+    _log('< checkCardPlayed, idx_played= '+ idx_played+', playerTurn='+player_turn);
+
     return { idx_played, player_turn };
 
 }
 
 async function _cardPlayed(gameId, idx_played, player) {
 
+    _log(`>cardPlayed(${idx_played},${player})`);
+
     //gets the other player's name
     const [game] = await connection('games').where('id', gameId).select('*');
 
+    _log('idxplayed atual = ' +  game.idx_played );
+
     let otherPlayer;
-    if (game.player1 == player)
-        otherPlayer = game.player2; else
+    if (game.player1 == player) {
+        
+        if (game.status_player2==1 ){
+             return { roundWinner: '', status_other_player:1 }     
+        }
+
+        otherPlayer = game.player2;
+    }  else {
+        
+        if (game.status_player1==1 ){
+            return { roundWinner: '', status_other_player:1 }     
+        }
         otherPlayer = game.player1;
+    }
+
+
+    await connection('games').where('id', gameId).update( {  status_player1 : 1, status_player2 : 1 });
+
 
     //loads the player card (first in his deck)
     const card = await connection('cards_game')
@@ -91,20 +121,14 @@ async function _cardPlayed(gameId, idx_played, player) {
         break;
     }
     
-    console.log("value played: "+ card.safety_index);
-    console.log("valuePlayedOpponent: " + opponentCard.safety_index);
-    
-
     //finds out which player won 
     let roundWinner;
     let roundLooser;
 
     if ( Math.fround(valuePlayed)  >  Math.fround(valuePlayedOpponent)) {
-        console.log("> roundwinner = " + player);
         roundWinner = player;
         roundLooser = otherPlayer;
     } else {
-        console.log("< roundwinner = " + otherPlayer);
         roundWinner = otherPlayer;
         roundLooser = player;
     }
@@ -127,7 +151,10 @@ async function _cardPlayed(gameId, idx_played, player) {
     //defines who should play next, and let the other player know which option was selected
     await connection('games').where({ id: gameId }).update({ player_turn: roundWinner, idx_played });
 
-    return { roundWinner }
+
+   _log(`<cardPlayed roundWinner=${roundWinner}`);
+
+    return { roundWinner, status_other_player:0 };
 }
 
 async function _lookForOpponent(player, gameId) {
@@ -145,11 +172,12 @@ async function _lookForOpponent(player, gameId) {
 
 async function _getCard(player, gameId) {
 
-    
+    _log('>_getCard, player= '+ player); 
 
     const [game] = await connection('games').where('id', gameId).select('*');
 
     const player_turn = game.player_turn;
+    const idx_played = game.idx_played; 
 
     const card = await connection('cards_game')
         .where({ player, game_id: gameId, seq: 1 })
@@ -176,7 +204,25 @@ async function _getCard(player, gameId) {
 
     opponentCount = opponentCardCount['count(*)'];
 
-    return { card, opponentCard, count, opponentCount, player_turn };
+   _log('< _getCard, '+ card.name);
+
+
+
+   
+    if (game.player1 == player){
+
+        await connection('games').where('id', gameId).update( {  status_player1 : 0 });
+    } else {
+        
+        await connection('games').where('id', gameId).update( {  status_player2 : 0 });
+    }
+        
+
+
+
+
+
+    return { card, opponentCard, count, opponentCount, player_turn, idx_played };
 }
 
 
@@ -250,7 +296,7 @@ async function startGame(gameId, player1, player2) {
 
 
     const iTurn =  Math.floor( Math.random() * 2 ) + 1; 
-    console.log('iTurn = ' + iTurn);
+    _log('iTurn = ' + iTurn);
     let turn;
     if (iTurn==1)
       turn = player1; else 

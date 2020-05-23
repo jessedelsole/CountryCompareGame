@@ -25,14 +25,14 @@ export default function Card(props) {
             <Text style={{flexWrap:'wrap', marginTop: 6, color: '#707070', fontWeight: 'bold', flex: 4 }}>{cardData.countryName}</Text>
           </View>
           <View style={{ flex: 1, marginTop: 3 }} >
-            <Text style={{ color: '#707070', fontStyle: 'italic' }}>{`Idioma: ${cardData.idiom}`}</Text>
+            <Text style={{ color: '#707070', fontStyle: 'italic' }}>{`Idioma: ${cardData.language}`}</Text>
           </View>
           <View style={{ flex: 1 }} >
             <Text style={{ color: '#707070', fontStyle: 'italic' }}>{`Moeda: ${cardData.currency}`}</Text >
           </View>
         </View>
         <View style={{ flex: 1 }}>
-          {cardData.map ? <Image source={{ uri: cardData.map }} style={{ flex: 2, resizeMode: 'contain', marginRight: 6 }} ></Image> : null}
+          {cardData.map ? <Image source={{ uri: cardData.map }} style={{marginTop:-8, flex: 2, marginRight: 6 }} ></Image> : null}
         
         </View>
       </View>

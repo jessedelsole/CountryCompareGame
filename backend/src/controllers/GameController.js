@@ -204,10 +204,7 @@ async function _getCard(player, gameId) {
 
     opponentCount = opponentCardCount['count(*)'];
 
-   _log('< _getCard, '+ card.name);
-
-
-
+   
    
     if (game.player1 == player){
 
@@ -283,7 +280,7 @@ async function startGame(gameId, player1, player2) {
 
     shuffle(cards);
    
-    const length = cards.length;
+    const length =  4;//cards.length;
     const half = Math.floor(length/2);
     
     let seq=1;

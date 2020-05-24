@@ -6,6 +6,7 @@ import BackCard from './backcard';
 import RightPanel from './right_panel';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import api from '../../services/api';
+import Toast from 'react-native-tiny-toast'
 
 
 export default function Game() {
@@ -31,11 +32,28 @@ export default function Game() {
 
 
 
+    function toast(msg, color) {
+        Toast.show(msg, {
+            position: Toast.position.CENTER,
+            containerStyle: { backgroundColor: color },
+            textStyle: {},
+            // imgSource: require('xxx'),
+            imgStyle: {},
+            mask: false,
+            maskColor: 'red',
+            maskStyle: {},
+           // textColor: '#707070'
+           textColor:'rgba(112, 112, 112, 0.9)',
+           duration: 2000
+
+        });
+    }
+
     const showtime = () => {
 
         var min = new Date().getMinutes(); //To get the Current Minutes
         var sec = new Date().getSeconds(); //To get the Current Seconds 
-      //  var d = new Date();
+      
         return min + ' ' + sec
     }
 
@@ -48,17 +66,15 @@ export default function Game() {
 
         _log('winner = ' + winner);
 
-        setStatusTextBold(true);
-        setStatusColor('#e7e7e7');
-
         if (winner == name) {
 
-            // setStatusText('Você ganhou essa rodada!');
+            toast('Você ganhou essa rodada!', 'rgba(173, 229, 138, 0.9)');
             setCardResult(1);
             setOpponentCardResult(2);
 
         } else {
-            // setStatusText('Você perdeu essa rodada...');
+           
+            toast('Você perdeu essa rodada...', 'rgba(251, 86, 86, 0.9)');
             setCardResult(2);
             setOpponentCardResult(1);
         }
@@ -68,12 +84,8 @@ export default function Game() {
 
     function afterCallApiCard(roundWinner) {
 
-
         setShowOpponentsCard(true);
-     
-        setStatusText('Analisando vencedor...');
-        setStatusTextBold(true);
-        setStatusColor('#e7e7e7');
+        toast('Analisando vencedor...', 'rgba(232, 232, 232, 0.9)');
         setTimeout(() => showWinner(roundWinner), 2000);
     }
 
@@ -83,29 +95,28 @@ export default function Game() {
             return;
 
         setIdxSelected(idxClicked);
-        setStatusText(`Você escolheu ${textClicked}, revelando carta do adversário...`);
-        setStatusTextBold(true);
-        setStatusColor('#e7e7e7');
+
+        toast(`Você escolheu ${textClicked}, revelando carta do adversário...`, 'rgba(232, 232, 232, 0.9)');
 
         _log('cardOptionClick:' + idxClicked);
         api.post('cardPlayed', { gameId, idx_played: idxClicked, player: name }).then(
             result => {
                 const { roundWinner, status_other_player } = result.data;
-                    
-                  if (status_other_player==0){
+
+                if (status_other_player == 0) {
                     global.turn = roundWinner;
                     setTimeout(() => afterCallApiCard(roundWinner), 2000);
-                  } else { //other player not ready yet, wait a bit more
+                } else { //other player not ready yet, wait a bit more
                     _log('other player not ready yet...');
-                    setTimeout(() => cardsOptionClick(idxClicked, textClicked), 1000) ;
-                  }
+                    setTimeout(() => cardsOptionClick(idxClicked, textClicked), 1000);
+                }
             });
     }
 
     function opponentHasPlayed(player_turn) {
 
         setShowOpponentsCard(true);
-        setStatusText('Analisando vencedor...');
+        toast('Analisando vencedor...', 'rgba(232, 232, 232, 0.9)');
         setTimeout(() => showWinner(player_turn), 2000);
     }
 
@@ -116,7 +127,7 @@ export default function Game() {
         api.get('checkCardPlayed', { params: { gameId } }).then((result) => {
 
             const { idx_played, player_turn } = result.data;
-            
+
             global.turn = player_turn;
 
             _log('índice clicado = ' + idx_played);
@@ -140,11 +151,7 @@ export default function Game() {
                         break;
                 }
 
-                setStatusText(`${opponentName} escolheu: '${opcaoJogada}', revelando a carta... `);
-                setStatusColor('#e7e7e7');
-
-                setStatusTextBold(true);
-
+                toast(`${opponentName} escolheu: '${opcaoJogada}', revelando a carta... `, 'rgba(232, 232, 232, 0.9)');
                 setTimeout(() => opponentHasPlayed(player_turn), 2000);
 
 
@@ -159,7 +166,11 @@ export default function Game() {
 
     function backToMainScreen() {
 
-        setTimeout(() => { global.gameId = 0; navigation.goBack(); }, 2000)
+        setTimeout(() => {
+            global.turn = undefined;
+            global.gameId = 0;
+            navigation.goBack();
+        }, 2000)
     }
 
     function getRoundInfo() {
@@ -168,7 +179,7 @@ export default function Game() {
 
         setIdxSelected(0);
         setShowOpponentsCard(false);
-        setStatusTextBold(false);
+        //setStatusTextBold(false);
         setCardResult(0);
         setOpponentCardResult(0);
 
@@ -179,9 +190,9 @@ export default function Game() {
 
             _log('<getRoundInfo, idx_played atual =  ' + idx_played);
 
-            if (global.turn === undefined){
-              global.turn = player_turn;
-              _log('assumindo vez pela primeira vez : ' + global.turn);
+            if (global.turn === undefined) {
+                global.turn = player_turn;
+                _log('assumindo vez pela primeira vez : ' + global.turn);
             }
 
             if (count > 0) {
@@ -201,21 +212,17 @@ export default function Game() {
             setCardCount(count);
             setOpponnetCardCount(opponentCount);
 
-           
+
 
             if (count == 0) {
 
-                setStatusText('Você perdeu o jogo!');
-                setStatusColor('#fb5454');
-                setStatusTextBold(false);
+                toast('Você perdeu o jogo!', 'rgba(251, 86, 86, 0.9)');
                 backToMainScreen();
 
             } else
                 if (opponentCount == 0) {
 
-                    setStatusText('Você ganhou!!');
-                    setStatusColor('#ace589');
-                    setStatusTextBold(false);
+                    toast('Você ganhou!',  'rgba(173, 229, 138, 0.9)');
                     backToMainScreen();
                 } else
 
@@ -223,15 +230,12 @@ export default function Game() {
 
                         setIndicatorColor('#ace589');
                         setIndicatorOpponentColor('#707070');
-                        setStatusText('Sua vez de jogar! Escolha uma opção abaixo:');
-                        setStatusColor('#8edfa7');
-                        setStatusTextBold(false);
+                        toast(`Sua vez de jogar,${name}! Escolha uma opção abaixo:`, 'rgba(144, 224, 169, 0.9)');
+
                     } else {
-                        setStatusText(`Aguarde enquanto ${opponentName} faz a jogada...`);
-                        setStatusColor('#eff9a5');
+                        toast(`Aguarde enquanto ${opponentName} faz a jogada...`, 'rgba(239, 249, 164, 0.9)')
                         setIndicatorColor('#707070');
                         setIndicatorOpponentColor('#ace589');
-
                         setTimeout(() => {
                             checkIfOpponentHasPlayed()
                         }, 2000);

@@ -3,7 +3,6 @@ import { StyleSheet, View, Text, SafeAreaView, Image, TouchableOpacity } from 'r
 import Constants from 'expo-constants';
 import Card from './card';
 import BackCard from './backcard';
-import RightPanel from './right_panel';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import api from '../../services/api';
 import Toast from 'react-native-tiny-toast'
@@ -229,10 +228,10 @@ export default function Game() {
 
                         setIndicatorColor('#ace589');
                         setIndicatorOpponentColor('#707070');
-                        toast(`Sua vez de jogar, ${name}! Escolha uma opção abaixo:`, 'rgba(144, 224, 169, 0.9)');
+                        toast(`Sua vez de jogar, ${name}! Escolha uma opção abaixo:`, 'rgba(144, 224, 169, 0.9)', 2500);
 
                     } else {
-                        toast(`Aguarde enquanto ${opponentName} faz a jogada...`, 'rgba(239, 249, 164, 0.9)')
+                        toast(`Aguarde enquanto ${opponentName} faz a jogada...`, 'rgba(239, 249, 164, 0.9)', 2500)
                         setIndicatorColor('#707070');
                         setIndicatorOpponentColor('#ace589');
                         setTimeout(() => {

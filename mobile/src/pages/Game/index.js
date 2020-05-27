@@ -30,31 +30,28 @@ export default function Game() {
     const [indicatorOpponentColor, setIndicatorOpponentColor] = useState('#707070');
     const [indicatorColor, setIndicatorColor] = useState('#ace589');
 
+    function toast(msg, color, duration = 2000, img = null, mask = false, maskColor = null) {
 
-
-    function toast(msg, color) {
         Toast.show(msg, {
             position: Toast.position.CENTER,
             containerStyle: { backgroundColor: color },
             textStyle: {},
-            // imgSource: require('xxx'),
             imgStyle: {},
-            mask: false,
-            maskColor: 'red',
+            mask: mask,
+            maskColor: maskColor,
             maskStyle: {},
-           // textColor: '#707070'
-           textColor:'rgba(112, 112, 112, 0.9)',
-           duration: 2000
-
+            textColor: 'rgba(112, 112, 112, 0.9)',
+            duration: duration,
+            imgSource: img
         });
     }
 
     const showtime = () => {
 
-        var min = new Date().getMinutes(); //To get the Current Minutes
-        var sec = new Date().getSeconds(); //To get the Current Seconds 
-      
-        return min + ' ' + sec
+        var min = new Date().getMinutes();
+        var sec = new Date().getSeconds();
+
+        return min + ':' + sec
     }
 
     function _log(log) {
@@ -73,7 +70,7 @@ export default function Game() {
             setOpponentCardResult(2);
 
         } else {
-           
+
             toast('Você perdeu essa rodada...', 'rgba(251, 86, 86, 0.9)');
             setCardResult(2);
             setOpponentCardResult(1);
@@ -216,13 +213,19 @@ export default function Game() {
 
             if (count == 0) {
 
-                toast('Você perdeu o jogo!', 'rgba(251, 86, 86, 0.9)');
+
+                toast(`Não foi dessa vez${name}, você perdeu o jogo!`, 'rgba(252, 186, 156, 0.9)', 3500, require('./../../../assets/medal.png'), true,
+                    'rgba(252, 238, 156, 0.9)');
+
                 backToMainScreen();
 
             } else
                 if (opponentCount == 0) {
 
-                    toast('Você ganhou!',  'rgba(173, 229, 138, 0.9)');
+
+                    toast(`Parabéns ${name}, você ganhou o jogo!`, 'rgba(173, 229, 138, 0.9)', 3500, require('./../../../assets/trophy.png'), true,
+                        'rgba(138, 174, 229, 0.9)');
+
                     backToMainScreen();
                 } else
 
@@ -230,7 +233,7 @@ export default function Game() {
 
                         setIndicatorColor('#ace589');
                         setIndicatorOpponentColor('#707070');
-                        toast(`Sua vez de jogar,${name}! Escolha uma opção abaixo:`, 'rgba(144, 224, 169, 0.9)');
+                        toast(`Sua vez de jogar, ${name}! Escolha uma opção abaixo:`, 'rgba(144, 224, 169, 0.9)');
 
                     } else {
                         toast(`Aguarde enquanto ${opponentName} faz a jogada...`, 'rgba(239, 249, 164, 0.9)')

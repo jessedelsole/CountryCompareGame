@@ -18,15 +18,12 @@ export default function Game() {
 
     const [cardCount, setCardCount] = useState(0);
     const [opponentCardCount, setOpponnetCardCount] = useState(0);
-    const [statusText, setStatusText] = useState('');
-    const [statusColor, setStatusColor] = useState('#fff');
     const [idxSelected, setIdxSelected] = useState(0);
     const [showOpponentsCard, setShowOpponentsCard] = useState(false);
     const [opponentCardData, setOpponentCardData] = useState(new CardData('', '', '', '', '', '', ''));
     const [cardData, setCardData] = useState(new CardData('', '', '', '', '', '', ''));
     const [cardResult, setCardResult] = useState(0);
     const [opponentCardResult, setOpponentCardResult] = useState(0);
-    const [statusTextBold, setStatusTextBold] = useState(false);
     const [indicatorOpponentColor, setIndicatorOpponentColor] = useState('#707070');
     const [indicatorColor, setIndicatorColor] = useState('#ace589');
 
@@ -176,7 +173,6 @@ export default function Game() {
 
         setIdxSelected(0);
         setShowOpponentsCard(false);
-        //setStatusTextBold(false);
         setCardResult(0);
         setOpponentCardResult(0);
 

@@ -280,7 +280,7 @@ async function startGame(gameId, player1, player2) {
 
     shuffle(cards);
    
-    const length =  4;//cards.length;
+    const length = 30;// cards.length;
     const half = Math.floor(length/2);
     
     let seq=1;

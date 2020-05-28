@@ -14,7 +14,7 @@ export default function Card(props) {
   return (
     <View style={{
       backgroundColor: '#FAEBFF', flex: 5, borderColor: '#707070', borderWidth: 1, marginLeft:10,marginRight: 10,marginBottom:4,
-      borderRadius: 10, padding: 10
+      borderRadius: 10, padding: 10,
     }}>
 
       <View style={{ padding: 5, flex: 2, flexDirection: 'row' }}>

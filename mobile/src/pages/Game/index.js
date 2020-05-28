@@ -5,7 +5,9 @@ import Card from './card';
 import BackCard from './backcard';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import api from '../../services/api';
-import Toast from 'react-native-tiny-toast'
+import Toast from 'react-native-tiny-toast';
+import FlipCard from 'react-native-flip-card';
+
 
 
 export default function Game() {
@@ -272,18 +274,33 @@ export default function Game() {
                 </View>
             </View>
 
-            {opponentCardCount > 0 ?
-                (showOpponentsCard ?
-                    <Card idxSelected={idxSelected} cardData={opponentCardData} cardResult={opponentCardResult}>
-                    </Card> :
-                    <BackCard>
-                    </BackCard>) : null
-            }
 
+         
 
+            <FlipCard
+                style={{flex:5}}
+                friction={6}
+                perspective={0}
+                flipHorizontal={true}
+                flipVertical={false}
+                flip={showOpponentsCard}
+                clickable={false}
+                onFlipEnd={(isFlipEnd) => { console.log('isFlipEnd', isFlipEnd) }}
+            >
+                {/* Face Side */}
+                <BackCard>
+                </BackCard>
+                {/* Back Side */}
+                <Card idxSelected={idxSelected} cardData={opponentCardData} cardResult={opponentCardResult}>
+                </Card> 
+            </FlipCard>
 
             <Card idxSelected={idxSelected} cardsOptionClick={cardsOptionClick} cardData={cardData} cardResult={cardResult} >
             </Card>
+
+
+
+           
 
             <View style={{ flex: 1, flexDirection: 'row' }}>
 

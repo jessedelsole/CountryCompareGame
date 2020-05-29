@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef} from 'react';
 import { StyleSheet, View, Text, SafeAreaView, Image, TouchableOpacity } from 'react-native';
 import Constants from 'expo-constants';
 import Card from './card';
@@ -7,10 +7,11 @@ import { useRoute, useNavigation } from '@react-navigation/native';
 import api from '../../services/api';
 import Toast from 'react-native-tiny-toast';
 import FlipCard from 'react-native-flip-card';
+import Drawer from 'react-native-drawer-menu';
+import { Easing } from 'react-native'; // Customize easing function (Optional)
+import { Feather } from '@expo/vector-icons';
 
-
-
-export default function Game() {
+export default function Game( props ) {
 
 
     const navigation = useNavigation();
@@ -27,35 +28,87 @@ export default function Game() {
     const [opponentCardResult, setOpponentCardResult] = useState(0);
     const [indicatorOpponentColor, setIndicatorOpponentColor] = useState('#707070');
     const [indicatorColor, setIndicatorColor] = useState('#ace589');
+    const drawerRef = useRef(null);
 
-    function toast(msg, color, duration = 2000, img = null, mask = false, maskColor = null) {
 
-        Toast.show(msg, {
-            position: Toast.position.CENTER,
-            containerStyle: { backgroundColor: color },
-            textStyle: {},
-            imgStyle: {},
-            mask: mask,
-            maskColor: maskColor,
-            maskStyle: {},
-            textColor: 'rgba(112, 112, 112, 0.9)',
-            duration: duration,
-            imgSource: img
+
+    useEffect(() => {
+
+        getRoundInfo();
+
+    }, []);
+
+
+    function getRoundInfo() {
+
+        _log('>getRoundInfo');
+
+        setIdxSelected(0);
+        setShowOpponentsCard(false);
+        setCardResult(0);
+        setOpponentCardResult(0);
+
+        api.get('getCard', { params: { player: name, gameId } }).then(result => {
+
+            const { card, opponentCard, count, opponentCount, player_turn, idx_played } = result.data;
+
+            _log('<getRoundInfo, idx_played atual =  ' + idx_played);
+
+            if (global.turn === undefined) {
+                global.turn = player_turn;
+                _log('assumindo vez pela primeira vez : ' + global.turn);
+            }
+
+            if (count > 0) {
+                setCardData(new CardData(card.name, card.population, card.area, card.hdi,
+                    card.safety_index, card.pop_density, card.url, card.map, card.language, card.currency));
+            } else {
+                setCardData(new CardData('', '', '', '', '', '', ''));
+            }
+
+            if (opponentCount > 0) {
+                setOpponentCardData(new CardData(opponentCard.name, opponentCard.population, opponentCard.area, opponentCard.hdi,
+                    opponentCard.safety_index, opponentCard.pop_density, opponentCard.url, opponentCard.map, opponentCard.language, opponentCard.currency));
+            } else {
+                setOpponentCardData(new CardData('', '', '', '', '', '', ''));
+            }
+
+            setCardCount(count);
+            setOpponnetCardCount(opponentCount);
+
+            if (count == 0) {
+
+                toast(`Não foi dessa vez${name}, você perdeu o jogo!`, 'rgba(252, 186, 156, 0.9)', 3500, require('./../../../assets/medal.png'), true,
+                    'rgba(252, 238, 156, 0.9)');
+
+                backToMainScreen();
+
+            } else
+                if (opponentCount == 0) {
+
+                    toast(`Parabéns ${name}, você ganhou o jogo!`, 'rgba(173, 229, 138, 0.9)', 3500, require('./../../../assets/trophy.png'), true,
+                        'rgba(138, 174, 229, 0.9)');
+
+                    backToMainScreen();
+                } else
+
+                    if (global.turn == name) {
+
+                        setIndicatorColor('#ace589');
+                        setIndicatorOpponentColor('#707070');
+                        toast(`Sua vez de jogar, ${name}! Escolha uma opção abaixo:`, 'rgba(144, 224, 169, 0.9)', 2500);
+
+                    } else {
+                        toast(`Aguarde enquanto ${opponentName} faz a jogada...`, 'rgba(239, 249, 164, 0.9)', 2500)
+                        setIndicatorColor('#707070');
+                        setIndicatorOpponentColor('#ace589');
+                        setTimeout(() => {
+                            checkIfOpponentHasPlayed()
+                        }, 2000);
+                    }
         });
     }
 
-    const showtime = () => {
-
-        var min = new Date().getMinutes();
-        var sec = new Date().getSeconds();
-
-        return min + ':' + sec
-    }
-
-    function _log(log) {
-        console.log(`[Mobile]${showtime()} (${name}): ${log}`);
-
-    }
 
     function showWinner(winner) {
 
@@ -129,7 +182,6 @@ export default function Game() {
 
             if (idx_played > 0) {
 
-
                 setIdxSelected(idx_played);
 
                 let opcaoJogada;
@@ -149,7 +201,6 @@ export default function Game() {
                 toast(`${opponentName} escolheu: '${opcaoJogada}', revelando a carta... `, 'rgba(232, 232, 232, 0.9)');
                 setTimeout(() => opponentHasPlayed(player_turn), 2000);
 
-
             } else {
 
                 setTimeout(() => {
@@ -159,175 +210,161 @@ export default function Game() {
         });
     }
 
+    function goBack() {
+        global.turn = undefined;
+        global.gameId = 0;
+        navigation.goBack();
+    }
+
     function backToMainScreen() {
 
         setTimeout(() => {
-            global.turn = undefined;
-            global.gameId = 0;
-            navigation.goBack();
+            goBack();
         }, 2000)
     }
 
-    function getRoundInfo() {
 
-        _log('>getRoundInfo');
+    function toast(msg, color, duration = 2000, img = null, mask = false, maskColor = null) {
 
-        setIdxSelected(0);
-        setShowOpponentsCard(false);
-        setCardResult(0);
-        setOpponentCardResult(0);
-
-        api.get('getCard', { params: { player: name, gameId } }).then(result => {
-
-            const { card, opponentCard, count, opponentCount, player_turn, idx_played } = result.data;
-
-
-            _log('<getRoundInfo, idx_played atual =  ' + idx_played);
-
-            if (global.turn === undefined) {
-                global.turn = player_turn;
-                _log('assumindo vez pela primeira vez : ' + global.turn);
-            }
-
-            if (count > 0) {
-                setCardData(new CardData(card.name, card.population, card.area, card.hdi,
-                    card.safety_index, card.pop_density, card.url, card.map, card.language, card.currency));
-            } else {
-                setCardData(new CardData('', '', '', '', '', '', ''));
-            }
-
-            if (opponentCount > 0) {
-                setOpponentCardData(new CardData(opponentCard.name, opponentCard.population, opponentCard.area, opponentCard.hdi,
-                    opponentCard.safety_index, opponentCard.pop_density, opponentCard.url, opponentCard.map, opponentCard.language, opponentCard.currency));
-            } else {
-                setOpponentCardData(new CardData('', '', '', '', '', '', ''));
-            }
-
-            setCardCount(count);
-            setOpponnetCardCount(opponentCount);
-
-
-
-            if (count == 0) {
-
-
-                toast(`Não foi dessa vez${name}, você perdeu o jogo!`, 'rgba(252, 186, 156, 0.9)', 3500, require('./../../../assets/medal.png'), true,
-                    'rgba(252, 238, 156, 0.9)');
-
-                backToMainScreen();
-
-            } else
-                if (opponentCount == 0) {
-
-
-                    toast(`Parabéns ${name}, você ganhou o jogo!`, 'rgba(173, 229, 138, 0.9)', 3500, require('./../../../assets/trophy.png'), true,
-                        'rgba(138, 174, 229, 0.9)');
-
-                    backToMainScreen();
-                } else
-
-                    if (global.turn == name) {
-
-                        setIndicatorColor('#ace589');
-                        setIndicatorOpponentColor('#707070');
-                        toast(`Sua vez de jogar, ${name}! Escolha uma opção abaixo:`, 'rgba(144, 224, 169, 0.9)', 2500);
-
-                    } else {
-                        toast(`Aguarde enquanto ${opponentName} faz a jogada...`, 'rgba(239, 249, 164, 0.9)', 2500)
-                        setIndicatorColor('#707070');
-                        setIndicatorOpponentColor('#ace589');
-                        setTimeout(() => {
-                            checkIfOpponentHasPlayed()
-                        }, 2000);
-                    }
+        Toast.show(msg, {
+            position: Toast.position.CENTER,
+            containerStyle: { backgroundColor: color },
+            textStyle: {},
+            imgStyle: {},
+            mask: mask,
+            maskColor: maskColor,
+            maskStyle: {},
+            textColor: 'rgba(112, 112, 112, 0.9)',
+            duration: duration,
+            imgSource: img
         });
     }
 
-    useEffect(() => {
+    const showtime = () => {
 
-        getRoundInfo();
+        var min = new Date().getMinutes();
+        var sec = new Date().getSeconds();
 
-    }, [])
+        return min + ':' + sec
+    }
+
+    function _log(log) {
+        console.log(`[Mobile]${showtime()} (${name}): ${log}`);
+
+    }
+
+
+    // prepare your drawer content
+    var drawerContent = (
+        <SafeAreaView style={{ backgroundColor: '#FAEBFF', flex: 1 }}>
+           
+           
+                <View style={{alignItems:'center' }}>
+                    <Text style={{ width: '100%', textAlign: 'center', fontWeight: 'bold', fontSize: 18, color: '#333D79' }}>Country Compare Game</Text>
+                    <Image style={{ width: 60, height: 120, resizeMode: 'contain' }} source={require('../../../assets/icon.png')}>
+                    </Image>
+
+                    <TouchableOpacity style={{
+                       height: 60, width: '100%', flexDirection: 'row', borderRadius: 0,
+                        justifyContent: 'center', alignItems: 'center'
+                    }}
+                        onPress={goBack}>
+
+                        <Feather name="arrow-left" size={16} color='#333D79' style={{ flex: 1, paddingLeft: 30 }}></Feather>
+                        <Text style={{ color: '#333D79', fontSize: 18, flex: 9, textAlign: 'left', paddingRight: 60 }}>Encerrar jogo</Text>
+                    </TouchableOpacity>
+                </View>
+            </SafeAreaView>);
+
 
     return (
 
-        <SafeAreaView style={styles.container}>
-            <View style={{ flex: 1, flexDirection: 'row' }}>
-                <View style={{ flex: 2, marginRight: 10 }}>
-                    <Image style={{
-                        backgroundColor: 'white', borderRadius: 100, marginLeft: 20, marginBottom: 5,
-                        marginTop: 5, width: 42, height: 5, flex: 2, resizeMode: 'cover', borderColor: indicatorOpponentColor, borderWidth: 2
-                    }}
-                        source={require('../../../assets/avatar_1.png')}>
-                    </Image>
-                </View>
-                <View style={{ flex: 8, flexDirection: 'column', justifyContent: 'space-around', padding: 5 }}>
-                    <Text style={{ color: '#FAEBFF', fontWeight: 'bold', fontSize: 18 }}>{opponentName}</Text>
-                    <Text style={{ color: '#FAEBFF', fontSize: 18 }}>{`${opponentCardCount} Cartas`}</Text>
-                </View>
-                <View style={{ flex: 2 }}>
-                    <TouchableOpacity>
-                        <Image style={{ marginRight: 5, marginTop: 12 }}
-                            source={require('../../../assets/menu_icon.png')}>
+        <Drawer
+            ref={ drawerRef }
+            style={styles.container}
+            drawerWidth={300}
+            drawerContent={drawerContent}
+            type={Drawer.types.Overlay}
+            customStyles={{
+                drawer: {
+                    shadowColor: '#000',
+                    shadowOpacity: 0.4,
+                    shadowRadius: 10
+                },
+                mask: {},
+                main: {}
+            }}
+            drawerPosition={Drawer.positions.Right}
+            onDrawerOpen={() => { console.log('Drawer is opened'); }}
+            onDrawerClose={() => { console.log('Drawer is closed') }}
+            easingFunc={Easing.ease}
+        >
+
+            <SafeAreaView style={styles.container}>
+                <View style={{ flex: 1, flexDirection: 'row' }}>
+                    <View style={{ flex: 2, marginRight: 10 }}>
+                        <Image style={{
+                            backgroundColor: 'white', borderRadius: 100, marginLeft: 20, marginBottom: 5,
+                            marginTop: 5, width: 42, height: 5, flex: 2, resizeMode: 'cover', borderColor: indicatorOpponentColor, borderWidth: 2
+                        }}
+                            source={require('../../../assets/avatar_1.png')}>
                         </Image>
-                    </TouchableOpacity>
-                </View>
-            </View>
-
-
-         
-
-            <FlipCard
-                style={{flex:5}}
-                friction={6}
-                perspective={0}
-                flipHorizontal={true}
-                flipVertical={false}
-                flip={showOpponentsCard}
-                clickable={false}
-                onFlipEnd={(isFlipEnd) => { console.log('isFlipEnd', isFlipEnd) }}
-            >
-                {/* Face Side */}
-                <BackCard>
-                </BackCard>
-                {/* Back Side */}
-                <Card idxSelected={idxSelected} cardData={opponentCardData} cardResult={opponentCardResult}>
-                </Card> 
-            </FlipCard>
-
-            <Card idxSelected={idxSelected} cardsOptionClick={cardsOptionClick} cardData={cardData} cardResult={cardResult} >
-            </Card>
-
-
-
-           
-
-            <View style={{ flex: 1, flexDirection: 'row' }}>
-
-                <View style={{ flex: 2, marginRight: 10 }}>
-
+                    </View>
+                    <View style={{ flex: 8, flexDirection: 'column', justifyContent: 'space-around', padding: 5 }}>
+                        <Text style={{ color: '#FAEBFF', fontWeight: 'bold', fontSize: 18 }}>{opponentName}</Text>
+                        <Text style={{ color: '#FAEBFF', fontSize: 18 }}>{`${opponentCardCount} Cartas`}</Text>
+                    </View>
+                    <View style={{ flex: 2 }}>
+                        <TouchableOpacity onPress={ () =>{ drawerRef.current.openDrawer() }}>
+                            <Image style={{ marginRight: 5, marginTop: 12 }}
+                                source={require('../../../assets/menu_icon.png')}>
+                            </Image>
+                        </TouchableOpacity>
+                    </View>
                 </View>
 
-                <View style={{ flex: 8, flexDirection: 'column', justifyContent: 'flex-end', padding: 5, marginRight: 10 }}>
-                    <Text style={{ color: '#FAEBFF', fontWeight: 'bold', fontSize: 18, textAlign: 'right' }}>{name}</Text>
-                    <Text style={{ color: '#FAEBFF', fontSize: 18, textAlign: 'right' }}>{`${cardCount} Cartas`}</Text>
-                </View>
-                <View style={{ flex: 2 }}>
+                <FlipCard
+                    style={{ flex: 5 }}
+                    friction={6}
+                    perspective={0}
+                    flipHorizontal={true}
+                    flipVertical={false}
+                    flip={showOpponentsCard}
+                    clickable={false}>
+                    {/* Face Side */}
+                    <BackCard>
+                    </BackCard>
+                    {/* Back Side */}
+                    <Card idxSelected={idxSelected} cardData={opponentCardData} cardResult={opponentCardResult}>
+                    </Card>
+                </FlipCard>
 
-                    <Image style={{
-                        backgroundColor: 'white', borderRadius: 100, marginRight: 20, marginBottom: 5,
-                        marginTop: 5, width: 42, height: 5, flex: 2, resizeMode: 'cover', borderColor: indicatorColor, borderWidth: 2
-                    }}
-                        source={require('../../../assets/avatar_2.png')}>
-                    </Image>
-                </View>
-            </View>
+                <Card idxSelected={idxSelected} cardsOptionClick={cardsOptionClick} cardData={cardData} cardResult={cardResult} >
+                </Card>
 
-        </SafeAreaView>
+                <View style={{ flex: 1, flexDirection: 'row' }}>
+                    <View style={{ flex: 2, marginRight: 10 }}>
+                    </View>
+                    <View style={{ flex: 8, flexDirection: 'column', justifyContent: 'flex-end', padding: 5, marginRight: 10 }}>
+                        <Text style={{ color: '#FAEBFF', fontWeight: 'bold', fontSize: 18, textAlign: 'right' }}>{name}</Text>
+                        <Text style={{ color: '#FAEBFF', fontSize: 18, textAlign: 'right' }}>{`${cardCount} Cartas`}</Text>
+                    </View>
+                    <View style={{ flex: 2 }}>
+                        <Image style={{
+                            backgroundColor: 'white', borderRadius: 100, marginRight: 20, marginBottom: 5,
+                            marginTop: 5, width: 42, height: 5, flex: 2, resizeMode: 'cover', borderColor: indicatorColor, borderWidth: 2
+                        }}
+                            source={require('../../../assets/avatar_2.png')}>
+                        </Image>
+                    </View>
+                </View>
+            </SafeAreaView>
+
+        </Drawer>
+
 
     );
 }
-
 
 class CardData {
     constructor(countryName, population, area, hdi, safety_index, popDensity, flag, map, language, currency) {

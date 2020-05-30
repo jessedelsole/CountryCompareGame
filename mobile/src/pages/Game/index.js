@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef} from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, View, Text, SafeAreaView, Image, TouchableOpacity } from 'react-native';
 import Constants from 'expo-constants';
 import Card from './card';
@@ -10,8 +10,10 @@ import FlipCard from 'react-native-flip-card';
 import Drawer from 'react-native-drawer-menu';
 import { Easing } from 'react-native'; // Customize easing function (Optional)
 import { Feather } from '@expo/vector-icons';
+import Dialog from "react-native-dialog";
 
-export default function Game( props ) {
+
+export default function Game(props) {
 
 
     const navigation = useNavigation();
@@ -28,7 +30,9 @@ export default function Game( props ) {
     const [opponentCardResult, setOpponentCardResult] = useState(0);
     const [indicatorOpponentColor, setIndicatorOpponentColor] = useState('#707070');
     const [indicatorColor, setIndicatorColor] = useState('#ace589');
+    const [msgSairJgoVisible, setMsgSairJogoVisible]=useState(false);
     const drawerRef = useRef(null);
+
 
 
 
@@ -253,34 +257,44 @@ export default function Game( props ) {
 
     }
 
+    function handleSim(){
+        goBack();
+        setMsgSairJogoVisible(false);    
+    }
 
-    // prepare your drawer content
+    function handleNao(){
+        
+        setMsgSairJogoVisible(false);    
+
+    }
+
+    function msgDesejaSar(){
+
+        setMsgSairJogoVisible(true);
+    }
+
     var drawerContent = (
         <SafeAreaView style={{ backgroundColor: '#FAEBFF', flex: 1 }}>
-           
-           
-                <View style={{alignItems:'center' }}>
-                    <Text style={{ width: '100%', textAlign: 'center', fontWeight: 'bold', fontSize: 18, color: '#333D79' }}>Country Compare Game</Text>
-                    <Image style={{ width: 60, height: 120, resizeMode: 'contain' }} source={require('../../../assets/icon.png')}>
-                    </Image>
-
-                    <TouchableOpacity style={{
-                       height: 60, width: '100%', flexDirection: 'row', borderRadius: 0,
-                        justifyContent: 'center', alignItems: 'center'
-                    }}
-                        onPress={goBack}>
-
-                        <Feather name="arrow-left" size={16} color='#333D79' style={{ flex: 1, paddingLeft: 30 }}></Feather>
-                        <Text style={{ color: '#333D79', fontSize: 18, flex: 9, textAlign: 'left', paddingRight: 60 }}>Encerrar jogo</Text>
-                    </TouchableOpacity>
-                </View>
-            </SafeAreaView>);
+            <View style={{ alignItems: 'center' }}>
+                <Text style={{ width: '100%', textAlign: 'center', fontWeight: 'bold', fontSize: 18, color: '#333D79' }}>Country Compare Game</Text>
+                <Image style={{ width: 60, height: 120, resizeMode: 'contain' }} source={require('../../../assets/icon.png')}>
+                </Image>
+                <TouchableOpacity style={{
+                    height: 60, width: '100%', flexDirection: 'row', borderRadius: 0,
+                    justifyContent: 'center', alignItems: 'center'
+                }}
+                    onPress={msgDesejaSar}>
+                    <Feather name="arrow-left" size={16} color='#333D79' style={{ flex: 1, paddingLeft: 30 }}></Feather>
+                    <Text style={{ color: '#333D79', fontSize: 18, flex: 9, textAlign: 'left', paddingRight: 60 }}>Encerrar jogo</Text>
+                </TouchableOpacity>
+            </View>
+        </SafeAreaView>);
 
 
     return (
 
         <Drawer
-            ref={ drawerRef }
+            ref={drawerRef}
             style={styles.container}
             drawerWidth={300}
             drawerContent={drawerContent}
@@ -315,7 +329,7 @@ export default function Game( props ) {
                         <Text style={{ color: '#FAEBFF', fontSize: 18 }}>{`${opponentCardCount} Cartas`}</Text>
                     </View>
                     <View style={{ flex: 2 }}>
-                        <TouchableOpacity onPress={ () =>{ drawerRef.current.openDrawer() }}>
+                        <TouchableOpacity onPress={() => { drawerRef.current.openDrawer() }}>
                             <Image style={{ marginRight: 5, marginTop: 12 }}
                                 source={require('../../../assets/menu_icon.png')}>
                             </Image>
@@ -360,8 +374,15 @@ export default function Game( props ) {
                 </View>
             </SafeAreaView>
 
+            <Dialog.Container visible={msgSairJgoVisible}>
+                <Dialog.Title>Confirmação</Dialog.Title>
+                <Dialog.Description>
+                    Deseja mesmo sair desta partida?
+                </Dialog.Description>
+                <Dialog.Button label="Sim"onPress={handleSim} />
+                <Dialog.Button label="Não"onPress={handleNao} />
+            </Dialog.Container>
         </Drawer>
-
 
     );
 }

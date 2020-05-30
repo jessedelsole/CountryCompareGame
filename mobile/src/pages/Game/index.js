@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, View, Text, SafeAreaView, Image, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, SafeAreaView, Image, TouchableOpacity, BackHandler, Alert } from 'react-native';
 import Constants from 'expo-constants';
 import Card from './card';
 import BackCard from './backcard';
@@ -30,15 +30,29 @@ export default function Game(props) {
     const [opponentCardResult, setOpponentCardResult] = useState(0);
     const [indicatorOpponentColor, setIndicatorOpponentColor] = useState('#707070');
     const [indicatorColor, setIndicatorColor] = useState('#ace589');
-    const [msgSairJgoVisible, setMsgSairJogoVisible]=useState(false);
     const drawerRef = useRef(null);
-
-
 
 
     useEffect(() => {
 
         getRoundInfo();
+
+
+
+        const backAction = () => {
+            msgDesejaSar();
+            return true;
+        };
+
+        const backHandler = BackHandler.addEventListener(
+            "hardwareBackPress",
+            backAction
+        );
+
+        return () => backHandler.remove();
+
+
+
 
     }, []);
 
@@ -257,20 +271,12 @@ export default function Game(props) {
 
     }
 
-    function handleSim(){
-        goBack();
-        setMsgSairJogoVisible(false);    
-    }
-
-    function handleNao(){
-        
-        setMsgSairJogoVisible(false);    
-
-    }
-
-    function msgDesejaSar(){
-
-        setMsgSairJogoVisible(true);
+    function msgDesejaSar() {
+       
+        Alert.alert('Confirmação', 'Deseja mesmo encerrar esta partida?', [
+            { text: 'Não', onPress: () => null, style: 'cancel'},
+            { text: 'Sim', onPress: () => goBack() }
+        ]);
     }
 
     var drawerContent = (
@@ -373,17 +379,7 @@ export default function Game(props) {
                     </View>
                 </View>
             </SafeAreaView>
-
-            <Dialog.Container visible={msgSairJgoVisible}>
-                <Dialog.Title>Confirmação</Dialog.Title>
-                <Dialog.Description>
-                    Deseja mesmo sair desta partida?
-                </Dialog.Description>
-                <Dialog.Button label="Sim"onPress={handleSim} />
-                <Dialog.Button label="Não"onPress={handleNao} />
-            </Dialog.Container>
         </Drawer>
-
     );
 }
 

@@ -74,14 +74,14 @@ export default function Game() {
                 setCardData(new CardData(card.card_code, card.name, card.population, card.area, card.hdi,
                     card.safety_index, card.pop_density, card.language, card.currency));
             } else {
-                setCardData(new CardData(0, '', '', '', '', '', '','',''));
+                setCardData(new CardData(0, '', '', '', '', '', '', '', ''));
             }
 
             if (opponentCount > 0) {
                 setOpponentCardData(new CardData(opponentCard.card_code, opponentCard.name, opponentCard.population, opponentCard.area, opponentCard.hdi,
                     opponentCard.safety_index, opponentCard.pop_density, opponentCard.language, opponentCard.currency));
             } else {
-                setOpponentCardData(new CardData(0, '', '', '', '', '', '','',''));
+                setOpponentCardData(new CardData(0, '', '', '', '', '', '', '', ''));
             }
 
             setCardCount(count);
@@ -187,7 +187,8 @@ export default function Game() {
 
             const { idx_played, player_turn } = result.data;
 
-            global.turn = player_turn;
+            if (global.turn !=undefined) //undefined here means game aborted
+             global.turn = player_turn;
 
             _log('índice clicado = ' + idx_played);
 
@@ -214,16 +215,17 @@ export default function Game() {
 
             } else {
 
-                setTimeout(() => {
-                    checkIfOpponentHasPlayed()
-                }, 2000);
+                if (global.turn != undefined) {
+                    setTimeout(() => {
+                        checkIfOpponentHasPlayed()
+                    }, 2000);
+                }
             }
         });
     }
 
     function goBack() {
         global.turn = undefined;
-        global.gameId = 0;
         navigation.goBack();
     }
 
@@ -265,9 +267,9 @@ export default function Game() {
     }
 
     function msgDesejaSar() {
-       
+
         Alert.alert('Confirmação', 'Deseja mesmo encerrar esta partida?', [
-            { text: 'Não', onPress: () => null, style: 'cancel'},
+            { text: 'Não', onPress: () => null, style: 'cancel' },
             { text: 'Sim', onPress: () => goBack() }
         ]);
     }
@@ -275,7 +277,7 @@ export default function Game() {
     var drawerContent = (
         <SafeAreaView style={{ backgroundColor: '#FAEBFF', flex: 1 }}>
             <View style={{ alignItems: 'center' }}>
-                <Text style={{marginTop:20,  width: '100%', textAlign: 'center', fontWeight: 'bold', fontSize: 18, color: '#333D79' }}>Country Compare Game</Text>
+                <Text style={{ marginTop: 20, width: '100%', textAlign: 'center', fontWeight: 'bold', fontSize: 18, color: '#333D79' }}>Country Compare Game</Text>
                 <Image style={{ width: 60, height: 120, resizeMode: 'contain' }} source={require('../../../assets/icon.png')}>
                 </Image>
                 <TouchableOpacity style={{

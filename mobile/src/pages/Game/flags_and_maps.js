@@ -91,10 +91,7 @@ const flags_and_maps = {
         flag: require('./../../../assets/flags/8.png'),
         map: require('./../../../assets/maps/8.png')
     },
-    card_code8: {
-        flag: require('./../../../assets/flags/9.png'),
-        map: require('./../../../assets/maps/9.png')
-    },
+  
     card_code9: {
         flag: require('./../../../assets/flags/9.png'),
         map: require('./../../../assets/maps/9.png')

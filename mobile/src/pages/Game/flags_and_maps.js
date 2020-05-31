@@ -1,5 +1,9 @@
+import {  Image} from 'react-native';
+
 
 export default function getFlagAndMap(card_code) {
+    console.log('> getFLagAndMap ' + card_code);
+
 
     switch (card_code) {
 
@@ -51,8 +55,9 @@ export default function getFlagAndMap(card_code) {
 
 
 
-
 const flags_and_maps = {
+
+
 
     card_code1: {
         flag: require('./../../../assets/flags/1.png'),
@@ -87,6 +92,10 @@ const flags_and_maps = {
         map: require('./../../../assets/maps/8.png')
     },
     card_code8: {
+        flag: require('./../../../assets/flags/9.png'),
+        map: require('./../../../assets/maps/9.png')
+    },
+    card_code9: {
         flag: require('./../../../assets/flags/9.png'),
         map: require('./../../../assets/maps/9.png')
     },

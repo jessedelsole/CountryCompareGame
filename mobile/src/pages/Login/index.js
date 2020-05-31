@@ -52,12 +52,15 @@ export default function Login() {
     } else {
 
       global.timeOutCount++;
-      if (global.timeOutCount >= 10) {
+      if (global.timeOutCount >= 3) {
 
         loginButtonRef.current.reset();
         setCarregando(false);
         Alert.alert('Sem jogares online','No momento não há jogadores online. Tente convidar algum amigo para jogar também.');
         global.timeOutCount = 0;
+
+        api.post('abortGame', { gameId }).then(result => {console.log(result.data)});
+
       } else {
 
         console.log('chamando setTimeOut');

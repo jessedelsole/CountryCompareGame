@@ -23,9 +23,23 @@ module.exports = {
         
         const { gameId } = request.query;    
         return response.json(await _checkCardPlayed(gameId));  
+    },
+    async abortGame(request, response){
+        
+        const { gameId } = request.body;
+        return response.json( await _abortGame(gameId) );
     }
 }
 
+async function _abortGame(gameId){
+
+    console.log('_abortGame ' + gameId) ;
+ 
+    await connection('games').where({id:gameId}).delete();
+
+    return {sucess: true };
+
+}
 
 function showtime(){
     var d = new Date();

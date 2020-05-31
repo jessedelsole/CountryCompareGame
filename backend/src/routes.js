@@ -6,6 +6,7 @@ routes.post('/lookForOpponent', GameController.lookForOpponent);
 routes.get ('/getCard'        , GameController.getCard);
 routes.post('/cardPlayed'     , GameController.cardPlayed);
 routes.get('/checkCardPlayed' , GameController.checkCardPlayed);
+routes.post('/abortGame'      , GameController.abortGame);
 
 
 

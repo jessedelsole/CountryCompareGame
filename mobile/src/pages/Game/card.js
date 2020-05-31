@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, Image, TouchableOpacity, TouchableHightLight } 
 import SectionCard from './section_card';
 import 'intl';
 import 'intl/locale-data/jsonp/en';
+import getFlagAndMap from './flags_and_maps'
 
 
 
@@ -21,7 +22,7 @@ export default function Card(props) {
 
         <View style={{ flex: 1, flexDirection: 'column' }}>
           <View style={{ flex: 2, flexDirection: 'row' }} >
-            {cardData.flag ? <Image source={{ uri: cardData.flag }} style={{ flex: 2, resizeMode: 'stretch', marginRight: 6 }} ></Image> : null}
+            {cardData.card_code>0 ? <Image source={getFlagAndMap(cardData.card_code).flag} style={{ flex: 2, height: 35, resizeMode: 'stretch', marginRight: 6 }} ></Image> : null}
             <Text style={{flexWrap:'wrap', marginTop: 6, color: '#707070', fontWeight: 'bold', flex: 4 }}>{cardData.countryName}</Text>
           </View>
           <View style={{ flex: 1, marginTop: 3 }} >
@@ -32,7 +33,7 @@ export default function Card(props) {
           </View>
         </View>
         <View style={{ flex: 1 }}>
-          {cardData.map ? <Image source={{ uri: cardData.map }} style={{marginTop:-8, flex: 2, marginRight: 6 }} ></Image> : null}
+          {cardData.card_code>0 ? <Image source={getFlagAndMap(cardData.card_code).map} style={{height:100, marginLeft:10, width:150, marginTop:-8, flex: 2, marginRight: 6 }} ></Image> : null}
         
         </View>
       </View>

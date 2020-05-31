@@ -10,10 +10,8 @@ import FlipCard from 'react-native-flip-card';
 import Drawer from 'react-native-drawer-menu';
 import { Easing } from 'react-native'; // Customize easing function (Optional)
 import { Feather } from '@expo/vector-icons';
-import Dialog from "react-native-dialog";
 
-
-export default function Game(props) {
+export default function Game() {
 
 
     const navigation = useNavigation();
@@ -37,8 +35,6 @@ export default function Game(props) {
 
         getRoundInfo();
 
-
-
         const backAction = () => {
             msgDesejaSar();
             return true;
@@ -50,9 +46,6 @@ export default function Game(props) {
         );
 
         return () => backHandler.remove();
-
-
-
 
     }, []);
 
@@ -78,17 +71,17 @@ export default function Game(props) {
             }
 
             if (count > 0) {
-                setCardData(new CardData(card.name, card.population, card.area, card.hdi,
-                    card.safety_index, card.pop_density, card.url, card.map, card.language, card.currency));
+                setCardData(new CardData(card.card_code, card.name, card.population, card.area, card.hdi,
+                    card.safety_index, card.pop_density, card.language, card.currency));
             } else {
-                setCardData(new CardData('', '', '', '', '', '', ''));
+                setCardData(new CardData(0, '', '', '', '', '', '','',''));
             }
 
             if (opponentCount > 0) {
-                setOpponentCardData(new CardData(opponentCard.name, opponentCard.population, opponentCard.area, opponentCard.hdi,
-                    opponentCard.safety_index, opponentCard.pop_density, opponentCard.url, opponentCard.map, opponentCard.language, opponentCard.currency));
+                setOpponentCardData(new CardData(opponentCard.card_code, opponentCard.name, opponentCard.population, opponentCard.area, opponentCard.hdi,
+                    opponentCard.safety_index, opponentCard.pop_density, opponentCard.language, opponentCard.currency));
             } else {
-                setOpponentCardData(new CardData('', '', '', '', '', '', ''));
+                setOpponentCardData(new CardData(0, '', '', '', '', '', '','',''));
             }
 
             setCardCount(count);
@@ -282,7 +275,7 @@ export default function Game(props) {
     var drawerContent = (
         <SafeAreaView style={{ backgroundColor: '#FAEBFF', flex: 1 }}>
             <View style={{ alignItems: 'center' }}>
-                <Text style={{ width: '100%', textAlign: 'center', fontWeight: 'bold', fontSize: 18, color: '#333D79' }}>Country Compare Game</Text>
+                <Text style={{marginTop:20,  width: '100%', textAlign: 'center', fontWeight: 'bold', fontSize: 18, color: '#333D79' }}>Country Compare Game</Text>
                 <Image style={{ width: 60, height: 120, resizeMode: 'contain' }} source={require('../../../assets/icon.png')}>
                 </Image>
                 <TouchableOpacity style={{
@@ -346,7 +339,7 @@ export default function Game(props) {
                 <FlipCard
                     style={{ flex: 5 }}
                     friction={6}
-                    perspective={0}
+                    perspective={1000}
                     flipHorizontal={true}
                     flipVertical={false}
                     flip={showOpponentsCard}
@@ -384,15 +377,14 @@ export default function Game(props) {
 }
 
 class CardData {
-    constructor(countryName, population, area, hdi, safety_index, popDensity, flag, map, language, currency) {
+    constructor(card_code, countryName, population, area, hdi, safety_index, popDensity, language, currency) {
+        this.card_code = card_code;
         this.countryName = countryName;
         this.population = population;
         this.area = area;
         this.hdi = hdi;
         this.safety_index = safety_index;
         this.popDensity = popDensity;
-        this.flag = flag;
-        this.map = map;
         this.language = language;
         this.currency = currency;
     }

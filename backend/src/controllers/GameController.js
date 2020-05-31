@@ -204,8 +204,6 @@ async function _getCard(player, gameId) {
 
     opponentCount = opponentCardCount['count(*)'];
 
-   
-   
     if (game.player1 == player){
 
         await connection('games').where('id', gameId).update( {  status_player1 : 0 });
@@ -214,10 +212,6 @@ async function _getCard(player, gameId) {
         await connection('games').where('id', gameId).update( {  status_player2 : 0 });
     }
         
-
-
-
-
 
     return { card, opponentCard, count, opponentCount, player_turn, idx_played };
 }

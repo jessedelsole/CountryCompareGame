@@ -45,6 +45,8 @@ exports.seed = function(knex) {
         {card_code:38, name: 'Turquia',population:  75627000, area: 783562 , hdi:0.806,pop_density:96 , safety_index:56.29, language:'Turco',currency:'Lira turca'},        
         {card_code:39, name: 'Brunei', population:  411000 , area: 5000 , hdi:0.845, pop_density:64 , safety_index:71.25, language:'Malaio/Inglês',currency:'Dólar de Brunei'},        
         {card_code:40, name: 'Eritreia',population:  4954000 , area: 121320 , hdi:0.434, pop_density:37 , safety_index:72.24, language:'Árabe/Tigríneo/Inglês',currency:'Nakfa'},         
+        {card_code:41, name: 'Liechtenstein',population:  38000 , area: 160 , hdi:0.917, pop_density:215 , safety_index:96.64, language:'Alemão',currency:'Frano suiço'},         
+        {card_code:42, name: 'Butão',population:  831557 , area: 38000 , hdi:0.617, pop_density:19 , safety_index:64.98, language:'Butanês',currency:'Ngultrum'},         
 
         
 

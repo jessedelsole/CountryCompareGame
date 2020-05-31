@@ -47,6 +47,8 @@ export default function getFlagAndMap(card_code) {
         case 38: return flags_and_maps.card_code38;
         case 39: return flags_and_maps.card_code39;
         case 40: return flags_and_maps.card_code40;
+        case 41: return flags_and_maps.card_code41;
+        case 42: return flags_and_maps.card_code42;
         case 0 : return flags_and_maps.card_code1;
 
     }
@@ -219,6 +221,14 @@ const flags_and_maps = {
     card_code40: {
         flag: require('./../../../assets/flags/40.png'),
         map: require('./../../../assets/maps/40.png')
+    },
+    card_code41: {
+        flag: require('./../../../assets/flags/41.png'),
+        map: require('./../../../assets/maps/41.png')
+    },
+    card_code42: {
+        flag: require('./../../../assets/flags/42.png'),
+        map: require('./../../../assets/maps/42.png')
     },
 }
 

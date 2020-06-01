@@ -37,7 +37,12 @@ export default function Login() {
   function postLookForOpponent() {
 
     setCarregando(true);
-    api.post('lookForOpponent', { player: name, gameId }).then(result => trataResultadoPost(result));
+    api.post('lookForOpponent', { player: name, gameId }).then(result => trataResultadoPost(result))
+    .catch( error=> {
+        Alert.alert('Erro',`Ocorreu um erro : ${error}`); 
+        loginButtonRef.current.reset();
+        setCarregando(false);
+        }) ;
   }
 
   function trataResultadoPost(result) {

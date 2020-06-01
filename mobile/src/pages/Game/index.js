@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, View, Text, SafeAreaView, Image, TouchableOpacity, BackHandler, Alert } from 'react-native';
+import { StyleSheet, View, Text, SafeAreaView, Image, TouchableOpacity, BackHandler, Alert, Easing } from 'react-native';
 import Constants from 'expo-constants';
 import Card from './card';
 import BackCard from './backcard';
@@ -8,7 +8,6 @@ import api from '../../services/api';
 import Toast from 'react-native-tiny-toast';
 import FlipCard from 'react-native-flip-card';
 import Drawer from 'react-native-drawer-menu';
-import { Easing } from 'react-native'; // Customize easing function (Optional)
 import { Feather } from '@expo/vector-icons';
 
 export default function Game() {
@@ -28,6 +27,7 @@ export default function Game() {
     const [opponentCardResult, setOpponentCardResult] = useState(0);
     const [indicatorOpponentColor, setIndicatorOpponentColor] = useState('#707070');
     const [indicatorColor, setIndicatorColor] = useState('#ace589');
+    const [touchableClickable, setTouchableClickable] = useState(true);
     const drawerRef = useRef(null);
 
 
@@ -108,9 +108,10 @@ export default function Game() {
                         setIndicatorColor('#ace589');
                         setIndicatorOpponentColor('#707070');
                         toast(`Sua vez de jogar, ${name}! Escolha uma opção abaixo:`, 'rgba(144, 224, 169, 0.9)', 2500);
+                        setTouchableClickable(true);
 
                     } else {
-                        toast(`Aguarde enquanto ${opponentName} faz a jogada...`, 'rgba(239, 249, 164, 0.9)', 2500)
+                        toast(`Aguarde enquanto ${opponentName} faz a jogada...`, 'rgba(239, 249, 164, 0.9)', 2500);
                         setIndicatorColor('#707070');
                         setIndicatorOpponentColor('#ace589');
                         setTimeout(() => {
@@ -150,9 +151,12 @@ export default function Game() {
 
     const cardsOptionClick = (idxClicked, textClicked) => {
 
-        if (global.turn != name)
+        if (global.turn != name) {
+            toast(`É a vez de ${opponentName} jogar!`, 'rgba(239, 249, 164, 0.9)', 2500);
             return;
+        }
 
+        setTouchableClickable(false);
         setIdxSelected(idxClicked);
 
         toast(`Você escolheu ${textClicked}, revelando carta do adversário...`, 'rgba(232, 232, 232, 0.9)');
@@ -169,6 +173,10 @@ export default function Game() {
                     _log('other player not ready yet...');
                     setTimeout(() => cardsOptionClick(idxClicked, textClicked), 1000);
                 }
+            }).catch(error => {
+
+                Alert.alert('Erro', `Ocorreu um erro ${error} tente de novo `);
+                setTouchableClickable(false);
             });
     }
 
@@ -187,8 +195,8 @@ export default function Game() {
 
             const { idx_played, player_turn } = result.data;
 
-            if (global.turn !=undefined) //undefined here means game aborted
-             global.turn = player_turn;
+            if (global.turn != undefined) //undefined here means game aborted
+                global.turn = player_turn;
 
             _log('índice clicado = ' + idx_played);
 
@@ -350,11 +358,12 @@ export default function Game() {
                     <BackCard>
                     </BackCard>
                     {/* Back Side */}
-                    <Card idxSelected={idxSelected} cardData={opponentCardData} cardResult={opponentCardResult}>
+                    <Card idxSelected={idxSelected} cardData={opponentCardData} cardResult={opponentCardResult} touchableClickable={false}>
                     </Card>
                 </FlipCard>
 
-                <Card idxSelected={idxSelected} cardsOptionClick={cardsOptionClick} cardData={cardData} cardResult={cardResult} >
+                <Card idxSelected={idxSelected} cardsOptionClick={cardsOptionClick} cardData={cardData} cardResult={cardResult}
+                    touchableClickable={touchableClickable}>
                 </Card>
 
                 <View style={{ flex: 1, flexDirection: 'row' }}>

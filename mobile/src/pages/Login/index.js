@@ -1,8 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { StyleSheet, Text, Image, TouchableOpacity, TextInput, KeyboardAvoidingView, View, Dimensions, Alert } from 'react-native';
+import { StyleSheet, Text, Image, TextInput, KeyboardAvoidingView, View, Dimensions, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Constants from 'expo-constants';
-import { Feather } from '@expo/vector-icons';
 import api from '../../services/api';
 import Btn from 'react-native-micro-animated-button';
 
@@ -53,6 +52,7 @@ export default function Login() {
     if (result.data.return_status == 2) {
       loginButtonRef.current.reset();
       setCarregando(false);
+      global.timeOutCount = 0;
       navigation.navigate('Game', { name, gameId, opponentName });
     } else {
 

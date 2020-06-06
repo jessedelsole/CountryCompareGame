@@ -35,16 +35,8 @@ export default function Game() {
 
         getRoundInfo();
 
-        const backAction = () => {
-            msgDesejaSar();
-            return true;
-        };
-
-        const backHandler = BackHandler.addEventListener(
-            "hardwareBackPress",
-            backAction
-        );
-
+        const backAction = () => { msgDesejaSar(); return true; };
+        const backHandler = BackHandler.addEventListener("hardwareBackPress",backAction);
         return () => backHandler.remove();
 
     }, []);
@@ -118,6 +110,8 @@ export default function Game() {
                             checkIfOpponentHasPlayed()
                         }, 2000);
                     }
+        }).catch(  error => {
+            Alert.alert('Erro',`Ocorreu um erro : ${error}`); 
         });
     }
 
@@ -229,6 +223,8 @@ export default function Game() {
                     }, 2000);
                 }
             }
+        }).catch( (error) =>{
+            Alert.alert('Erro',`Ocorreu um erro : ${error}`); 
         });
     }
 
@@ -318,8 +314,6 @@ export default function Game() {
                 main: {}
             }}
             drawerPosition={Drawer.positions.Right}
-            onDrawerOpen={() => { console.log('Drawer is opened'); }}
-            onDrawerClose={() => { console.log('Drawer is closed') }}
             easingFunc={Easing.ease}
         >
 

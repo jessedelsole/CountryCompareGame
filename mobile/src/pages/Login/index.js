@@ -10,24 +10,26 @@ export default function Login() {
   const navigation = useNavigation();
   const [name, setName] = useState('');
   const [carregando, setCarregando] = useState(false);
-
+  const [waitingText, setWaitingText]= useState('');
   const loginButtonRef = useRef(null);
 
 
   useEffect(() => {
 
-    global.timeOutCount = 0;
+    global.timeOutLoginCount = 0;
 
   }, []);
 
   function onBtnClick() {
 
+    console.log('Login -> onBtnCLick');
     if (name == '') {
       Alert.alert('Erro', 'Por favor informe um nome!');
       loginButtonRef.current.reset();
       return;
     }
 
+    setWaitingText('Aguarde, procurando um oponente online...');
     postLookForOpponent(0);
   }
 
@@ -35,7 +37,7 @@ export default function Login() {
 
     setCarregando(true);
 
-    console.log(`post(LookForOpponent(${name}, ${gameId} [${global.timeOutCount}/15])`);
+    console.log(`post(LookForOpponent(${name}, ${gameId} [${global.timeOutLoginCount}/20])`);
     api.post('lookForOpponent', { player: name, gameId }).then(result => trataResultadoPost(result))
       .catch(error => {
         Alert.alert('Erro', `Ocorreu um erro : ${error}`);
@@ -54,24 +56,28 @@ export default function Login() {
 
       loginButtonRef.current.reset();
       setCarregando(false);
-      global.timeOutCount = 0;
+      global.timeOutLoginCount = 0;
       navigation.navigate('Game', { name, gameId:return_gameId, opponentName });
     
     } else {
 
-      global.timeOutCount++;
-      if (global.timeOutCount >= 15) {
+      global.timeOutLoginCount++;
+      
+      if (global.timeOutLoginCount==10){
+        setWaitingText('Ainda aguardando oponente....');
+      }
+      
+      if (global.timeOutLoginCount >= 20) {
 
         loginButtonRef.current.reset();
         setCarregando(false);
         Alert.alert('Sem jogares online', 'No momento não há jogadores online. Tente convidar algum amigo para jogar também.');
-        global.timeOutCount = 0;
+        global.timeOutLoginCount = 0;
 
         api.post('abortGame', { gameId:return_gameId }).then(result => { console.log(result.data) });
 
       } else {
-
-        console.log('chamando setTimeOut');
+       
         setTimeout( () => postLookForOpponent( return_gameId ), 2000);
       }
     }
@@ -98,7 +104,7 @@ export default function Login() {
         </TextInput>
       </View>
 
-      {carregando ? <Text style={{ width: '100%', textAlign: 'center', color: '#333D79', fontStyle: 'italic' }}>Aguarde, procurando um oponente online...</Text> : null}
+      {carregando ? <Text style={{ width: '100%', textAlign: 'center', color: '#333D79', fontStyle: 'italic' }}>{waitingText}</Text> : null}
 
 
 

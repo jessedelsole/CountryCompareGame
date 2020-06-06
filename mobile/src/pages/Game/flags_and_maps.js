@@ -2,8 +2,6 @@ import {  Image} from 'react-native';
 
 
 export default function getFlagAndMap(card_code) {
-    console.log('> getFLagAndMap ' + card_code);
-
 
     switch (card_code) {
 

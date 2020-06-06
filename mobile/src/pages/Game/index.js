@@ -33,10 +33,14 @@ export default function Game() {
 
     useEffect(() => {
 
+
+        global.timeOutCheckIfOpponentHasPlayed = 0;
+        global.secondsOnYourTurn = 0;
+
         getRoundInfo();
 
         const backAction = () => { msgDesejaSar(); return true; };
-        const backHandler = BackHandler.addEventListener("hardwareBackPress",backAction);
+        const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction);
         return () => backHandler.remove();
 
     }, []);
@@ -101,6 +105,7 @@ export default function Game() {
                         setIndicatorOpponentColor('#707070');
                         toast(`Sua vez de jogar, ${name}! Escolha uma opção abaixo:`, 'rgba(144, 224, 169, 0.9)', 2500);
                         setTouchableClickable(true);
+                        countSecondsOnYourTurn(true);
 
                     } else {
                         toast(`Aguarde enquanto ${opponentName} faz a jogada...`, 'rgba(239, 249, 164, 0.9)', 2500);
@@ -110,11 +115,45 @@ export default function Game() {
                             checkIfOpponentHasPlayed()
                         }, 2000);
                     }
-        }).catch(  error => {
-            Alert.alert('Erro',`Ocorreu um erro : ${error}`); 
+        }).catch(error => {
+            Alert.alert('Erro', `Ocorreu um erro : ${error}`);
         });
     }
 
+
+    function countSecondsOnYourTurn(initialCall) {
+
+        if (global.turn == undefined) {
+            return
+        }
+
+        _log(`coundSecondsOnYourTurn... ${global.secondsOnYourTurn}`);
+
+        if (global.secondsOnYourTurn==30){
+            global.secondsOnYourTurn=0 ;
+            Alert.alert('Confirmação', `${name}, ainda quer continuar jogando?`, [
+                { text: 'Não', onPress: () => goBack(), style: 'cancel' },
+                { text: 'Sim', onPress: () => countSecondsOnYourTurn(true)}
+            ]);
+            return;
+        }
+        
+
+        if (global.secondsOnYourTurn % 10 == 0 ) {
+            toast(`É sua vez de jogar, ${name}... Escolha uma opção abaixo!`, 'rgba(144, 224, 169, 0.9)', 2500);
+        }
+
+        if (initialCall || (!initialCall && global.secondsOnYourTurn > 0)) {
+            global.secondsOnYourTurn++;
+            setTimeout(() => {
+                countSecondsOnYourTurn(false);
+               
+
+            }, 2000);
+        }
+
+
+    }
 
     function showWinner(winner) {
 
@@ -150,6 +189,8 @@ export default function Game() {
             return;
         }
 
+        global.secondsOnYourTurn = 0;
+
         setTouchableClickable(false);
         setIdxSelected(idxClicked);
 
@@ -183,7 +224,27 @@ export default function Game() {
 
     function checkIfOpponentHasPlayed() {
 
-        _log('checkIfOpponentHasPlayed...');
+        _log(`checkIfOpponentHasPlayed${gameId}[${global.timeOutCheckIfOpponentHasPlayed}/30]`);
+
+        global.timeOutCheckIfOpponentHasPlayed++;
+
+
+        if (global.timeOutCheckIfOpponentHasPlayed == 10 ||
+            global.timeOutCheckIfOpponentHasPlayed == 20) {
+            toast(`${opponentName} ainda está pensando..., aguarde`, 'rgba(239, 249, 164, 0.9)', 2500);
+        }
+
+        if (global.timeOutCheckIfOpponentHasPlayed == 30) {
+
+            global.timeOutCheckIfOpponentHasPlayed = 0;
+
+            Alert.alert('Confirmação', `${opponentName} está demorando muito para jogar.\nDeseja continuar aguardando?`, [
+                { text: 'Não', onPress: () => goBack(), style: 'cancel' },
+                { text: 'Sim', onPress: () => checkIfOpponentHasPlayed() }
+            ]);
+            return;
+        }
+
 
         api.get('checkCardPlayed', { params: { gameId } }).then((result) => {
 
@@ -195,6 +256,10 @@ export default function Game() {
             _log('índice clicado = ' + idx_played);
 
             if (idx_played > 0) {
+
+                //opponent has played 
+
+                global.timeOutCheckIfOpponentHasPlayed = 0;
 
                 setIdxSelected(idx_played);
 
@@ -217,20 +282,26 @@ export default function Game() {
 
             } else {
 
+                //opponent has not played yet
+
                 if (global.turn != undefined) {
                     setTimeout(() => {
                         checkIfOpponentHasPlayed()
                     }, 2000);
                 }
             }
-        }).catch( (error) =>{
-            Alert.alert('Erro',`Ocorreu um erro : ${error}`); 
+        }).catch((error) => {
+            Alert.alert('Erro', `Ocorreu um erro : ${error}`);
         });
     }
 
     function goBack() {
-        global.turn = undefined;
-        navigation.goBack();
+        try{
+            global.turn = undefined;
+            navigation.goBack();
+        }catch( err){
+
+        }
     }
 
     function backToMainScreen() {

@@ -1,5 +1,3 @@
-import {  Image} from 'react-native';
-
 
 export default function getFlagAndMap(card_code) {
 
@@ -47,7 +45,15 @@ export default function getFlagAndMap(card_code) {
         case 40: return flags_and_maps.card_code40;
         case 41: return flags_and_maps.card_code41;
         case 42: return flags_and_maps.card_code42;
-        case 0 : return flags_and_maps.card_code1;
+        case 43: return flags_and_maps.card_code43;
+        case 44: return flags_and_maps.card_code44;
+        case 45: return flags_and_maps.card_code45;
+        case 46: return flags_and_maps.card_code46;
+        case 47: return flags_and_maps.card_code47;
+        case 48: return flags_and_maps.card_code48;
+        case 49: return flags_and_maps.card_code49;
+        case 50: return flags_and_maps.card_code50;
+        case 0: return flags_and_maps.card_code1;
 
     }
 
@@ -91,7 +97,7 @@ const flags_and_maps = {
         flag: require('./../../../assets/flags/8.png'),
         map: require('./../../../assets/maps/8.png')
     },
-  
+
     card_code9: {
         flag: require('./../../../assets/flags/9.png'),
         map: require('./../../../assets/maps/9.png')
@@ -228,5 +234,39 @@ const flags_and_maps = {
         flag: require('./../../../assets/flags/42.png'),
         map: require('./../../../assets/maps/42.png')
     },
+    card_code43: {
+        flag: require('./../../../assets/flags/43.png'),
+        map: require('./../../../assets/maps/43.png')
+    },
+    card_code44: {
+        flag: require('./../../../assets/flags/44.png'),
+        map: require('./../../../assets/maps/44.png')
+    },
+    card_code45: {
+        flag: require('./../../../assets/flags/45.png'),
+        map: require('./../../../assets/maps/45.png')
+    },
+    card_code46: {
+        flag: require('./../../../assets/flags/46.png'),
+        map: require('./../../../assets/maps/46.png')
+    },
+    card_code47: {
+        flag: require('./../../../assets/flags/47.png'),
+        map: require('./../../../assets/maps/47.png')
+    },
+    card_code48: {
+        flag: require('./../../../assets/flags/48.png'),
+        map: require('./../../../assets/maps/48.png')
+    },
+    card_code49: {
+        flag: require('./../../../assets/flags/49.png'),
+        map: require('./../../../assets/maps/49.png')
+    },
+    card_code50: {
+        flag: require('./../../../assets/flags/50.png'),
+        map: require('./../../../assets/maps/50.png')
+    }
+
+
 }
 

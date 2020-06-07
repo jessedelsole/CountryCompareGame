@@ -127,27 +127,28 @@ export default function Game() {
             return
         }
 
-        _log(`coundSecondsOnYourTurn... ${global.secondsOnYourTurn}`);
+        _log(`countSecondsOnYourTurn... ${global.secondsOnYourTurn}, global.turn = ${global.turn}`);
 
-        if (global.secondsOnYourTurn==30){
-            global.secondsOnYourTurn=0 ;
+        if (global.secondsOnYourTurn == 30) {
+            global.secondsOnYourTurn = 0;
             Alert.alert('Confirmação', `${name}, ainda quer continuar jogando?`, [
                 { text: 'Não', onPress: () => goBack(), style: 'cancel' },
-                { text: 'Sim', onPress: () => countSecondsOnYourTurn(true)}
+                { text: 'Sim', onPress: () => countSecondsOnYourTurn(true) }
             ]);
             return;
         }
-        
 
-        if (global.secondsOnYourTurn % 10 == 0 ) {
-            toast(`É sua vez de jogar, ${name}... Escolha uma opção abaixo!`, 'rgba(144, 224, 169, 0.9)', 2500);
-        }
 
         if (initialCall || (!initialCall && global.secondsOnYourTurn > 0)) {
+
+            if (global.secondsOnYourTurn>0 && global.secondsOnYourTurn % 10 == 0) {
+                toast(`É sua vez de jogar, ${name}... Escolha uma opção abaixo!`, 'rgba(144, 224, 169, 0.9)', 2500);
+            }
+
             global.secondsOnYourTurn++;
             setTimeout(() => {
                 countSecondsOnYourTurn(false);
-               
+
 
             }, 2000);
         }
@@ -296,10 +297,13 @@ export default function Game() {
     }
 
     function goBack() {
-        try{
+        try {
             global.turn = undefined;
             navigation.goBack();
-        }catch( err){
+            global.timeOutCheckIfOpponentHasPlayed=0;
+            global.secondsOnYourTurn=0;
+
+        } catch (err) {
 
         }
     }
@@ -313,6 +317,8 @@ export default function Game() {
 
 
     function toast(msg, color, duration = 2000, img = null, mask = false, maskColor = null) {
+
+        _log('toast:' + msg);
 
         Toast.show(msg, {
             position: Toast.position.CENTER,

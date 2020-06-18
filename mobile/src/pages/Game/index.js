@@ -141,7 +141,7 @@ export default function Game() {
 
         if (initialCall || (!initialCall && global.secondsOnYourTurn > 0)) {
 
-            if (global.secondsOnYourTurn>0 && global.secondsOnYourTurn % 10 == 0) {
+            if (global.secondsOnYourTurn > 0 && global.secondsOnYourTurn % 10 == 0) {
                 toast(`É sua vez de jogar, ${name}... Escolha uma opção abaixo!`, 'rgba(144, 224, 169, 0.9)', 2500);
             }
 
@@ -211,8 +211,20 @@ export default function Game() {
                 }
             }).catch(error => {
 
-                Alert.alert('Erro', `Ocorreu um erro ${error} tente de novo `);
-                setTouchableClickable(false);
+
+                _log(error.reponse);
+
+                if (error.response && error.response.status == 410) {
+
+                    Alert.alert('Erro', 'Seu adversário saiu do jogo', [
+                        { text: 'Ok', onPress: () => goBack() }
+                    ]);
+
+                } else {
+
+                    Alert.alert('Erro', `Ocorreu um erro ${error} tente de novo `);
+                    setTouchableClickable(true);
+                }
             });
     }
 
@@ -246,6 +258,10 @@ export default function Game() {
             return;
         }
 
+
+        if (global.turn == undefined) {
+            return;
+        }
 
         api.get('checkCardPlayed', { params: { gameId } }).then((result) => {
 
@@ -283,6 +299,7 @@ export default function Game() {
 
             } else {
 
+
                 //opponent has not played yet
 
                 if (global.turn != undefined) {
@@ -291,8 +308,24 @@ export default function Game() {
                     }, 2000);
                 }
             }
+
         }).catch((error) => {
-            Alert.alert('Erro', `Ocorreu um erro : ${error}`);
+
+
+            _log(error.reponse);
+
+            if (error.response && error.response.status == 410) {
+
+                Alert.alert('Erro', 'Seu adversário saiu do jogo', [
+                    { text: 'Ok', onPress: () => goBack() }
+                ]);
+
+            } else {
+
+                Alert.alert('Erro', `Ocorreu um erro : ${error}`);
+            }
+
+
         });
     }
 
@@ -300,8 +333,11 @@ export default function Game() {
         try {
             global.turn = undefined;
             navigation.goBack();
-            global.timeOutCheckIfOpponentHasPlayed=0;
-            global.secondsOnYourTurn=0;
+            global.timeOutCheckIfOpponentHasPlayed = 0;
+            global.secondsOnYourTurn = 0;
+
+            //delete game when users go back to login screen
+            api.post('abortGame', { gameId }).then(result => { console.log(result.data) });
 
         } catch (err) {
 
@@ -358,7 +394,7 @@ export default function Game() {
     var drawerContent = (
         <SafeAreaView style={{ backgroundColor: '#FAEBFF', flex: 1 }}>
             <View style={{ alignItems: 'center' }}>
-                <Text style={{ marginTop: 20, width: '100%', textAlign: 'center', fontWeight: 'bold', fontSize: 18, color: '#333D79' }}>Country Compare Game</Text>
+                <Text style={{ marginTop: 18, width: '100%', textAlign: 'center', fontWeight: 'bold', fontSize: 18, color: '#333D79' }}>Country Comparison Game</Text>
                 <Image style={{ width: 60, height: 120, resizeMode: 'contain' }} source={require('../../../assets/icon.png')}>
                 </Image>
                 <TouchableOpacity style={{

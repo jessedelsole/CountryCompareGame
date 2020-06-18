@@ -87,7 +87,7 @@ export default function Login() {
   return (
     <KeyboardAvoidingView behavior='height' style={styles.container}>
 
-      <Text style={{ width: '100%', textAlign: 'center', fontWeight: 'bold', fontSize: 28, color: '#333D79' }}>Country Compare Game</Text>
+      <Text style={{ width: '100%', textAlign: 'center', fontWeight: 'bold', fontSize: 25, color: '#333D79' }}>Country Comparison Game</Text>
       <Image style={{ width: '100%', height: 120, resizeMode: 'contain' }} source={require('../../../assets/icon.png')}>
       </Image>
 

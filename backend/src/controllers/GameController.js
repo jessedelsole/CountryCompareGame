@@ -57,9 +57,13 @@ async function _checkCardPlayed(gameId){
 
     const {idx_played, player_turn} = game;
 
+    _log(`idx played = ${idx_played}`);
+
+    _log('updating idx_played to 0');
+
     await connection('games').where({id:gameId}).update({idx_played:0} );
 
-    _log('< checkCardPlayed, idx_played= '+ idx_played+', playerTurn='+player_turn);
+    _log('< checkCardPlayed, playerTurn='+player_turn);
 
     return { idx_played, player_turn };
 
@@ -162,6 +166,8 @@ async function _cardPlayed(gameId, idx_played, player) {
     //(moves the queue of card's, second will become first, and so forth. lets it prepared for next round)
     await connection('cards_game').where({ game_id: gameId }).decrement('seq', 1);
 
+   
+    _log(`update idx_played = ${idx_played}`)
     //defines who should play next, and let the other player know which option was selected
     await connection('games').where({ id: gameId }).update({ player_turn: roundWinner, idx_played });
 

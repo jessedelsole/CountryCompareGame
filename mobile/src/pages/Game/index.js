@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, View, Text, SafeAreaView, Image, TouchableOpacity, BackHandler, Alert, Easing } from 'react-native';
+import { StyleSheet, View, Text, SafeAreaView, Image, TouchableOpacity, BackHandler, Alert, Easing, TouchableHighlight, Animated, Button } from 'react-native';
 import Constants from 'expo-constants';
 import Card from './card';
 import BackCard from './backcard';
@@ -28,14 +28,25 @@ export default function Game() {
     const [indicatorOpponentColor, setIndicatorOpponentColor] = useState('#707070');
     const [indicatorColor, setIndicatorColor] = useState('#ace589');
     const [touchableClickable, setTouchableClickable] = useState(true);
-    const drawerRef = useRef(null);
+    const [startValueCardX, setStartValueCardX] = useState(new Animated.Value(0));
+    const [startValueCardY, setStartValueCardY] = useState(new Animated.Value(0));
+    const [startValueOpponentCardX, setStartValueOpponentCardX] = useState(new Animated.Value(0));
+    const [startValueOpponentCardY, setStartValueOpponentCardY] = useState(new Animated.Value(0));
+    const [cardsVisible, setCardsVisible] = useState(false);
 
+
+    const drawerRef = useRef(null);
 
     useEffect(() => {
 
+        _log('*** use Effect *** ');
 
+        global.count = 0;
         global.timeOutCheckIfOpponentHasPlayed = 0;
         global.secondsOnYourTurn = 0;
+
+        _log('settubg efeitoInicial = true');
+        global.efeitoInicial = true;
 
         getRoundInfo();
 
@@ -45,6 +56,144 @@ export default function Game() {
 
     }, []);
 
+
+    function Animacoes(tipo, toastMsg) {
+
+
+        setTimeout(() => {
+
+            const efeito1_abaixa =
+                Animated.stagger(250, [
+                    Animated.timing(
+                        startValueCardY,
+                        {
+                            toValue: 700,
+                            duration: 850,
+                            useNativeDriver: true
+                        }
+                    ),
+                    Animated.timing(
+                        startValueOpponentCardY,
+                        {
+                            toValue: 700,
+                            duration: 850,
+                            useNativeDriver: true
+                        }
+                    )
+                ]);
+
+
+            const efeito1_desliza_acima =
+                Animated.stagger(250, [
+
+                    Animated.timing(
+                        startValueOpponentCardY,
+                        {
+                            toValue: -700,
+                            duration: 850,
+                            useNativeDriver: true
+                        }
+                    ),
+                    Animated.timing(
+                        startValueCardY,
+                        {
+                            toValue: -700,
+                            duration: 850,
+                            useNativeDriver: true
+                        }
+                    )
+                ]);
+
+            const efeito2_voltaProLado =
+
+                Animated.parallel([
+                    Animated.timing(
+                        startValueCardY,
+                        {
+                            toValue: 0,
+                            duration: 0,
+                            useNativeDriver: true
+                        }
+                    ),
+                    Animated.timing(
+                        startValueOpponentCardY,
+                        {
+                            toValue: 0,
+                            duration: 0,
+                            useNativeDriver: true
+                        }
+                    ),
+                    Animated.timing(
+                        startValueCardX,
+                        {
+                            toValue: -500,
+                            duration: 0,
+                            useNativeDriver: true
+                        }
+                    ),
+                    Animated.timing(
+                        startValueOpponentCardX,
+                        {
+                            toValue: -500,
+                            duration: 0,
+                            useNativeDriver: true
+                        }
+                    ),
+
+                ]);
+
+
+            const efeito3_desliza_direita =
+                Animated.stagger(250, [
+
+
+                    Animated.timing(
+                        startValueOpponentCardX,
+                        {
+                            toValue: 0,
+                            duration: 500,
+                            useNativeDriver: true
+                        }
+                    ),
+                    Animated.timing(
+                        startValueCardX,
+                        {
+                            toValue: 0,
+                            duration: 500,
+                            useNativeDriver: true
+                        }
+                    )
+                ]);
+
+
+
+            let efeito1;
+
+            if (tipo == 1) //winner
+                efeito1 = efeito1_abaixa; else
+                if (tipo == 2) //looser
+                    efeito1 = efeito1_desliza_acima;
+
+            if (tipo == 0) {//initial effect
+
+                efeito2_voltaProLado.start(() => {
+                    setCardsVisible(true);
+                    efeito3_desliza_direita.start( ()=>{ if (toastMsg) toastMsg(); }  );
+                });
+
+            } else {
+
+                Animated.sequence([
+
+                    efeito1,
+                    efeito2_voltaProLado,
+                    efeito3_desliza_direita
+
+                ]).start(() => { if (toastMsg) toastMsg();  });
+
+            }
+        }, 100);
+    }
 
     function getRoundInfo() {
 
@@ -103,20 +252,39 @@ export default function Game() {
 
                         setIndicatorColor('#ace589');
                         setIndicatorOpponentColor('#707070');
-                        toast(`Sua vez de jogar, ${name}! Escolha uma opção abaixo:`, 'rgba(144, 224, 169, 0.9)', 2500);
+                        
                         setTouchableClickable(true);
                         countSecondsOnYourTurn(true);
 
+                        if (global.efeitoInicial) {
+                            _log('efeito inicial  = true');
+                            Animacoes(0, ()=>{toast(`Você começa jogando, ${name}! Escolha uma opção abaixo:`, 'rgba(144, 224, 169, 0.9)', 2500); });
+                            global.efeitoInicial = false;
+                        } else {
+                            Animacoes(1, ()=>{toast(`Sua vez de jogar, ${name}! Escolha uma opção abaixo:`, 'rgba(144, 224, 169, 0.9)', 2500);} );
+                            _log('efeito inicial  = false');
+                        }
+
                     } else {
-                        toast(`Aguarde enquanto ${opponentName} faz a jogada...`, 'rgba(239, 249, 164, 0.9)', 2500);
+                        
                         setIndicatorColor('#707070');
                         setIndicatorOpponentColor('#ace589');
                         setTimeout(() => {
                             checkIfOpponentHasPlayed()
                         }, 2000);
+
+
+                        if (global.efeitoInicial) {
+                            _log('efeito inicial  = true');
+                            Animacoes(0, ()=>{ toast(` ${opponentName} começa jogando. Aguarde a jogada do seu oponente...`, 'rgba(239, 249, 164, 0.9)', 2500); });
+                            global.efeitoInicial = false;
+                        } else {
+                            Animacoes(2, ()=>{ toast(`Aguarde enquanto ${opponentName} faz a jogada...`, 'rgba(239, 249, 164, 0.9)', 2500); });
+                            _log('efeito inicial  = false');
+                        }
                     }
         }).catch(error => {
-            Alert.alert('Erro', `Ocorreu um erro : ${error}`);
+            Alert.alert('Ops...', `Ocorreu um erro : ${error}`);
         });
     }
 
@@ -152,9 +320,9 @@ export default function Game() {
 
             }, 2000);
         }
-
-
     }
+
+
 
     function showWinner(winner) {
 
@@ -171,9 +339,16 @@ export default function Game() {
             toast('Você perdeu essa rodada...', 'rgba(251, 86, 86, 0.9)');
             setCardResult(2);
             setOpponentCardResult(1);
+
+
         }
+
+
         setTimeout(() => getRoundInfo(), 3000);
     }
+
+
+
 
 
     function afterCallApiCard(roundWinner) {
@@ -216,14 +391,15 @@ export default function Game() {
 
                 if (error.response && error.response.status == 410) {
 
-                    Alert.alert('Erro', 'Seu adversário saiu do jogo', [
+                    Alert.alert('Ops...', 'Seu adversário saiu do jogo', [
                         { text: 'Ok', onPress: () => goBack() }
                     ]);
 
                 } else {
 
-                    Alert.alert('Erro', `Ocorreu um erro ${error} tente de novo `);
+                    Alert.alert('Ops...', `Ocorreu um erro ${error} tente de novo `);
                     setTouchableClickable(true);
+                    setIdxSelected(0);
                 }
             });
     }
@@ -304,7 +480,7 @@ export default function Game() {
 
                 if (global.turn != undefined) {
                     setTimeout(() => {
-                        checkIfOpponentHasPlayed()
+                        checkIfOpponentHasPlayed();
                     }, 2000);
                 }
             }
@@ -316,13 +492,18 @@ export default function Game() {
 
             if (error.response && error.response.status == 410) {
 
-                Alert.alert('Erro', 'Seu adversário saiu do jogo', [
+                Alert.alert('Ops...', 'Seu adversário saiu do jogo', [
                     { text: 'Ok', onPress: () => goBack() }
                 ]);
 
             } else {
 
-                Alert.alert('Erro', `Ocorreu um erro : ${error}`);
+
+                Alert.alert('Ops...', `Ocorreu um erro : ${error}`, [
+                    { text: 'Tentar novamente', onPress: () => checkIfOpponentHasPlayed() }
+                ]);
+
+
             }
 
 
@@ -330,18 +511,15 @@ export default function Game() {
     }
 
     function goBack() {
-        try {
-            global.turn = undefined;
-            navigation.goBack();
-            global.timeOutCheckIfOpponentHasPlayed = 0;
-            global.secondsOnYourTurn = 0;
 
-            //delete game when users go back to login screen
-            api.post('abortGame', { gameId }).then(result => { console.log(result.data) });
+        global.turn = undefined;
+        navigation.goBack();
+        global.timeOutCheckIfOpponentHasPlayed = 0;
+        global.secondsOnYourTurn = 0;
 
-        } catch (err) {
+        //delete game when users go back to login screen
+        api.post('abortGame', { gameId }).then(result => { console.log(result.status) });
 
-        }
     }
 
     function backToMainScreen() {
@@ -391,6 +569,7 @@ export default function Game() {
         ]);
     }
 
+
     var drawerContent = (
         <SafeAreaView style={{ backgroundColor: '#FAEBFF', flex: 1 }}>
             <View style={{ alignItems: 'center' }}>
@@ -427,8 +606,7 @@ export default function Game() {
                 main: {}
             }}
             drawerPosition={Drawer.positions.Right}
-            easingFunc={Easing.ease}
-        >
+            easingFunc={Easing.ease}>
 
             <SafeAreaView style={styles.container}>
                 <View style={{ flex: 1, flexDirection: 'row' }}>
@@ -453,27 +631,43 @@ export default function Game() {
                     </View>
                 </View>
 
-                <FlipCard
-                    style={{ flex: 5 }}
-                    friction={6}
-                    perspective={1000}
-                    flipHorizontal={true}
-                    flipVertical={false}
-                    flip={showOpponentsCard}
-                    clickable={false}>
-                    {/* Face Side */}
-                    <BackCard>
-                    </BackCard>
-                    {/* Back Side */}
-                    <Card idxSelected={idxSelected} cardData={opponentCardData} cardResult={opponentCardResult} touchableClickable={false}>
-                    </Card>
-                </FlipCard>
+                {cardsVisible ?
+                    <Animated.View style={[{ flex: 5, marginLeft: 10, marginRight: 10, marginBottom: 4 },
+                    { transform: [{ translateY: startValueOpponentCardY }, { translateX: startValueOpponentCardX }] }]}>
+                        <FlipCard
+                            style={{ flex: 1 }}
+                            friction={6}
+                            perspective={1000}
+                            flipHorizontal={true}
+                            flipVertical={false}
+                            flip={showOpponentsCard}
+                            clickable={false}>
+                            {/* Face Side */}
+                            <BackCard styles={{}}>
+                            </BackCard>
+                            {/* Back Side */}
+                            <Card idxSelected={idxSelected} cardData={opponentCardData} cardResult={opponentCardResult} touchableClickable={false}>
+                            </Card>
+                        </FlipCard>
+                    </Animated.View> : null}
 
-                <Card idxSelected={idxSelected} cardsOptionClick={cardsOptionClick} cardData={cardData} cardResult={cardResult}
-                    touchableClickable={touchableClickable}>
-                </Card>
 
-                <View style={{ flex: 1, flexDirection: 'row' }}>
+                {cardsVisible ?
+                    <Animated.View style={[{ flex: 5, marginLeft: 10, marginRight: 10, marginBottom: 4 },
+                    { transform: [{ translateY: startValueCardY }, { translateX: startValueCardX }] }]}>
+                        <Card
+                            idxSelected={idxSelected} cardsOptionClick={cardsOptionClick} cardData={cardData} cardResult={cardResult}
+                            touchableClickable={touchableClickable}>
+                        </Card>
+                    </Animated.View> : null
+                }
+
+                {cardsVisible ? null : <View style={{ flex: 10 }}></View>}
+
+
+                <View
+
+                    style={{ flex: 1, flexDirection: 'row' }}>
                     <View style={{ flex: 2, marginRight: 10 }}>
                     </View>
                     <View style={{ flex: 8, flexDirection: 'column', justifyContent: 'flex-end', padding: 5, marginRight: 10 }}>

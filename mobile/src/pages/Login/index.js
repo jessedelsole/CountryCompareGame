@@ -13,6 +13,8 @@ export default function Login() {
   const [carregando, setCarregando] = useState(false);
   const [waitingText, setWaitingText]= useState('');
   const loginButtonRef = useRef(null);
+  const inputRef=useRef(null);
+  const viewRef=useRef(null);
 
 
   useEffect(() => {
@@ -22,6 +24,16 @@ export default function Login() {
   }, []);
 
   function onBtnClick() {
+
+    viewRef.current.measure( (fx, fy, width, height, px, py) => {
+
+      console.log('Component width is: ' + width)
+      console.log('Component height is: ' + height)
+      console.log('X offset to frame: ' + fx)
+      console.log('Y offset to frame: ' + fy)
+      console.log('X offset to page: ' + px)
+      console.log('Y offset to page: ' + py)
+  });
 
     console.log('Login -> onBtnCLick');
     if (name == '') {
@@ -91,11 +103,16 @@ export default function Login() {
       <Image style={{ width: '100%', height: 120, resizeMode: 'contain' }} source={require('../../../assets/icon.png')}>
       </Image>
 
-      <View style={{ width: '100%' }}>
+      <View style={{ width: '100%' }}
+        ref={viewRef}
+      
+      >
         <Text style={{ marginBottom: 10, color: '#333D79', fontSize: 20 }}>Digite seu nome para começar: </Text>
 
 
-        <TextInput style={{ width: '100%' }}
+        <TextInput 
+          ref={inputRef}
+          style={{ width: '100%' }}
           editable={!carregando}
           style={{
             width: '100%', height: 60, borderColor: '#707070', borderWidth: 1, backgroundColor: 'white',

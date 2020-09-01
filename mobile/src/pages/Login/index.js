@@ -11,10 +11,10 @@ export default function Login() {
   const navigation = useNavigation();
   const [name, setName] = useState('');
   const [carregando, setCarregando] = useState(false);
-  const [waitingText, setWaitingText]= useState('');
+  const [waitingText, setWaitingText] = useState('');
   const loginButtonRef = useRef(null);
-  const inputRef=useRef(null);
-  const viewRef=useRef(null);
+  const inputRef = useRef(null);
+
 
 
   useEffect(() => {
@@ -24,17 +24,7 @@ export default function Login() {
   }, []);
 
   function onBtnClick() {
-
-    viewRef.current.measure( (fx, fy, width, height, px, py) => {
-
-      console.log('Component width is: ' + width)
-      console.log('Component height is: ' + height)
-      console.log('X offset to frame: ' + fx)
-      console.log('Y offset to frame: ' + fy)
-      console.log('X offset to page: ' + px)
-      console.log('Y offset to page: ' + py)
-  });
-
+   
     console.log('Login -> onBtnCLick');
     if (name == '') {
       Alert.alert('Erro', 'Por favor informe um nome!');
@@ -64,22 +54,22 @@ export default function Login() {
     const { opponentName, return_gameId } = result.data;
 
     if (result.data.return_status == 2) {
-      
+
       //everything ready to start:
 
       loginButtonRef.current.reset();
       setCarregando(false);
       global.timeOutLoginCount = 0;
-      navigation.navigate('Game', { name, gameId:return_gameId, opponentName });
-    
+      navigation.navigate('Game', { name, gameId: return_gameId, opponentName });
+
     } else {
 
       global.timeOutLoginCount++;
-      
-      if (global.timeOutLoginCount==10){
+
+      if (global.timeOutLoginCount == 10) {
         setWaitingText('Ainda aguardando oponente....');
       }
-      
+
       if (global.timeOutLoginCount >= 20) {
 
         loginButtonRef.current.reset();
@@ -87,11 +77,11 @@ export default function Login() {
         Alert.alert('Sem jogares online', 'No momento não há jogadores online. Tente convidar algum amigo para jogar também.');
         global.timeOutLoginCount = 0;
 
-        api.post('abortGame', { gameId:return_gameId }).then(result => { console.log(result.data) });
+        api.post('abortGame', { gameId: return_gameId }).then(result => { console.log(result.data) });
 
       } else {
-       
-        setTimeout( () => postLookForOpponent( return_gameId ), 2000);
+
+        setTimeout(() => postLookForOpponent(return_gameId), 2000);
       }
     }
   }
@@ -103,14 +93,11 @@ export default function Login() {
       <Image style={{ width: '100%', height: 120, resizeMode: 'contain' }} source={require('../../../assets/icon.png')}>
       </Image>
 
-      <View style={{ width: '100%' }}
-        ref={viewRef}
-      
-      >
+      <View style={{ width: '100%' }}>
         <Text style={{ marginBottom: 10, color: '#333D79', fontSize: 20 }}>Digite seu nome para começar: </Text>
 
 
-        <TextInput 
+        <TextInput
           ref={inputRef}
           style={{ width: '100%' }}
           editable={!carregando}

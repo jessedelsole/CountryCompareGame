@@ -15,7 +15,7 @@ export default function BackCard(props) {
            borderColor: '#707070', padding:10 }]}>
             <Image style={{marginTop:-70, marginBottom:15, width: 50, height: 50, resizeMode: 'contain' }} source={require('../../../assets/icon.png')}>
             </Image>
-            <Text style={{fontWeight:'bold', color:'#707070'}}>Country Compare Game</Text>
+            <Text style={{fontWeight:'bold', color:'#707070'}}>Country Comparison Game</Text>
         </View>
     );
 

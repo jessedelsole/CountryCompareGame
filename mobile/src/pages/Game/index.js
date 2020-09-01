@@ -21,6 +21,7 @@ export default function Game() {
     const [opponentCardCount, setOpponnetCardCount] = useState(0);
     const [idxSelected, setIdxSelected] = useState(0);
     const [showOpponentsCard, setShowOpponentsCard] = useState(false);
+    const [showCard, setShowCard]= useState(false);
     const [opponentCardData, setOpponentCardData] = useState(new CardData('', '', '', '', '', '', ''));
     const [cardData, setCardData] = useState(new CardData('', '', '', '', '', '', ''));
     const [cardResult, setCardResult] = useState(0);
@@ -178,7 +179,7 @@ export default function Game() {
 
                 efeito2_voltaProLado.start(() => {
                     setCardsVisible(true);
-                    efeito3_desliza_direita.start( ()=>{ if (toastMsg) toastMsg(); }  );
+                    efeito3_desliza_direita.start( ()=>{ if (toastMsg) toastMsg(); setShowCard(true) }  );
                 });
 
             } else {
@@ -189,7 +190,7 @@ export default function Game() {
                     efeito2_voltaProLado,
                     efeito3_desliza_direita
 
-                ]).start(() => { if (toastMsg) toastMsg();  });
+                ]).start(() => { if (toastMsg) toastMsg(); setShowCard(true) });
 
             }
         }, 100);
@@ -201,6 +202,8 @@ export default function Game() {
 
         setIdxSelected(0);
         setShowOpponentsCard(false);
+        
+        setShowCard(false);
         setCardResult(0);
         setOpponentCardResult(0);
 
@@ -655,10 +658,32 @@ export default function Game() {
                 {cardsVisible ?
                     <Animated.View style={[{ flex: 5, marginLeft: 10, marginRight: 10, marginBottom: 4 },
                     { transform: [{ translateY: startValueCardY }, { translateX: startValueCardX }] }]}>
-                        <Card
+                       
+                       
+                       <FlipCard
+                            style={{ flex: 1 }}
+                            friction={6}
+                            perspective={1000}
+                            flipHorizontal={true}
+                            flipVertical={false}
+                            flip={showCard}
+                            clickable={false}>
+                            {/* Face Side */}
+                            <BackCard styles={{}}>
+                            </BackCard>
+                            {/* Back Side */}
+                            <Card
+                              idxSelected={idxSelected} cardsOptionClick={cardsOptionClick} cardData={cardData} cardResult={cardResult}
+                              touchableClickable={touchableClickable}>
+                             </Card>
+                        </FlipCard>
+
+
+                       
+                        {/*<Card
                             idxSelected={idxSelected} cardsOptionClick={cardsOptionClick} cardData={cardData} cardResult={cardResult}
                             touchableClickable={touchableClickable}>
-                        </Card>
+                        </Card>*/}
                     </Animated.View> : null
                 }
 

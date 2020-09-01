@@ -58,7 +58,7 @@ export default function Game() {
     }, []);
 
 
-    function Animacoes(tipo, toastMsg) {
+    function Animacoes(tipo, toastMsg, end=false) {
 
 
         setTimeout(() => {
@@ -182,6 +182,14 @@ export default function Game() {
                     efeito3_desliza_direita.start( ()=>{ if (toastMsg) toastMsg(); setShowCard(true) }  );
                 });
 
+            } else 
+            if (end){
+                Animated.sequence([
+
+                    efeito1,
+                    efeito2_voltaProLado
+                ]).start(() => { if (toastMsg) toastMsg(); setShowCard(true) });
+            
             } else {
 
                 Animated.sequence([
@@ -237,18 +245,15 @@ export default function Game() {
 
             if (count == 0) {
 
-                toast(`Não foi dessa vez${name}, você perdeu o jogo!`, 'rgba(252, 186, 156, 0.9)', 3500, require('./../../../assets/medal.png'), true,
-                    'rgba(252, 238, 156, 0.9)');
-
-                backToMainScreen();
+                Animacoes(2, ()=>{ toast(`Não foi dessa vez${name}, você perdeu o jogo!`, 'rgba(252, 186, 156, 0.9)', 3500, require('./../../../assets/medal.png'), true); }, true );
+                setTimeout( ()=>{backToMainScreen();},3700)    
 
             } else
                 if (opponentCount == 0) {
 
-                    toast(`Parabéns ${name}, você ganhou o jogo!`, 'rgba(173, 229, 138, 0.9)', 3500, require('./../../../assets/trophy.png'), true,
-                        'rgba(138, 174, 229, 0.9)');
-
-                    backToMainScreen();
+                    Animacoes(1, ()=>{ toast(`Parabéns ${name}, você ganhou o jogo!`, 'rgba(173, 229, 138, 0.9)', 3500, require('./../../../assets/trophy.png'), true) }, true );
+                    setTimeout( ()=>{backToMainScreen();},3700)    
+      
                 } else
 
                     if (global.turn == name) {

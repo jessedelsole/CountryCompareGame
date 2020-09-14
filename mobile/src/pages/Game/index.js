@@ -51,7 +51,14 @@ export default function Game() {
 
         getRoundInfo();
 
-        const backAction = () => { msgDesejaSar(); return true; };
+        const backAction = () => { 
+            
+            if (global.drawerOpen){
+                drawerRef.current.closeDrawer();
+            }else
+              msgDesejaSar(); return true;
+        
+        };
         const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction);
         return () => backHandler.remove();
 
@@ -604,6 +611,9 @@ export default function Game() {
             drawerWidth={300}
             drawerContent={drawerContent}
             type={Drawer.types.Overlay}
+            onDrawerOpen={() => {global.drawerOpen = true;}}
+            onDrawerClose={() => {global.drawerOpen = false; }}
+            
             customStyles={{
                 drawer: {
                     shadowColor: '#000',
@@ -682,13 +692,6 @@ export default function Game() {
                               touchableClickable={touchableClickable}>
                              </Card>
                         </FlipCard>
-
-
-                       
-                        {/*<Card
-                            idxSelected={idxSelected} cardsOptionClick={cardsOptionClick} cardData={cardData} cardResult={cardResult}
-                            touchableClickable={touchableClickable}>
-                        </Card>*/}
                     </Animated.View> : null
                 }
 

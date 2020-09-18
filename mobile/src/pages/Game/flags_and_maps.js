@@ -63,8 +63,6 @@ export default function getFlagAndMap(card_code) {
 
 const flags_and_maps = {
 
-
-
     card_code1: {
         flag: require('./../../../assets/flags/1.png'),
         map: require('./../../../assets/maps/1.png')
@@ -104,7 +102,7 @@ const flags_and_maps = {
     },
     card_code10: {
         flag: require('./../../../assets/flags/10.png'),
-        map: require('./../../../assets/maps/1.png')
+        map: require('./../../../assets/maps/10.png')
     },
     card_code11: {
         flag: require('./../../../assets/flags/11.png'),

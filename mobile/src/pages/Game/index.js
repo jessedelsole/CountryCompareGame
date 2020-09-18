@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, View, Text, SafeAreaView, Image, TouchableOpacity, BackHandler, Alert, Easing, TouchableHighlight, Animated, Button } from 'react-native';
+import { StyleSheet, View, Text, SafeAreaView, Image, TouchableOpacity, BackHandler, Alert, Easing, Animated } from 'react-native';
 import Constants from 'expo-constants';
 import Card from './card';
 import BackCard from './backcard';
@@ -9,13 +9,14 @@ import Toast from 'react-native-tiny-toast';
 import FlipCard from 'react-native-flip-card';
 import Drawer from 'react-native-drawer-menu';
 import { Feather } from '@expo/vector-icons';
+import getAvatar from './../Game/avatars';
 
 export default function Game() {
 
 
     const navigation = useNavigation();
     const route = useRoute();
-    const { name, gameId, opponentName } = route.params;
+    const { name, gameId, opponentName, opponentAvatarId, avatarId } = route.params;
 
     const [cardCount, setCardCount] = useState(0);
     const [opponentCardCount, setOpponnetCardCount] = useState(0);
@@ -528,7 +529,7 @@ export default function Game() {
     function goBack() {
 
         global.turn = undefined;
-        navigation.goBack();
+        navigation.navigate('Login');
         global.timeOutCheckIfOpponentHasPlayed = 0;
         global.secondsOnYourTurn = 0;
 
@@ -633,7 +634,7 @@ export default function Game() {
                             backgroundColor: 'white', borderRadius: 100, marginLeft: 20, marginBottom: 5,
                             marginTop: 5, width: 42, height: 5, flex: 2, resizeMode: 'cover', borderColor: indicatorOpponentColor, borderWidth: 2
                         }}
-                            source={require('../../../assets/avatar_1.png')}>
+                            source={getAvatar(opponentAvatarId) }>
                         </Image>
                     </View>
                     <View style={{ flex: 8, flexDirection: 'column', justifyContent: 'space-around', padding: 5 }}>
@@ -712,7 +713,7 @@ export default function Game() {
                             backgroundColor: 'white', borderRadius: 100, marginRight: 20, marginBottom: 5,
                             marginTop: 5, width: 42, height: 5, flex: 2, resizeMode: 'cover', borderColor: indicatorColor, borderWidth: 2
                         }}
-                            source={require('../../../assets/avatar_2.png')}>
+                            source={getAvatar(avatarId) }>
                         </Image>
                     </View>
                 </View>

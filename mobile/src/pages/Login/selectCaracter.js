@@ -29,7 +29,7 @@ export default function SelectCaracter() {
 
         if ( !(global.avatarId === undefined)){
             setAvatarId(global.avatarId);
-            scrollRef.current.scrollToIndex({ index:global.avatarId-1, animated:false})
+            scrollRef.current.scrollToIndex({ index:global.avatarId-1, animated:true})
         } 
 
 

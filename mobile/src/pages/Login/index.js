@@ -3,29 +3,29 @@ import { StyleSheet, Text, Image, TextInput, KeyboardAvoidingView, View, Alert, 
 import { useNavigation } from '@react-navigation/native';
 import Constants from 'expo-constants';
 import { Feather } from '@expo/vector-icons';
-
+import * as Localization from 'expo-localization'; 
+import getString from './../../../assets/strings' 
 
 export default function Login() {
 
+  
   const navigation = useNavigation();
   const [name, setName] = useState('');
 
-
-  
+  global.englishLanguage= (Localization.locale !== "pt-BR");
+  console.log("teste");
+  console.log("Localication = " + Localization.locale);
 
   function onBtnClick() {
 
     console.log('Login -> onBtnCLick');
     if (name == '') {
-      Alert.alert('Erro', 'Por favor informe um nome!');
+      Alert.alert(getString("error"), getString("informAName"));
       return;
     }
 
     navigation.navigate('SelectCaracter', { name });
   }
-
-
-
 
 
   return (
@@ -36,7 +36,7 @@ export default function Login() {
       </Image>
 
       <View style={{ width: '100%' }}>
-        <Text style={{ marginBottom: 10, color: '#333D79', fontSize: 20 }}>Digite seu nome para começar: </Text>
+        <Text style={{ marginBottom: 10, color: '#333D79', fontSize: 20 }}>{getString("typeYourName")} </Text>
 
 
         <TextInput
@@ -52,7 +52,7 @@ export default function Login() {
 
       <TouchableOpacity style={{width:'100%'}} onPress ={onBtnClick} >
           <View style={{width:'100%', alignItems:'center', flexDirection:'row', justifyContent:'center' }} >
-            <Text style={{color:'#333D79', fontSize: 20 }}>Continuar</Text>
+        <Text style={{color:'#333D79', fontSize: 20 }}>{getString("continue")}</Text>
             <Feather name="arrow-right" size={20} color='#333D79' style={{  paddingLeft: 5 }}></Feather>
           </View>
       </TouchableOpacity>

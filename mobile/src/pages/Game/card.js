@@ -3,7 +3,8 @@ import {  Text, View, Image, TouchableOpacity } from 'react-native';
 import SectionCard from './section_card';
 import 'intl';
 import 'intl/locale-data/jsonp/en';
-import getFlagAndMap from './flags_and_maps'
+import getFlagAndMap from './flags_and_maps';
+import getString from './../../../assets/strings';
 
 
 
@@ -26,10 +27,10 @@ export default function Card(props) {
             <Text style={{flexWrap:'wrap', marginTop: 6, color: '#707070', fontWeight: 'bold', flex: 4 }}>{cardData.countryName}</Text>
           </View>
           <View style={{ flex: 1, marginTop: 3 }} >
-            <Text style={{ color: '#707070', fontStyle: 'italic' }}>{`Idioma: ${cardData.language}`}</Text>
+            <Text style={{ color: '#707070', fontStyle: 'italic' }}>{`${getString("language")}: ${cardData.language}`}</Text>
           </View>
           <View style={{ flex: 1 }} >
-            <Text style={{ color: '#707070', fontStyle: 'italic' }}>{`Moeda: ${cardData.currency}`}</Text >
+            <Text style={{ color: '#707070', fontStyle: 'italic' }}>{`${getString("currency") }: ${cardData.currency}`}</Text >
           </View>
         </View>
         <View style={{ flex: 1 }}>
@@ -40,33 +41,33 @@ export default function Card(props) {
 
       <View style={{ flex: 6, flexDirection: 'column' }}>
         <TouchableOpacity style={{ flex: 1 }} disabled = {!touchableClickable}
-          onPress={() => { cardsOptionClick(1, 'População') }}>
-          <SectionCard selected={idxSelected == 1} text={'Polulação'} value={Intl.NumberFormat('pt-BR', { style: 'decimal' }).format(cardData.population) + ' hab'}
+          onPress={() => { cardsOptionClick(1,  getString("population")) }}>
+          <SectionCard selected={idxSelected == 1} text={getString("population")} value={Intl.NumberFormat('pt-BR', { style: 'decimal' }).format(cardData.population) + ' hab'}
             cardResult={cardResult} >
           </SectionCard>
         </TouchableOpacity>
 
         <TouchableOpacity style={{ flex: 1 }} disabled = {!touchableClickable}
-          onPress={() => { cardsOptionClick(2, 'Área') }}>
-          <SectionCard selected={idxSelected == 2} text={'Área'} value={Intl.NumberFormat('pt-BR', { style: 'decimal' }).format(cardData.area) + ' km²'} cardResult={cardResult}>
+          onPress={() => { cardsOptionClick(2, getString("area")) }}>
+          <SectionCard selected={idxSelected == 2} text={getString("area")} value={Intl.NumberFormat('pt-BR', { style: 'decimal' }).format(cardData.area) + ' km²'} cardResult={cardResult}>
           </SectionCard>
         </TouchableOpacity>
 
         <TouchableOpacity style={{ flex: 1 }} disabled = {!touchableClickable}
-          onPress={() => { cardsOptionClick(3, 'IDH') }}>
-          <SectionCard selected={idxSelected == 3} text={'IDH'} value={Intl.NumberFormat('pt-BR', { style: 'decimal', minimumFractionDigits: 3 }).format(cardData.hdi)} cardResult={cardResult} >
+          onPress={() => { cardsOptionClick(3, getString("HDI")) }}>
+          <SectionCard selected={idxSelected == 3} text={getString("HDI")} value={Intl.NumberFormat('pt-BR', { style: 'decimal', minimumFractionDigits: 3 }).format(cardData.hdi)} cardResult={cardResult} >
           </SectionCard>
         </TouchableOpacity>
 
         <TouchableOpacity style={{ flex: 1 }} disabled = {!touchableClickable}
-          onPress={() => { cardsOptionClick(4, 'Índice de segurança') }}>
-          <SectionCard selected={idxSelected == 4} text={'Índice de segurança'} value={Intl.NumberFormat('pt-BR', { style: 'decimal', minimumFractionDigits: 2 }).format(cardData.safety_index)} cardResult={cardResult} >
+          onPress={() => { cardsOptionClick(4, getString("safetyIndex")) }}>
+          <SectionCard selected={idxSelected == 4} text={getString("safetyIndex")} value={Intl.NumberFormat('pt-BR', { style: 'decimal', minimumFractionDigits: 2 }).format(cardData.safety_index)} cardResult={cardResult} >
           </SectionCard>
         </TouchableOpacity>
 
         <TouchableOpacity style={{ flex: 1 }}  disabled = {!touchableClickable}
-          onPress={() => { cardsOptionClick(5, 'Densidade pop.') }}>
-          <SectionCard selected={idxSelected == 5} text={'Densidade pop.'} value={Intl.NumberFormat('pt-BR', { style: 'decimal' }).format(cardData.popDensity) + ' Pessoas/ Km²'} cardResult={cardResult} >
+          onPress={() => { cardsOptionClick(5, getString("populationDensity")) }}>
+          <SectionCard selected={idxSelected == 5} text={getString("populationDensity")} value={Intl.NumberFormat('pt-BR', { style: 'decimal' }).format(cardData.popDensity) + ' Pessoas/ Km²'} cardResult={cardResult} >
           </SectionCard>
         </TouchableOpacity>
       </View>

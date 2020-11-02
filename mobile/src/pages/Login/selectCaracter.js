@@ -6,6 +6,8 @@ import api from '../../services/api';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { Feather } from '@expo/vector-icons';
 import getAvatar from './../Game/avatars';
+import getString from './../../../assets/strings';
+
 
 
 export default function SelectCaracter() {
@@ -21,9 +23,12 @@ export default function SelectCaracter() {
     const [avatarId, setAvatarId]= useState(1);
     const { name } = route.params;
 
+   
 
 
     useEffect(() => {
+
+       
 
         global.timeOutLoginCount = 0;
 
@@ -31,8 +36,6 @@ export default function SelectCaracter() {
             setAvatarId(global.avatarId);
             scrollRef.current.scrollToIndex({ index:global.avatarId-1, animated:true})
         } 
-
-
     }, []);
 
 
@@ -41,7 +44,7 @@ export default function SelectCaracter() {
         global.cancelLookForOppoent= false;
         setCarregando(true);
 
-        setWaitingText('Aguarde, procurando um oponente online...');
+        setWaitingText(getString("waitingForOpponent"));
         postLookForOpponent(0);
     }
 
@@ -55,12 +58,10 @@ export default function SelectCaracter() {
 
     function postLookForOpponent(gameId) {
 
-       
-
         console.log(`post(LookForOpponent(${name}, ${gameId} [${global.timeOutLoginCount}/20])`);
         api.post('lookForOpponent', { player: name, gameId, avatarId }).then(result => trataResultadoPost(result))
             .catch(error => {
-                Alert.alert('Erro', `Ocorreu um erro : ${error}`);
+                Alert.alert(getString("error"), `${getString("thereWasAnError")} ${error}`);
                 loginButtonRef.current.reset();
                 setCarregando(false);
             });
@@ -76,7 +77,6 @@ export default function SelectCaracter() {
         if (result.data.return_status == 2) {
 
             //everything ready to start:
-
             loginButtonRef.current.reset();
             setCarregando(false);
             global.timeOutLoginCount = 0;
@@ -89,7 +89,7 @@ export default function SelectCaracter() {
             console.log('timeOutCount = ' + global.timeOutLoginCount);
 
             if (global.timeOutLoginCount == 10) {
-                setWaitingText('Ainda aguardando oponente....');
+                setWaitingText( getString("stillWating"));
             }
 
             if (global.timeOutLoginCount >= 20 || global.cancelLookForOppoent) {
@@ -98,7 +98,7 @@ export default function SelectCaracter() {
                 setCarregando(false);
                 
                 if (!global.cancelLookForOppoent)
-                 Alert.alert('Sem jogares online', 'No momento não há jogadores online. Tente convidar algum amigo para jogar também.');
+                 Alert.alert(getString("noOnlinePlayers"), getString("noOnlinePlayersInviteSomeone"));
                 
                 global.timeOutLoginCount = 0;
 
@@ -127,8 +127,8 @@ export default function SelectCaracter() {
         <View style={styles.container}>
             <View style={{ flex: 1, justifyContent: 'space-evenly', }}>
 
-                <Text style={{ width: '100%', fontWeight: 'bold', fontSize: 25, color: '#333D79' }}>{`Olá, ${name}!`}</Text>
-                <Text style={{ width: '100%', fontSize: 20, color: '#333D79' }}>Escolha agora o seu avatar:</Text>
+                <Text style={{ width: '100%', fontWeight: 'bold', fontSize: 25, color: '#333D79' }}>{`${getString("hello")} ${name}!`}</Text>
+    <Text style={{ width: '100%', fontSize: 20, color: '#333D79' }}>{getString("selectAvatar")}</Text>
             </View>
             <View style={{ flex: 1, justifyContent: 'center' }}>
 
@@ -158,7 +158,7 @@ export default function SelectCaracter() {
                 <View style={{ width: '100%', justifyContent: 'center', alignItems: 'center' }}>
                     <Btn style={{ height: 50 }}
                         ref={loginButtonRef}
-                        label="Começar!"
+                        label={getString("start")}
                         onPress={onBtnClick}
                         successIcon="check"
                         backgroundColor='#333D79'
@@ -175,7 +175,7 @@ export default function SelectCaracter() {
                 {carregando?null:
                 <TouchableOpacity onPress={onGoBackClick} >
                     <View style={{ width: '100%', flexDirection: 'row' }} >
-                        <Text style={{ color: '#333D79', fontSize: 20 }}>Voltar</Text>
+                <Text style={{ color: '#333D79', fontSize: 20 }}>{getString("goBack")}</Text>
                         <Feather name="arrow-left" size={20} color='#333D79' style={{ paddingLeft: 5 }}></Feather>
                     </View>
                 </TouchableOpacity>
@@ -184,7 +184,7 @@ export default function SelectCaracter() {
                 {carregando?
                 <TouchableOpacity onPress={cancelLookForOpponent} >
                     <View style={{ width: '100%', flexDirection: 'row' }} >
-                        <Text style={{ color: '#333D79', fontSize: 20 }}>Cancelar</Text>
+                <Text style={{ color: '#333D79', fontSize: 20 }}>{getString("cancel")}</Text>
                         <Feather name="x" size={20} color='#333D79' style={{ paddingLeft: 5 }}></Feather>
                     </View>
                 </TouchableOpacity> : null

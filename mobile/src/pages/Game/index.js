@@ -10,6 +10,7 @@ import FlipCard from 'react-native-flip-card';
 import Drawer from 'react-native-drawer-menu';
 import { Feather } from '@expo/vector-icons';
 import getAvatar from './../Game/avatars';
+import getString from './../../../assets/strings'
 
 export default function Game() {
 
@@ -253,13 +254,13 @@ export default function Game() {
 
             if (count == 0) {
 
-                Animacoes(2, ()=>{ toast(`Não foi dessa vez${name}, você perdeu o jogo!`, 'rgba(252, 186, 156, 0.9)', 3500, require('./../../../assets/medal.png'), true); }, true );
+                Animacoes(2, ()=>{ toast(`${getString("notThisTime")}${name}, ${getString("youLost")}`, 'rgba(252, 186, 156, 0.9)', 3500, require('./../../../assets/medal.png'), true); }, true );
                 setTimeout( ()=>{backToMainScreen();},3700)    
 
             } else
                 if (opponentCount == 0) {
 
-                    Animacoes(1, ()=>{ toast(`Parabéns ${name}, você ganhou o jogo!`, 'rgba(173, 229, 138, 0.9)', 3500, require('./../../../assets/trophy.png'), true) }, true );
+                    Animacoes(1, ()=>{ toast(`${getString("congratulations")}${name}, ${getString("youWon")}`, 'rgba(173, 229, 138, 0.9)', 3500, require('./../../../assets/trophy.png'), true) }, true );
                     setTimeout( ()=>{backToMainScreen();},3700)    
       
                 } else
@@ -274,10 +275,10 @@ export default function Game() {
 
                         if (global.efeitoInicial) {
                             _log('efeito inicial  = true');
-                            Animacoes(0, ()=>{toast(`Você começa jogando, ${name}! Escolha uma opção abaixo:`, 'rgba(144, 224, 169, 0.9)', 2500); });
+                            Animacoes(0, ()=>{toast(`${getString("youStartPlaying")}, ${name}! ${getString("choseAOptionsBelow")}:`, 'rgba(144, 224, 169, 0.9)', 2500); });
                             global.efeitoInicial = false;
                         } else {
-                            Animacoes(1, ()=>{toast(`Sua vez de jogar, ${name}! Escolha uma opção abaixo:`, 'rgba(144, 224, 169, 0.9)', 2500);} );
+                            Animacoes(1, ()=>{toast(`${getString("yourTurn")}, ${name}! ${getString("choseAOptionsBelow")}:`, 'rgba(144, 224, 169, 0.9)', 2500);} );
                             _log('efeito inicial  = false');
                         }
 
@@ -292,10 +293,10 @@ export default function Game() {
 
                         if (global.efeitoInicial) {
                             _log('efeito inicial  = true');
-                            Animacoes(0, ()=>{ toast(` ${opponentName} começa jogando. Aguarde a jogada do seu oponente...`, 'rgba(239, 249, 164, 0.9)', 2500); });
+                            Animacoes(0, ()=>{ toast(` ${opponentName} ${getString("opponentStartsPlaying")}`, 'rgba(239, 249, 164, 0.9)', 2500); });
                             global.efeitoInicial = false;
                         } else {
-                            Animacoes(2, ()=>{ toast(`Aguarde enquanto ${opponentName} faz a jogada...`, 'rgba(239, 249, 164, 0.9)', 2500); });
+                            Animacoes(2, ()=>{ toast(`${getString("waitWhile")} ${opponentName} ${getString("plays")}...`, 'rgba(239, 249, 164, 0.9)', 2500); });
                             _log('efeito inicial  = false');
                         }
                     }
@@ -315,9 +316,9 @@ export default function Game() {
 
         if (global.secondsOnYourTurn == 30) {
             global.secondsOnYourTurn = 0;
-            Alert.alert('Confirmação', `${name}, ainda quer continuar jogando?`, [
-                { text: 'Não', onPress: () => goBack(), style: 'cancel' },
-                { text: 'Sim', onPress: () => countSecondsOnYourTurn(true) }
+            Alert.alert(getString("confirmation"), `${name}, ${getString("doYouStillWannaPlay")}?`, [
+                { text: getString("no"), onPress: () => goBack(), style: 'cancel' },
+                { text: getString("yes"), onPress: () => countSecondsOnYourTurn(true) }
             ]);
             return;
         }
@@ -326,7 +327,7 @@ export default function Game() {
         if (initialCall || (!initialCall && global.secondsOnYourTurn > 0)) {
 
             if (global.secondsOnYourTurn > 0 && global.secondsOnYourTurn % 10 == 0) {
-                toast(`É sua vez de jogar, ${name}... Escolha uma opção abaixo!`, 'rgba(144, 224, 169, 0.9)', 2500);
+                toast(`${getString("yourTurn")}, ${name}... ${getString("choseAOptionsBelow")}!`, 'rgba(144, 224, 169, 0.9)', 2500);
             }
 
             global.secondsOnYourTurn++;
@@ -346,19 +347,16 @@ export default function Game() {
 
         if (winner == name) {
 
-            toast('Você ganhou essa rodada!', 'rgba(173, 229, 138, 0.9)');
+            toast(`${getString("youWonThisRound")}!`, 'rgba(173, 229, 138, 0.9)');
             setCardResult(1);
             setOpponentCardResult(2);
 
         } else {
 
-            toast('Você perdeu essa rodada...', 'rgba(251, 86, 86, 0.9)');
+            toast(`${getString("youLostThisRound")}...`, 'rgba(251, 86, 86, 0.9)');
             setCardResult(2);
             setOpponentCardResult(1);
-
-
         }
-
 
         setTimeout(() => getRoundInfo(), 3000);
     }
@@ -370,14 +368,14 @@ export default function Game() {
     function afterCallApiCard(roundWinner) {
 
         setShowOpponentsCard(true);
-        toast('Analisando vencedor...', 'rgba(232, 232, 232, 0.9)');
+        toast(`${getString("comparingResults")}...`, 'rgba(232, 232, 232, 0.9)');
         setTimeout(() => showWinner(roundWinner), 2000);
     }
 
     const cardsOptionClick = (idxClicked, textClicked) => {
 
         if (global.turn != name) {
-            toast(`É a vez de ${opponentName} jogar!`, 'rgba(239, 249, 164, 0.9)', 2500);
+            toast(`${getString("Its")} ${opponentName} ${getString("turn")}!`, 'rgba(239, 249, 164, 0.9)', 2500);
             return;
         }
 
@@ -386,7 +384,7 @@ export default function Game() {
         setTouchableClickable(false);
         setIdxSelected(idxClicked);
 
-        toast(`Você escolheu ${textClicked}, revelando carta do adversário...`, 'rgba(232, 232, 232, 0.9)');
+        toast(`${getString("youChoose")} ${textClicked}. ${getString("showingOpponentsCard")}...`, 'rgba(232, 232, 232, 0.9)');
 
         _log('cardOptionClick:' + idxClicked);
         api.post('cardPlayed', { gameId, idx_played: idxClicked, player: name }).then(
@@ -407,13 +405,13 @@ export default function Game() {
 
                 if (error.response && error.response.status == 410) {
 
-                    Alert.alert('Ops...', 'Seu adversário saiu do jogo', [
+                    Alert.alert(getString("oops"), getString("opponentHasLeft"), [
                         { text: 'Ok', onPress: () => goBack() }
                     ]);
 
                 } else {
 
-                    Alert.alert('Ops...', `Ocorreu um erro ${error} tente de novo `);
+                    Alert.alert(getString("oops"), `${getString("anErrorHasOcurred")} ${error} ${getString("tryAgain")}`);
                     setTouchableClickable(true);
                     setIdxSelected(0);
                 }
@@ -423,7 +421,7 @@ export default function Game() {
     function opponentHasPlayed(player_turn) {
 
         setShowOpponentsCard(true);
-        toast('Analisando vencedor...', 'rgba(232, 232, 232, 0.9)');
+        toast(`${getString("comparingResults")}...`, 'rgba(232, 232, 232, 0.9)');
         setTimeout(() => showWinner(player_turn), 2000);
     }
 
@@ -436,16 +434,16 @@ export default function Game() {
 
         if (global.timeOutCheckIfOpponentHasPlayed == 10 ||
             global.timeOutCheckIfOpponentHasPlayed == 20) {
-            toast(`${opponentName} ainda está pensando..., aguarde`, 'rgba(239, 249, 164, 0.9)', 2500);
+            toast(`${opponentName}${getString("isStilThinking")}`, 'rgba(239, 249, 164, 0.9)', 2500);
         }
 
         if (global.timeOutCheckIfOpponentHasPlayed == 30) {
 
             global.timeOutCheckIfOpponentHasPlayed = 0;
 
-            Alert.alert('Confirmação', `${opponentName} está demorando muito para jogar.\nDeseja continuar aguardando?`, [
-                { text: 'Não', onPress: () => goBack(), style: 'cancel' },
-                { text: 'Sim', onPress: () => checkIfOpponentHasPlayed() }
+            Alert.alert(getString("confirmation"), `${opponentName} ${getString("isTakingTooLong")}`, [
+                { text: getString("no"), onPress: () => goBack(), style: 'cancel' },
+                { text: getString("yes"), onPress: () => checkIfOpponentHasPlayed() }
             ]);
             return;
         }
@@ -474,19 +472,19 @@ export default function Game() {
 
                 let opcaoJogada;
                 switch (idx_played) {
-                    case 1: opcaoJogada = 'População'
+                    case 1: opcaoJogada = getString("population");
                         break;
-                    case 2: opcaoJogada = 'Área';
+                    case 2: opcaoJogada = getString("area");
                         break;
-                    case 3: opcaoJogada = 'IDH';
+                    case 3: opcaoJogada = getString("HDI");
                         break;
-                    case 4: opcaoJogada = 'Índice de segurança';
+                    case 4: opcaoJogada = getString("safetyIndex");
                         break;
-                    case 5: opcaoJogada = 'Densidade pop.';
+                    case 5: opcaoJogada = getString("populationDensity");
                         break;
                 }
 
-                toast(`${opponentName} escolheu: '${opcaoJogada}', revelando a carta... `, 'rgba(232, 232, 232, 0.9)');
+                toast(`${opponentName}  ${getString("hasChosen")}: '${opcaoJogada}', ${getString("showingOpponentsCard")}.. `, 'rgba(232, 232, 232, 0.9)');
                 setTimeout(() => opponentHasPlayed(player_turn), 2000);
 
             } else {
@@ -503,26 +501,21 @@ export default function Game() {
 
         }).catch((error) => {
 
-
             _log(error.reponse);
 
             if (error.response && error.response.status == 410) {
 
-                Alert.alert('Ops...', 'Seu adversário saiu do jogo', [
+                Alert.alert(getString("oops"), getString("opponentHasLeft"), [
                     { text: 'Ok', onPress: () => goBack() }
                 ]);
 
             } else {
 
-
-                Alert.alert('Ops...', `Ocorreu um erro : ${error}`, [
-                    { text: 'Tentar novamente', onPress: () => checkIfOpponentHasPlayed() }
+                Alert.alert(getString("oops"), `${getString("anErrorHasOcurred")} : ${error}`, [
+                    { text: getString("tryAgain"), onPress: () => checkIfOpponentHasPlayed() }
                 ]);
 
-
             }
-
-
         });
     }
 
@@ -579,9 +572,9 @@ export default function Game() {
 
     function msgDesejaSar() {
 
-        Alert.alert('Confirmação', 'Deseja mesmo encerrar esta partida?', [
-            { text: 'Não', onPress: () => null, style: 'cancel' },
-            { text: 'Sim', onPress: () => goBack() }
+        Alert.alert(getString("confirmation"), getString('leaveTheGame'), [
+            { text: getString("no"), onPress: () => null, style: 'cancel' },
+            { text: getString("yes"), onPress: () => goBack() }
         ]);
     }
 
@@ -598,7 +591,7 @@ export default function Game() {
                 }}
                     onPress={msgDesejaSar}>
                     <Feather name="arrow-left" size={16} color='#333D79' style={{ flex: 1, paddingLeft: 30 }}></Feather>
-                    <Text style={{ color: '#333D79', fontSize: 18, flex: 9, textAlign: 'left', paddingRight: 60 }}>Encerrar jogo</Text>
+                    <Text style={{ color: '#333D79', fontSize: 18, flex: 9, textAlign: 'left', paddingRight: 60 }}>{getString("quitGame")}</Text>
                 </TouchableOpacity>
             </View>
         </SafeAreaView>);

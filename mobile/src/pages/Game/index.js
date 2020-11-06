@@ -10,7 +10,8 @@ import FlipCard from 'react-native-flip-card';
 import Drawer from 'react-native-drawer-menu';
 import { Feather } from '@expo/vector-icons';
 import getAvatar from './../Game/avatars';
-import getString from './../../../assets/strings'
+import getString from './../../../assets/strings';
+import getCountryName from './../../../assets/countryNames';
 
 export default function Game() {
 
@@ -236,14 +237,14 @@ export default function Game() {
             }
 
             if (count > 0) {
-                setCardData(new CardData(card.card_code, card.name, card.population, card.area, card.hdi,
+                setCardData(new CardData(card.card_code, getCountryName(card.card_code), card.population, card.area, card.hdi,
                     card.safety_index, card.pop_density, card.language, card.currency));
             } else {
                 setCardData(new CardData(0, '', '', '', '', '', '', '', ''));
             }
 
             if (opponentCount > 0) {
-                setOpponentCardData(new CardData(opponentCard.card_code, opponentCard.name, opponentCard.population, opponentCard.area, opponentCard.hdi,
+                setOpponentCardData(new CardData(opponentCard.card_code, getCountryName(opponentCard.card_code), opponentCard.population, opponentCard.area, opponentCard.hdi,
                     opponentCard.safety_index, opponentCard.pop_density, opponentCard.language, opponentCard.currency));
             } else {
                 setOpponentCardData(new CardData(0, '', '', '', '', '', '', '', ''));
@@ -632,7 +633,7 @@ export default function Game() {
                     </View>
                     <View style={{ flex: 8, flexDirection: 'column', justifyContent: 'space-around', padding: 5 }}>
                         <Text style={{ color: '#FAEBFF', fontWeight: 'bold', fontSize: 18 }}>{opponentName}</Text>
-                        <Text style={{ color: '#FAEBFF', fontSize: 18 }}>{`${opponentCardCount} Cartas`}</Text>
+                        <Text style={{ color: '#FAEBFF', fontSize: 18 }}>{`${opponentCardCount} ${getString("cards")}`}</Text>
                     </View>
                     <View style={{ flex: 2 }}>
                         <TouchableOpacity onPress={() => { drawerRef.current.openDrawer() }}>
@@ -699,7 +700,7 @@ export default function Game() {
                     </View>
                     <View style={{ flex: 8, flexDirection: 'column', justifyContent: 'flex-end', padding: 5, marginRight: 10 }}>
                         <Text style={{ color: '#FAEBFF', fontWeight: 'bold', fontSize: 18, textAlign: 'right' }}>{name}</Text>
-                        <Text style={{ color: '#FAEBFF', fontSize: 18, textAlign: 'right' }}>{`${cardCount} Cartas`}</Text>
+                        <Text style={{ color: '#FAEBFF', fontSize: 18, textAlign: 'right' }}>{`${cardCount} ${getString("cards")}`}</Text>
                     </View>
                     <View style={{ flex: 2 }}>
                         <Image style={{

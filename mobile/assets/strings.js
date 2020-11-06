@@ -152,12 +152,12 @@ export default function getString(text) {
 
     if (text == "youWonThisRound")
         return global.englishLanguage ?
-            "You won this round" :
+            "You've won this round" :
             "Você ganhou essa rodada"
 
     if (text == "youLostThisRound")
         return global.englishLanguage ?
-            "You lost this round" :
+            "You've lost this round" :
             "Você perdeu essa rodada"
 
 
@@ -247,7 +247,7 @@ export default function getString(text) {
     if (text == "populationDensity")
         return global.englishLanguage ?
             "Population denslity" :
-            "Densidade populacional";
+            "Densidade pop.";
 
     if (text == "hasChosen")
         return global.englishLanguage ?
@@ -274,5 +274,11 @@ export default function getString(text) {
             "Currency" :
             "Moeda";
 
+    if (text=='cards')
+     return global.englishLanguage?
+      "Cards" :
+      "Cartas"
+
 
 }
+

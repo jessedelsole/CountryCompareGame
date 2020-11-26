@@ -5,6 +5,7 @@ import 'intl';
 import 'intl/locale-data/jsonp/en';
 import getFlagAndMap from './flags_and_maps';
 import getString from './../../../assets/strings';
+import getLanguageName from './../../../assets/languageNames';
 
 
 
@@ -27,7 +28,7 @@ export default function Card(props) {
             <Text style={{flexWrap:'wrap', marginTop: 6, color: '#707070', fontWeight: 'bold', flex: 4 }}>{cardData.countryName}</Text>
           </View>
           <View style={{ flex: 1, marginTop: 3 }} >
-            <Text style={{ color: '#707070', fontStyle: 'italic' }}>{`${getString("language")}: ${cardData.language}`}</Text>
+            <Text style={{ color: '#707070', fontStyle: 'italic' }}>{`${getString("language")}: ${getLanguageName(cardData.card_code)}`}</Text>
           </View>
           <View style={{ flex: 1 }} >
             <Text style={{ color: '#707070', fontStyle: 'italic' }}>{`${getString("currency") }: ${cardData.currency}`}</Text >

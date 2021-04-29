@@ -96,8 +96,8 @@ export default function getString(text) {
 
     if (text == "congratulations")
         return global.englishLanguage ?
-            "Congratulations" :
-            "Parabéns";
+            "Congratulations " :
+            "Parabéns ";
 
     if (text == "youStartPlaying")
         return global.englishLanguage ?

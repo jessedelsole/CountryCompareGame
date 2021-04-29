@@ -7,9 +7,9 @@
       "android",
       "web"
     ],
-    "version": "3.0.0",
+    "version": "4.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/icon_app.png",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
@@ -22,11 +22,13 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.jessedsg.countrycomparisongame",
+      "buildNumber": "4.0.0"
     },
     "android": {
       "package": "com.jessedsg.countrycomparisongame",
-      "versionCode":3
+      "versionCode":4
     }
   }
 }

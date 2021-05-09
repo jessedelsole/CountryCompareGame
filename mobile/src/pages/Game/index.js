@@ -18,7 +18,7 @@ export default function Game() {
 
     const navigation = useNavigation();
     const route = useRoute();
-    const { name, gameId, opponentName, opponentAvatarId, avatarId } = route.params;
+    const { name, gameId, opponentName, opponentAvatarId, avatarId, isTablet } = route.params;
 
     const [cardCount, setCardCount] = useState(0);
     const [opponentCardCount, setOpponnetCardCount] = useState(0);
@@ -37,19 +37,17 @@ export default function Game() {
     const [startValueOpponentCardX, setStartValueOpponentCardX] = useState(new Animated.Value(0));
     const [startValueOpponentCardY, setStartValueOpponentCardY] = useState(new Animated.Value(0));
     const [cardsVisible, setCardsVisible] = useState(false);
+    
 
 
     const drawerRef = useRef(null);
 
     useEffect(() => {
 
-        _log('*** use Effect *** ');
-
         global.count = 0;
         global.timeOutCheckIfOpponentHasPlayed = 0;
         global.secondsOnYourTurn = 0;
 
-        _log('settubg efeitoInicial = true');
         global.efeitoInicial = true;
 
         getRoundInfo();
@@ -65,6 +63,10 @@ export default function Game() {
         const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction);
         return () => backHandler.remove();
 
+
+
+
+
     }, []);
 
 
@@ -78,7 +80,7 @@ export default function Game() {
                     Animated.timing(
                         startValueCardY,
                         {
-                            toValue: 700,
+                            toValue: isTablet?1400:700,
                             duration: 850,
                             useNativeDriver: true
                         }
@@ -86,7 +88,7 @@ export default function Game() {
                     Animated.timing(
                         startValueOpponentCardY,
                         {
-                            toValue: 700,
+                            toValue: isTablet?1400:700,
                             duration: 850,
                             useNativeDriver: true
                         }
@@ -100,7 +102,7 @@ export default function Game() {
                     Animated.timing(
                         startValueOpponentCardY,
                         {
-                            toValue: -700,
+                            toValue: isTablet?-1400:-700,
                             duration: 850,
                             useNativeDriver: true
                         }
@@ -108,7 +110,7 @@ export default function Game() {
                     Animated.timing(
                         startValueCardY,
                         {
-                            toValue: -700,
+                            toValue: isTablet?-1400:-700,
                             duration: 850,
                             useNativeDriver: true
                         }
@@ -137,7 +139,7 @@ export default function Game() {
                     Animated.timing(
                         startValueCardX,
                         {
-                            toValue: -500,
+                            toValue: isTablet?-1000:-500,
                             duration: 0,
                             useNativeDriver: true
                         }
@@ -145,7 +147,7 @@ export default function Game() {
                     Animated.timing(
                         startValueOpponentCardX,
                         {
-                            toValue: -500,
+                            toValue: isTablet?-1000:-500,
                             duration: 0,
                             useNativeDriver: true
                         }
@@ -622,21 +624,21 @@ export default function Game() {
             easingFunc={Easing.ease}>
 
             <SafeAreaView style={styles.container}>
-                <View style={{ flex: 1, flexDirection: 'row' }}>
-                    <View style={{ flex: 2, marginRight: 10 }}>
+                <View style={{ flex: 1, flexDirection: 'row'}}>
+                    <View style={{ flex: isTablet?1.3: 2, marginRight: 10, alignItems:'center' }}>
                         <Image style={{
                             backgroundColor: 'white', borderRadius: 100, marginLeft: 20, marginBottom: 5,
-                            marginTop: 5, width: 42, height: 5, flex: 2, resizeMode: 'cover', borderColor: indicatorOpponentColor, borderWidth: 2
+                            marginTop: 5, width:'90%', height: 5, flex: 2, resizeMode: 'cover', borderColor: indicatorOpponentColor, borderWidth: 2
                         }}
                             source={getAvatar(opponentAvatarId) }>
                         </Image>
                     </View>
-                    <View style={{ flex: 8, flexDirection: 'column', justifyContent: 'space-around', padding: 5 }}>
+                    <View style={{  flex: 8, flexDirection: 'column', justifyContent: 'center', padding: 5}}>
                         <Text style={{ color: '#FAEBFF', fontWeight: 'bold', fontSize: 18 }}>{opponentName}</Text>
                         <Text style={{ color: '#FAEBFF', fontSize: 18 }}>{`${opponentCardCount} ${getString("cards")}`}</Text>
                     </View>
-                    <View style={{ flex: 2 }}>
-                        <TouchableOpacity onPress={() => { drawerRef.current.openDrawer() }}>
+                    <View style={{ flex: 2, alignItems:'flex-end'}}>
+                        <TouchableOpacity style={{marginRight:20}}onPress={() => { drawerRef.current.openDrawer() }}>
                             <Image style={{ marginRight: 5, marginTop: 12 }}
                                 source={require('../../../assets/menu_icon.png')}>
                             </Image>
@@ -645,7 +647,7 @@ export default function Game() {
                 </View>
 
                 {cardsVisible ?
-                    <Animated.View style={[{ flex: 5, marginLeft: 10, marginRight: 10, marginBottom: 4 },
+                    <Animated.View style={[{ flex: 5, marginLeft: isTablet?230:10, marginRight:isTablet?230:10, marginBottom: 4 },
                     { transform: [{ translateY: startValueOpponentCardY }, { translateX: startValueOpponentCardX }] }]}>
                         <FlipCard
                             style={{ flex: 1 }}
@@ -659,14 +661,14 @@ export default function Game() {
                             <BackCard styles={{}}>
                             </BackCard>
                             {/* Back Side */}
-                            <Card idxSelected={idxSelected} cardData={opponentCardData} cardResult={opponentCardResult} touchableClickable={false}>
+                            <Card idxSelected={idxSelected} cardData={opponentCardData} cardResult={opponentCardResult} touchableClickable={false} isTablet ={isTablet}>
                             </Card>
                         </FlipCard>
                     </Animated.View> : null}
 
 
                 {cardsVisible ?
-                    <Animated.View style={[{ flex: 5, marginLeft: 10, marginRight: 10, marginBottom: 4 },
+                    <Animated.View style={[{ flex: 5,  marginLeft: isTablet?230:10, marginRight:isTablet?230:10, marginBottom: 4 },
                     { transform: [{ translateY: startValueCardY }, { translateX: startValueCardX }] }]}>
                        
                        
@@ -684,7 +686,7 @@ export default function Game() {
                             {/* Back Side */}
                             <Card
                               idxSelected={idxSelected} cardsOptionClick={cardsOptionClick} cardData={cardData} cardResult={cardResult}
-                              touchableClickable={touchableClickable}>
+                              touchableClickable={touchableClickable} isTablet ={isTablet} >
                              </Card>
                         </FlipCard>
                     </Animated.View> : null
@@ -698,14 +700,14 @@ export default function Game() {
                     style={{ flex: 1, flexDirection: 'row' }}>
                     <View style={{ flex: 2, marginRight: 10 }}>
                     </View>
-                    <View style={{ flex: 8, flexDirection: 'column', justifyContent: 'flex-end', padding: 5, marginRight: 10 }}>
+                    <View style={{ flex: 8, flexDirection: 'column', justifyContent: 'center', padding: 5, marginRight: 10 }}>
                         <Text style={{ color: '#FAEBFF', fontWeight: 'bold', fontSize: 18, textAlign: 'right' }}>{name}</Text>
                         <Text style={{ color: '#FAEBFF', fontSize: 18, textAlign: 'right' }}>{`${cardCount} ${getString("cards")}`}</Text>
                     </View>
-                    <View style={{ flex: 2 }}>
+                    <View style={{ flex: isTablet?1.3: 2, alignItems:'center'}}>
                         <Image style={{
                             backgroundColor: 'white', borderRadius: 100, marginRight: 20, marginBottom: 5,
-                            marginTop: 5, width: 42, height: 5, flex: 2, resizeMode: 'cover', borderColor: indicatorColor, borderWidth: 2
+                            marginTop: 5, width:'90%', flex: 2, resizeMode: 'contain', borderColor: indicatorColor, borderWidth: 2
                         }}
                             source={getAvatar(avatarId) }>
                         </Image>

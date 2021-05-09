@@ -19,29 +19,29 @@ export default function SelectCaracter() {
     const scrollRef = useRef(null);
     const [carregando, setCarregando] = useState(false);
     const [waitingText, setWaitingText] = useState('');
-   
-    const [avatarId, setAvatarId]= useState(1);
-    const { name } = route.params;
 
-   
+    const [avatarId, setAvatarId] = useState(1);
+    const { name, isTablet } = route.params;
+
+
 
 
     useEffect(() => {
 
-       
+
 
         global.timeOutLoginCount = 0;
 
-        if ( !(global.avatarId === undefined)){
+        if (!(global.avatarId === undefined)) {
             setAvatarId(global.avatarId);
-            scrollRef.current.scrollToIndex({ index:global.avatarId-1, animated:true})
-        } 
+            scrollRef.current.scrollToIndex({ index: global.avatarId - 1, animated: true })
+        }
     }, []);
 
 
     function onBtnClick() {
         console.log('Login -> onBtnCLick');
-        global.cancelLookForOppoent= false;
+        global.cancelLookForOppoent = false;
         setCarregando(true);
 
         setWaitingText(getString("waitingForOpponent"));
@@ -52,8 +52,8 @@ export default function SelectCaracter() {
         navigation.goBack();
     }
 
-    function cancelLookForOpponent(){
-        global.cancelLookForOppoent= true;
+    function cancelLookForOpponent() {
+        global.cancelLookForOppoent = true;
     }
 
     function postLookForOpponent(gameId) {
@@ -70,7 +70,7 @@ export default function SelectCaracter() {
 
     function trataResultadoPost(result) {
 
-       console.log(result.data)
+        console.log(result.data)
 
         const { opponentName, return_gameId, opponentAvatarId } = result.data;
 
@@ -80,7 +80,7 @@ export default function SelectCaracter() {
             loginButtonRef.current.reset();
             setCarregando(false);
             global.timeOutLoginCount = 0;
-            navigation.navigate('Game', { name, gameId: return_gameId, opponentName, opponentAvatarId, avatarId });
+            navigation.navigate('Game', { name, gameId: return_gameId, opponentName, opponentAvatarId, avatarId, isTablet });
 
         } else {
 
@@ -89,17 +89,17 @@ export default function SelectCaracter() {
             console.log('timeOutCount = ' + global.timeOutLoginCount);
 
             if (global.timeOutLoginCount == 10) {
-                setWaitingText( getString("stillWating"));
+                setWaitingText(getString("stillWating"));
             }
 
             if (global.timeOutLoginCount >= 20 || global.cancelLookForOppoent) {
 
                 loginButtonRef.current.reset();
                 setCarregando(false);
-                
+
                 if (!global.cancelLookForOppoent)
-                 Alert.alert(getString("noOnlinePlayers"), getString("noOnlinePlayersInviteSomeone"));
-                
+                    Alert.alert(getString("noOnlinePlayers"), getString("noOnlinePlayersInviteSomeone"));
+
                 global.timeOutLoginCount = 0;
 
                 api.post('abortGame', { gameId: return_gameId }).then(result => { console.log(result.data) });
@@ -115,9 +115,11 @@ export default function SelectCaracter() {
     const avatars = [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }, { id: 5 }, { id: 6 }];
 
     const renderAvatarList = ({ item }) => (
-        <TouchableOpacity style={{borderRadius:90}} onPress= { ()=>{  setAvatarId( item.id);global.avatarId= item.id  }  } disabled = {carregando} >
-            <View style={{ paddingLeft:item.id==avatarId? 0:3,paddingTop:item.id==avatarId? 2:4, width: 100, height: 100, 
-                backgroundColor: 'white', margin: 5, borderRadius: 90,borderWidth:item.id==avatarId? 4:0 , borderColor:'#8fe391' }}>
+        <TouchableOpacity style={{ borderRadius: 90 }} onPress={() => { setAvatarId(item.id); global.avatarId = item.id }} disabled={carregando} >
+            <View style={{
+                paddingLeft: item.id == avatarId ? 0 : 3, paddingTop: item.id == avatarId ? 2 : 4, width: 100, height: 100,
+                backgroundColor: 'white', margin: 5, borderRadius: 90, borderWidth: item.id == avatarId ? 4 : 0, borderColor: '#8fe391'
+            }}>
                 <Image source={getAvatar(item.id)} style={{ height: 90, width: 90, resizeMode: 'stretch', borderRadius: 90 }} ></Image>
             </View>
         </TouchableOpacity>
@@ -127,20 +129,20 @@ export default function SelectCaracter() {
         <View style={styles.container}>
             <View style={{ flex: 1, justifyContent: 'space-evenly', }}>
 
-                <Text style={{ width: '100%', fontWeight: 'bold', fontSize: 25, color: '#333D79' }}>{`${getString("hello")} ${name}!`}</Text>
-    <Text style={{ width: '100%', fontSize: 20, color: '#333D79' }}>{getString("selectAvatar")}</Text>
+                <Text style={{ width: '100%', fontWeight: 'bold', fontSize:isTablet?35:25, color: '#333D79' }}>{`${getString("hello")} ${name}!`}</Text>
+                <Text style={{ width: '100%', fontSize: isTablet?25:20, color: '#333D79' }}>{getString("selectAvatar")}</Text>
             </View>
             <View style={{ flex: 1, justifyContent: 'center' }}>
 
                 <View style={{ height: 110 }}>
 
-                    <FlatList 
+                    <FlatList
                         ref={scrollRef}
-                        onScrollToIndexFailed={info => { 
+                        onScrollToIndexFailed={info => {
                             const wait = new Promise(resolve => setTimeout(resolve, 500));
                             wait.then(() => {
                                 scrollRef.current?.scrollToIndex({ index: info.index, animated: false });
-                              });
+                            });
                         }}
                         data={avatars}
                         renderItem={renderAvatarList}
@@ -152,9 +154,9 @@ export default function SelectCaracter() {
                 </View>
             </View>
 
-            <View style={{ alignItems: 'center', justifyContent: 'space-evenly', flex: 1, width:'100%' }}>
+            <View style={{ alignItems: 'center', justifyContent: 'space-evenly', flex: 1, width: '100%' }}>
 
-                {carregando ? <Text style={{ width: '100%', textAlign: 'center', color: '#333D79', fontStyle: 'italic' }}>{waitingText}</Text> : null}
+                {carregando ? <Text style={{ width: '100%', textAlign: 'center', color: '#333D79', fontStyle: 'italic',fontSize:isTablet?25:15 }}>{waitingText}</Text> : null}
                 <View style={{ width: '100%', justifyContent: 'center', alignItems: 'center' }}>
                     <Btn style={{ height: 50 }}
                         ref={loginButtonRef}
@@ -166,28 +168,28 @@ export default function SelectCaracter() {
                         foregroundColor='#707070'
                         maxWidth={Math.round(Dimensions.get('window').width - 10)}
                         minWidth={50}
-                        labelStyle={{ color: '#FAEBFF', fontWeight: 'bold' }}
+                        labelStyle={{ color: '#FAEBFF', fontWeight: 'bold', fontSize:isTablet?22:17 }}
 
                     />
                 </View>
 
-                
-                {carregando?null:
-                <TouchableOpacity onPress={onGoBackClick} >
-                    <View style={{ width: '100%', flexDirection: 'row' }} >
-                <Text style={{ color: '#333D79', fontSize: 20 }}>{getString("goBack")}</Text>
-                        <Feather name="arrow-left" size={20} color='#333D79' style={{ paddingLeft: 5 }}></Feather>
-                    </View>
-                </TouchableOpacity>
+
+                {carregando ? null :
+                    <TouchableOpacity onPress={onGoBackClick} >
+                        <View style={{ width: '100%', flexDirection: 'row', alignItems:'center' }} >
+                            <Text style={{ color: '#333D79', fontSize:isTablet?25:20 }}>{getString("goBack")}</Text>
+                            <Feather name="arrow-left" size={20} color='#333D79' style={{ paddingLeft: 5 }}></Feather>
+                        </View>
+                    </TouchableOpacity>
                 }
 
-                {carregando?
-                <TouchableOpacity onPress={cancelLookForOpponent} >
-                    <View style={{ width: '100%', flexDirection: 'row' }} >
-                <Text style={{ color: '#333D79', fontSize: 20 }}>{getString("cancel")}</Text>
-                        <Feather name="x" size={20} color='#333D79' style={{ paddingLeft: 5 }}></Feather>
-                    </View>
-                </TouchableOpacity> : null
+                {carregando ?
+                    <TouchableOpacity onPress={cancelLookForOpponent} >
+                        <View style={{ width: '100%', flexDirection: 'row' , alignItems:'center'}} >
+                            <Text style={{ color: '#333D79', fontSize:isTablet?25:20 }}>{getString("cancel")}</Text>
+                            <Feather name="x" size={20} color='#333D79' style={{ paddingLeft: 5 }}></Feather>
+                        </View>
+                    </TouchableOpacity> : null
                 }
 
             </View>

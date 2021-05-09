@@ -11,7 +11,7 @@ import getCurrencyName from './../../../assets/currencyNames';
 
 export default function Card(props) {
 
-  const { cardData, cardsOptionClick, idxSelected, cardResult, touchableClickable } = props;
+  const { cardData, cardsOptionClick, idxSelected, cardResult, touchableClickable, isTablet } = props;
 
 
   return (
@@ -24,7 +24,7 @@ export default function Card(props) {
 
         <View style={{ flex: 1, flexDirection: 'column' }}>
           <View style={{ flex: 2, flexDirection: 'row' }} >
-            {cardData.card_code>0 ? <Image source={getFlagAndMap(cardData.card_code).flag} style={{ flex: 2, height: 35, resizeMode: 'stretch', marginRight: 6 }} ></Image> : null}
+            {cardData.card_code>0 ? <Image source={getFlagAndMap(cardData.card_code).flag} style={{ flex: 2, height: isTablet?55:35, resizeMode: 'stretch', marginRight: 6 }} ></Image> : null}
             <Text style={{flexWrap:'wrap', marginTop: 6, color: '#707070', fontWeight: 'bold', flex: 4 }}>{cardData.countryName}</Text>
           </View>
           <View style={{ flex: 1, marginTop: 3 }} >
@@ -34,7 +34,7 @@ export default function Card(props) {
             <Text style={{ color: '#707070', fontStyle: 'italic' }}>{`${getString("currency") }: ${getCurrencyName(cardData.card_code)}`}</Text >
           </View>
         </View>
-        <View style={{ flex: 1 }}>
+        <View style={{ flex: 1, alignItems:'flex-end',paddingRight:isTablet?10:0 }}>
           {cardData.card_code>0 ? <Image source={getFlagAndMap(cardData.card_code).map} style={{height:100, marginLeft:10, width:150, marginTop:-8, flex: 2, marginRight: 6 }} ></Image> : null}
         
         </View>
@@ -68,7 +68,7 @@ export default function Card(props) {
 
         <TouchableOpacity style={{ flex: 1 }}  disabled = {!touchableClickable}
           onPress={() => { cardsOptionClick(5, getString("populationDensity")) }}>
-          <SectionCard selected={idxSelected == 5} text={getString("populationDensity")} value={Intl.NumberFormat('pt-BR', { style: 'decimal' }).format(cardData.popDensity) + ' Pessoas/ Km²'} cardResult={cardResult} >
+          <SectionCard selected={idxSelected == 5} text={getString("populationDensity")} value={Intl.NumberFormat('pt-BR', { style: 'decimal' }).format(cardData.popDensity) + ` ${getString("people")}/ Km²`} cardResult={cardResult} >
           </SectionCard>
         </TouchableOpacity>
       </View>

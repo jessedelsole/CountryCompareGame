@@ -3,6 +3,12 @@
 
 export default function getString(text) {
 
+
+    if (text=='people')
+      return global.englishLanguage? 
+       "People":
+       "Pessoas";
+
     if (text == "typeYourName")
         return global.englishLanguage ?
             "Type a nickname to start:" :

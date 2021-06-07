@@ -1,12 +1,16 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { View, StyleSheet, Text, Dimensions, TouchableOpacity, FlatList, Image, Alert } from 'react-native';
+import { View, StyleSheet, Text, Dimensions, TouchableOpacity, TouchableWithoutFeedback, FlatList, Image, Alert, Switch, Pressable, Button } from 'react-native';
 import Btn from 'react-native-micro-animated-button';
 import Constants from 'expo-constants';
 import api from '../../services/api';
 import { useRoute, useNavigation } from '@react-navigation/native';
-import { Feather } from '@expo/vector-icons';
+import { Feather, Ionicons } from '@expo/vector-icons';
 import getAvatar from './../Game/avatars';
 import getString from './../../../assets/strings';
+import Modal from 'react-native-modal';
+import MyCheckbox from '../../Components/MyCheckbox';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 
 
@@ -19,16 +23,14 @@ export default function SelectCaracter() {
     const scrollRef = useRef(null);
     const [carregando, setCarregando] = useState(false);
     const [waitingText, setWaitingText] = useState('');
-
+    const [modalVisible, setModalVisible] = useState(false);
+    const [buttonEffectVisible, setButtonEffectVisible] = useState(false);
     const [avatarId, setAvatarId] = useState(1);
+    const [notShowAgainChecked, setNotShowAgainChecked] = useState(false);
+
     const { name, isTablet } = route.params;
 
-
-
-
     useEffect(() => {
-
-
 
         global.timeOutLoginCount = 0;
 
@@ -36,20 +38,87 @@ export default function SelectCaracter() {
             setAvatarId(global.avatarId);
             scrollRef.current.scrollToIndex({ index: global.avatarId - 1, animated: true })
         }
+
+        _loadPreferences = async() =>{
+
+            AsyncStorage.clear();  
+
+            let notShowAgain =  await AsyncStorage.getItem('@ccg:NOT_SHOW_AGAIN');
+
+            console.log(notShowAgain);
+            notShowAgain = JSON.parse(notShowAgain);
+
+            setNotShowAgainChecked(notShowAgain);
+  
+             if (notShowAgain===true)
+                 setButtonEffectVisible(true);
+        }
+      
+      
+        _loadPreferences();
+        
+
     }, []);
 
 
-    function onBtnClick() {
-        console.log('Login -> onBtnCLick');
+    async function saveNotShowAgain( notShowAgain ){
+       
+        console.log('saveNotShowAgain = '+ notShowAgain);
+        try {
+            await AsyncStorage.setItem('@ccg:NOT_SHOW_AGAIN',JSON.stringify( notShowAgain));
+            console.log('ok');
+          } catch (error) {
+             console.log('erro')
+          }
+    }
+
+
+
+    async function onChangeCheckBoxNotShowAgain(checked){
+       
+        console.log('onChangeCheckBoxNotShowAgain = '+  checked);
+        await saveNotShowAgain(checked);
+        setNotShowAgainChecked(checked);
+        console.log('onChangeCheckBoxNotShowAgain fim');
+        
+    }
+
+
+    function startGame(){
+        
         global.cancelLookForOppoent = false;
         setCarregando(true);
-
         setWaitingText(getString("waitingForOpponent"));
-        postLookForOpponent(0);
+        postLookForOpponent(0); 
+
     }
+
+    function onBtnStartGame_EffectClick() {
+        startGame();
+    }
+
+
+    function onBtnStartGame_NoEffectClick(){
+        setModalVisible(true);
+    }
+
 
     function onGoBackClick() {
         navigation.goBack();
+    }
+
+    function onBtnModalStartGameClick() {
+
+        setModalVisible(false);
+        setButtonEffectVisible(true);
+       
+        setTimeout(() => { loginButtonRef.current.load(); startGame();}, 200);
+    }
+
+    function onBtnModalCancelClick(){
+       
+        setModalVisible(false);
+        setButtonEffectVisible(notShowAgainChecked);
     }
 
     function cancelLookForOpponent() {
@@ -64,6 +133,7 @@ export default function SelectCaracter() {
                 Alert.alert(getString("error"), `${getString("thereWasAnError")} ${error}`);
                 loginButtonRef.current.reset();
                 setCarregando(false);
+                setButtonEffectVisible(notShowAgainChecked);
             });
     }
 
@@ -96,6 +166,7 @@ export default function SelectCaracter() {
 
                 loginButtonRef.current.reset();
                 setCarregando(false);
+                setButtonEffectVisible(notShowAgainChecked);
 
                 if (!global.cancelLookForOppoent)
                     Alert.alert(getString("noOnlinePlayers"), getString("noOnlinePlayersInviteSomeone"));
@@ -110,7 +181,6 @@ export default function SelectCaracter() {
             }
         }
     }
-
 
     const avatars = [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }, { id: 5 }, { id: 6 }];
 
@@ -129,8 +199,8 @@ export default function SelectCaracter() {
         <View style={styles.container}>
             <View style={{ flex: 1, justifyContent: 'space-evenly', }}>
 
-                <Text style={{ width: '100%', fontWeight: 'bold', fontSize:isTablet?35:25, color: '#333D79' }}>{`${getString("hello")} ${name}!`}</Text>
-                <Text style={{ width: '100%', fontSize: isTablet?25:20, color: '#333D79' }}>{getString("selectAvatar")}</Text>
+                <Text style={{ width: '100%', fontWeight: 'bold', fontSize: isTablet ? 35 : 25, color: '#333D79' }}>{`${getString("hello")} ${name}!`}</Text>
+                <Text style={{ width: '100%', fontSize: isTablet ? 25 : 20, color: '#333D79' }}>{getString("selectAvatar")}</Text>
             </View>
             <View style={{ flex: 1, justifyContent: 'center' }}>
 
@@ -156,43 +226,81 @@ export default function SelectCaracter() {
 
             <View style={{ alignItems: 'center', justifyContent: 'space-evenly', flex: 1, width: '100%' }}>
 
-                {carregando ? <Text style={{ width: '100%', textAlign: 'center', color: '#333D79', fontStyle: 'italic',fontSize:isTablet?25:15 }}>{waitingText}</Text> : null}
+                {carregando ? <Text style={{ width: '100%', textAlign: 'center', color: '#333D79', fontStyle: 'italic', fontSize: isTablet ? 25 : 15 }}>{waitingText}</Text> : null}
                 <View style={{ width: '100%', justifyContent: 'center', alignItems: 'center' }}>
-                    <Btn style={{ height: 50 }}
+                   {buttonEffectVisible? <Btn style={{ height: 50 }}
                         ref={loginButtonRef}
                         label={getString("start")}
-                        onPress={onBtnClick}
+                        onPress={onBtnStartGame_EffectClick}
                         successIcon="check"
                         backgroundColor='#333D79'
                         color='white'
                         foregroundColor='#707070'
                         maxWidth={Math.round(Dimensions.get('window').width - 10)}
                         minWidth={50}
-                        labelStyle={{ color: '#FAEBFF', fontWeight: 'bold', fontSize:isTablet?22:17 }}
+                        labelStyle={{ color: '#FAEBFF', fontWeight: 'bold', fontSize: isTablet ? 22 : 17 }}
 
-                    />
+                    />:null }
+                    {!buttonEffectVisible? <TouchableOpacity style={{width:'100%'}} onPress={onBtnStartGame_NoEffectClick}>
+                        <View style={{borderRadius:20, width:'100%', height: 50, backgroundColor:'#333D79',alignItems:'center', justifyContent:'center' }}>
+                           <Text style={{fontWeight:'bold', color:'#FAEBFF', fontSize: isTablet ? 22 : 17}}>{getString("start")}</Text>
+                            
+                        </View>
+                    </TouchableOpacity>:null}
                 </View>
-
 
                 {carregando ? null :
                     <TouchableOpacity onPress={onGoBackClick} >
-                        <View style={{ width: '100%', flexDirection: 'row', alignItems:'center' }} >
-                            <Text style={{ color: '#333D79', fontSize:isTablet?25:20 }}>{getString("goBack")}</Text>
-                            <Feather name="arrow-left" size={20} color='#333D79' style={{ paddingLeft: 5 }}></Feather>
+                        <View style={{ width: '100%', flexDirection: 'row', alignItems: 'center' }} >
+                            <Text style={{ color: '#333D79', fontSize: isTablet ? 25 : 20 }}>{getString("goBack")}</Text>
+                            <Feather name="arrow-left" size={20} color='#333D79' style={{ paddingLeft: 5, marginTop:3}}></Feather>
                         </View>
                     </TouchableOpacity>
                 }
 
                 {carregando ?
                     <TouchableOpacity onPress={cancelLookForOpponent} >
-                        <View style={{ width: '100%', flexDirection: 'row' , alignItems:'center'}} >
-                            <Text style={{ color: '#333D79', fontSize:isTablet?25:20 }}>{getString("cancel")}</Text>
-                            <Feather name="x" size={20} color='#333D79' style={{ paddingLeft: 5 }}></Feather>
+                        <View style={{ width: '100%', flexDirection: 'row', alignItems: 'center' }} >
+                            <Text style={{ color: '#333D79', fontSize: isTablet ? 25 : 20 }}>{getString("cancel")}</Text>
+                            <Feather name="x" size={20} color='#333D79' style={{ paddingLeft: 5,marginTop:3}}></Feather>
                         </View>
                     </TouchableOpacity> : null
                 }
 
             </View>
+
+            <Modal isVisible={modalVisible}>
+                <View style={styles.modalContent}>
+                    <Text style={{ fontSize: isTablet ? 25 : 16, color:'#333D79' }}>{getString('informationFewPlayers')}
+                          </Text>
+
+                    <View style={{ flexDirection: 'row', marginTop: 20 }}>
+                                                
+                        <TouchableOpacity style={{ flex: 1}} onPress={onBtnModalStartGameClick}>
+                            <View style={styles.buttonOk}>
+                                <Text style={{ fontSize: isTablet ? 22 : 18, color: 'white', fontWeight: 'bold', textAlign:'center' }}>{getString('gotIt')}</Text>
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={{ flex: 1 }} onPress={onBtnModalCancelClick}>
+                            <View style={styles.buttonCancelar}>
+                                <Text style={{ fontSize: isTablet ? 22 : 18, color: 'white', fontWeight: 'bold', textAlign:'center' }}>{getString('nevermind')}</Text>
+                            </View>
+                        </TouchableOpacity>
+                        
+                    </View>
+                    <View>
+                        <View style={{ flexDirection: 'row', marginTop: 20, alignItems:'center' }}>
+                            <MyCheckbox
+                                checked={notShowAgainChecked}
+                                onChange={onChangeCheckBoxNotShowAgain}>
+                            </MyCheckbox>
+                            <TouchableWithoutFeedback onPress={ () => {setNotShowAgainChecked(!notShowAgainChecked)}} style={{ marginLeft: 6 }}>
+                              <Text style={{ marginLeft:5, color:'#333D79',  fontSize: isTablet ? 21 : 16 }}>{getString('dontShowAgain')}</Text>
+                            </TouchableWithoutFeedback>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
         </View >
     );
 }
@@ -208,4 +316,37 @@ const styles = StyleSheet.create({
         paddingLeft: 5,
         paddingRight: 5
     },
+    modalContent: {
+        backgroundColor: 'white',
+        padding: 22,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 4,
+        borderColor: 'rgba(0, 0, 0, 0.1)',
+    },
+    buttonOk: {
+
+        backgroundColor: '#78C34B',
+        padding: 12,
+        margin: 16,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 15,
+        borderColor: 'rgba(0, 0, 0, 0.1)',
+    },
+    buttonCancelar: {
+
+        backgroundColor: '#DF541B',
+        padding: 12,
+        margin: 16,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 15,
+        borderColor: 'rgba(0, 0, 0, 0.1)',
+    }
 });
+
+
+
+
+

@@ -4,6 +4,32 @@
 export default function getString(text) {
 
 
+    if (text=='informationFewPlayers')
+    return global.englishLanguage? 
+     "There are only a few players online at the moment...\n" +
+    "In order to play online, invite a friend to download this game too, and ask them to click on "+
+    "\"Start Game\" at the same time than you, so that you can play together.":
+
+    "No momento há poucos jogadores online...\n"+
+    "Para jogar com alguém online, convide um amigo a baixar este game e peça para clicar em \"jogar online\" no mesmo momento que você, "+
+    "para assim poderem jogar juntos!";
+
+    if (text=='dontShowAgain')
+    return global.englishLanguage? 
+      "Don't show this message again":
+      "Não mostrar esta mensagem novamente";
+
+    if (text=='nevermind')
+     return global.englishLanguage? 
+      "Nevermind":
+      "Deixa pra lá";
+
+    if (text=='gotIt')
+     return global.englishLanguage? 
+      "Ok, got it!":
+       "Ok, entendi!";
+
+
     if (text=='people')
       return global.englishLanguage? 
        "People":

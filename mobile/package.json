@@ -8,6 +8,8 @@
     "eject": "expo eject"
   },
   "dependencies": {
+    "@react-native-async-storage/async-storage": "^1.15.5",
+    "@react-native-community/checkbox": "^0.5.7",
     "@react-native-community/masked-view": "0.1.10",
     "@react-navigation/drawer": "^5.8.1",
     "@react-navigation/native": "^5.1.5",
@@ -32,6 +34,7 @@
     "react-native-intl": "^1.0.0",
     "react-native-md-motion-buttons": "^1.1.0",
     "react-native-micro-animated-button": "^0.0.28",
+    "react-native-modal": "^11.10.0",
     "react-native-reanimated": "~1.9.0",
     "react-native-safe-area-context": "~3.0.7",
     "react-native-screens": "~2.9.0",
